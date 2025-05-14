@@ -1,4 +1,10 @@
 {
   "name": "DrumPadApp",
-  "displayName": "DrumPadApp"
+  "displayName": "DrumPadApp",
+  "android": {
+    "package": "com.oktay.shakirov.drumpadapp"
+  },
+  "ios": {
+    "bundleIdentifier": "com.oktay.shakirov.drumpadapp"
+  }
 }

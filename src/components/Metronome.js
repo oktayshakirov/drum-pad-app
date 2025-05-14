@@ -1,25 +1,23 @@
-// src/components/Metronome.js
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {View, Text, Button, StyleSheet, Platform} from 'react-native';
 import {AppContext} from '../contexts/AppContext';
 import {playMetronomeTick} from '../services/AudioService';
-// Consider using a slider for BPM
-// import Slider from '@react-native-community/slider'; // npm install @react-native-community/slider
+import Slider from '@react-native-community/slider';
 
 const Metronome = () => {
   const {metronomeBPM, setMetronomeBPM, isMetronomeOn, setIsMetronomeOn} =
     useContext(AppContext);
 
   const intervalRef = useRef(null);
-  const [beatVisual, setBeatVisual] = useState(false); // For visual feedback
+  const [beatVisual, setBeatVisual] = useState(false);
 
   useEffect(() => {
     if (isMetronomeOn) {
       const intervalTime = (60 / metronomeBPM) * 1000;
       intervalRef.current = setInterval(() => {
         playMetronomeTick();
-        setBeatVisual(v => !v); // Toggle visual feedback
-        setTimeout(() => setBeatVisual(false), 100); // Reset visual after short duration
+        setBeatVisual(v => !v);
+        setTimeout(() => setBeatVisual(false), 100);
       }, intervalTime);
     } else {
       clearInterval(intervalRef.current);
@@ -32,17 +30,6 @@ const Metronome = () => {
     setIsMetronomeOn(!isMetronomeOn);
   };
 
-  const adjustBPM = amount => {
-    let newBPM = metronomeBPM + amount;
-    if (newBPM < 60) {
-      newBPM = 60;
-    } // Added curly braces
-    if (newBPM > 200) {
-      newBPM = 200;
-    } // Added curly braces
-    setMetronomeBPM(newBPM);
-  };
-
   return (
     <View style={styles.container}>
       <Text style={styles.bpmText}>BPM: {metronomeBPM}</Text>
@@ -50,11 +37,17 @@ const Metronome = () => {
         style={[styles.beatIndicator, beatVisual && styles.beatIndicatorActive]}
       />
       <View style={styles.controls}>
-        <View style={styles.buttonWrapper}>
-          <Button
-            title="-"
-            onPress={() => adjustBPM(-5)}
-            color={Platform.OS === 'ios' ? '#fff' : '#333'}
+        <View style={styles.sliderContainer}>
+          <Slider
+            style={styles.slider}
+            minimumValue={60}
+            maximumValue={200}
+            step={1}
+            value={metronomeBPM}
+            onValueChange={value => setMetronomeBPM(value)}
+            minimumTrackTintColor="#FFFFFF"
+            maximumTrackTintColor="#AAAAAA"
+            thumbTintColor="#FFFFFF"
           />
         </View>
         <View style={styles.buttonWrapper}>
@@ -66,28 +59,7 @@ const Metronome = () => {
             }
           />
         </View>
-        <View style={styles.buttonWrapper}>
-          <Button
-            title="+"
-            onPress={() => adjustBPM(5)}
-            color={Platform.OS === 'ios' ? '#fff' : '#333'}
-          />
-        </View>
       </View>
-      {/*
-      // Example using Slider:
-      <Slider
-        style={{width: 200, height: 40}}
-        minimumValue={60}
-        maximumValue={200}
-        step={1}
-        value={metronomeBPM}
-        onValueChange={value => setMetronomeBPM(value)}
-        minimumTrackTintColor="#FFFFFF"
-        maximumTrackTintColor="#AAAAAA"
-        thumbTintColor="#FFFFFF"
-      />
-      */}
     </View>
   );
 };
@@ -117,9 +89,18 @@ const styles = StyleSheet.create({
   controls: {
     flexDirection: 'row',
     alignItems: 'center',
+    width: '100%',
+    paddingHorizontal: 20,
+  },
+  sliderContainer: {
+    flex: 1,
+    marginRight: 10,
+  },
+  slider: {
+    width: '100%',
+    height: 40,
   },
   buttonWrapper: {
-    marginHorizontal: 5,
     backgroundColor: '#444',
     borderRadius: 5,
   },

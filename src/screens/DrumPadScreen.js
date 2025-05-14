@@ -8,8 +8,7 @@ import {AppContext} from '../contexts/AppContext';
 const DrumPadScreen = () => {
   const {currentSoundPack} = useContext(AppContext);
 
-  // Define the layout of pads, e.g., which sound index each pad corresponds to
-  const padIds = Array.from({length: 12}, (_, i) => i); // 0 to 11
+  const padIds = Array.from({length: 12}, (_, i) => i);
 
   return (
     <View style={styles.container}>
@@ -22,8 +21,8 @@ const DrumPadScreen = () => {
           <Pad
             key={id}
             padId={id}
-            soundFile={currentSoundPack.sounds[id]} // Pass the specific sound file
-            packName={currentSoundPack.name} // Needed for AudioService to find the right path
+            soundFile={currentSoundPack.sounds[id]}
+            packName={currentSoundPack.name}
           />
         ))}
       </View>
