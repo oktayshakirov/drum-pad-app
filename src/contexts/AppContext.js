@@ -26,24 +26,24 @@ const SOUND_PACKS = {
     ],
     id: 'hiphop',
   },
-  // edm: {
-  //   name: 'EDM',
-  //   sounds: [
-  //     // 'edm_kick.wav',
-  //     // 'edm_snare.wav',
-  //     // 'edm_hat.wav',
-  //     // 'edm_tom1.wav',
-  //     // 'edm_tom2.wav',
-  //     // 'edm_tom3.wav',
-  //     // 'edm_clap.wav',
-  //     // 'edm_cymbal.wav',
-  //     // 'edm_fx1.wav',
-  //     // 'edm_fx2.wav',
-  //     // 'edm_openhat.wav',
-  //     // 'edm_perc.wav',
-  //   ],
-  //   id: 'edm',
-  // },
+  edm: {
+    name: 'EDM',
+    sounds: [
+      'edm_kick.wav',
+      'edm_snare.wav',
+      'edm_hi_hat.wav',
+      'edm_clap.wav',
+      // 'edm_tom1.wav',
+      // 'edm_tom2.wav',
+      // 'edm_tom3.wav',
+      // 'edm_cymbal.wav',
+      // 'edm_fx1.wav',
+      // 'edm_fx2.wav',
+      // 'edm_openhat.wav',
+      // 'edm_perc.wav',
+    ],
+    id: 'edm',
+  },
 };
 
 export const AppProvider = ({children}) => {
