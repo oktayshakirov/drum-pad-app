@@ -1,171 +1,145 @@
-import Sound from 'react-native-sound';
+import TrackPlayer from 'react-native-track-player';
+import {getSoundPath} from '../utils/soundUtils';
 
-Sound.setCategory('Playback');
-
-const DEFAULT_VOLUME = 1.0;
-const METRONOME_VOLUME = 0.7;
-const soundCache = {};
-
-export const preloadSoundPack = async (packName, soundFiles) => {
-  if (!packName || !soundFiles?.length) {
-    console.warn('Invalid sound pack data provided');
-    return;
+class AudioService {
+  constructor() {
+    this.currentSoundPack = null;
+    this.isInitialized = false;
+    this.initializePlayer();
   }
 
-  console.log(`Preloading sound pack: ${packName}`);
-  soundCache[packName] = soundCache[packName] || {};
-
-  const loadPromises = soundFiles.map(async soundFile => {
-    if (!soundFile || soundCache[packName][soundFile]) {
+  async initializePlayer() {
+    if (this.isInitialized) {
       return;
     }
-
-    const soundPath = `${packName.toLowerCase()}/${soundFile}`;
-    console.log(`Loading sound: ${soundPath}`);
 
     try {
-      soundCache[packName][soundFile] = await new Promise((resolve, reject) => {
-        const sound = new Sound(soundPath, Sound.MAIN_BUNDLE, error => {
-          if (error) {
-            console.error(`Failed to load sound ${soundPath}:`, error);
-            reject(error);
-            return;
-          }
-          sound.setVolume(DEFAULT_VOLUME);
-          resolve(sound);
-        });
+      await TrackPlayer.setupPlayer({
+        autoHandleInterruptions: true,
+        waitForBuffer: true,
       });
+      this.isInitialized = true;
+      console.log('TrackPlayer initialized successfully');
     } catch (error) {
-      console.error(`Error loading sound ${soundPath}:`, error);
-      delete soundCache[packName][soundFile];
+      console.error('Error initializing TrackPlayer:', error);
     }
-  });
-
-  await Promise.all(loadPromises);
-  console.log(`Sound pack ${packName} loaded successfully`);
-};
-
-export const playSound = async (packName, soundFile) => {
-  if (!packName || !soundFile) {
-    console.warn('Invalid sound parameters');
-    return;
   }
 
-  try {
-    const soundPromise = soundCache[packName]?.[soundFile];
-    if (!soundPromise) {
-      console.warn(`Sound ${soundFile} not preloaded in ${packName}`);
+  async preloadSoundPack(soundPack) {
+    if (!this.isInitialized) {
+      console.log('Waiting for TrackPlayer initialization...');
+      await this.initializePlayer();
+    }
+
+    try {
+      console.log(`Preloading sound pack: ${soundPack}`);
+      const sounds = await this.getSoundPackSounds(soundPack);
+
+      await TrackPlayer.reset();
+
+      await TrackPlayer.add(sounds);
+
+      this.currentSoundPack = soundPack;
+      console.log(`Sound pack ${soundPack} loaded successfully`);
+      return true;
+    } catch (error) {
+      console.error(`Error preloading sound pack ${soundPack}:`, error);
+      return false;
+    }
+  }
+
+  async getSoundPackSounds(soundPack) {
+    const soundFiles = ['kick', 'snare', 'hi_hat', 'clap'];
+
+    return soundFiles.map(sound => ({
+      id: `${soundPack}_${sound}`,
+      url: getSoundPath(soundPack, sound),
+      title: sound,
+      artist: soundPack,
+      duration: 1,
+    }));
+  }
+
+  async playSound(soundPack, sound) {
+    if (!this.isInitialized) {
+      console.log('Waiting for TrackPlayer initialization...');
+      await this.initializePlayer();
+    }
+
+    try {
+      if (this.currentSoundPack !== soundPack) {
+        console.log(`Sound pack ${soundPack} not preloaded`);
+        await this.preloadSoundPack(soundPack);
+      }
+
+      const trackId = `${soundPack}_${sound}`;
+      const queue = await TrackPlayer.getQueue();
+      const track = queue.find(t => t.id === trackId);
+
+      if (!track) {
+        console.error(`Track ${trackId} not found in queue`);
+        return false;
+      }
+
+      await TrackPlayer.reset();
+      await TrackPlayer.add(track);
+      await TrackPlayer.play();
+      return true;
+    } catch (error) {
+      console.error(`Error playing sound ${sound}:`, error);
+      return false;
+    }
+  }
+
+  async stopSound() {
+    if (!this.isInitialized) {
       return;
     }
+    try {
+      await TrackPlayer.stop();
+    } catch (error) {
+      console.error('Error stopping sound:', error);
+    }
+  }
 
-    const soundInstance = await soundPromise;
-    if (!soundInstance) {
-      console.error(`Sound instance not found for ${soundFile}`);
-      return;
+  async startMetronome(bpm) {
+    if (!this.isInitialized) {
+      console.log('Waiting for TrackPlayer initialization...');
+      await this.initializePlayer();
     }
 
-    soundInstance.stop(() => {
-      soundInstance.play(success => {
-        if (!success) {
-          console.error(`Playback failed for ${soundFile}`);
-        }
-      });
-    });
-  } catch (error) {
-    console.error(`Error playing sound ${soundFile}:`, error);
-  }
-};
+    try {
+      const tickSound = {
+        id: 'metronome_tick',
+        url: getSoundPath('metronome', 'tick'),
+        title: 'Metronome Tick',
+        artist: 'Metronome',
+        duration: 0.1,
+      };
 
-export const releaseSoundPack = async packName => {
-  if (!soundCache[packName]) {
-    return;
-  }
+      await TrackPlayer.reset();
+      await TrackPlayer.add(tickSound);
 
-  try {
-    const releasePromises = Object.values(soundCache[packName]).map(
-      async soundPromise => {
+      const interval = (60 / bpm) * 1000;
+      this.metronomeInterval = setInterval(async () => {
         try {
-          const sound = await soundPromise;
-          if (sound?.isPlaying()) {
-            sound.stop();
-          }
-          sound?.release();
+          await TrackPlayer.play();
+          await TrackPlayer.seekTo(0);
         } catch (error) {
-          console.warn(`Error releasing sound in ${packName}:`, error);
+          console.error('Error playing metronome tick:', error);
         }
-      },
-    );
-
-    await Promise.all(releasePromises);
-    delete soundCache[packName];
-    console.log(`Released sound pack: ${packName}`);
-  } catch (error) {
-    console.error(`Error releasing sound pack ${packName}:`, error);
-  }
-};
-
-let metronomeTickSound = null;
-
-export const loadMetronomeTick = async () => {
-  if (metronomeTickSound) {
-    return metronomeTickSound;
-  }
-
-  try {
-    metronomeTickSound = await new Promise((resolve, reject) => {
-      const sound = new Sound(
-        'metronome_tick.wav',
-        Sound.MAIN_BUNDLE,
-        error => {
-          if (error) {
-            console.error('Failed to load metronome tick:', error);
-            reject(error);
-            return;
-          }
-          sound.setVolume(METRONOME_VOLUME);
-          resolve(sound);
-        },
-      );
-    });
-    return metronomeTickSound;
-  } catch (error) {
-    console.error('Error loading metronome tick:', error);
-    metronomeTickSound = null;
-    throw error;
-  }
-};
-
-export const playMetronomeTick = async () => {
-  try {
-    const tick = await loadMetronomeTick();
-    if (!tick) {
-      return;
+      }, interval);
+    } catch (error) {
+      console.error('Error starting metronome:', error);
     }
-
-    tick.stop(() => {
-      tick.play(success => {
-        if (!success) {
-          console.error('Metronome tick playback failed');
-        }
-      });
-    });
-  } catch (error) {
-    console.error('Error playing metronome tick:', error);
   }
-};
 
-export const cleanup = async () => {
-  try {
-    const releasePromises = Object.keys(soundCache).map(packName =>
-      releaseSoundPack(packName),
-    );
-    await Promise.all(releasePromises);
-
-    if (metronomeTickSound) {
-      metronomeTickSound.release();
-      metronomeTickSound = null;
+  stopMetronome() {
+    if (this.metronomeInterval) {
+      clearInterval(this.metronomeInterval);
+      this.metronomeInterval = null;
     }
-  } catch (error) {
-    console.error('Error during cleanup:', error);
   }
-};
+}
+
+export default new AudioService();

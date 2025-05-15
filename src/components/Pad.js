@@ -1,105 +1,93 @@
-import React, {useState, useRef} from 'react';
+import React, {useState} from 'react';
 import {
   TouchableOpacity,
   Text,
   StyleSheet,
   Animated,
-  Easing,
+  Vibration,
 } from 'react-native';
-import {playSound} from '../services/AudioService';
+import AudioService from '../services/AudioService';
 
-const getRandomColor = () => {
-  const letters = '0123456789ABCDEF';
-  let color = '#';
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  const r = parseInt(color.slice(1, 3), 16);
-  const g = parseInt(color.slice(3, 5), 16);
-  const b = parseInt(color.slice(5, 7), 16);
-  if (r < 50 && g < 50 && b < 50) {
-    return getRandomColor();
-  }
-  return color;
-};
+const Pad = ({sound, label, soundPack}) => {
+  const [scale] = useState(new Animated.Value(1));
+  const [isPressed, setIsPressed] = useState(false);
 
-const Pad = ({padId, soundFile, packName}) => {
-  const [padColor] = useState(getRandomColor());
-  const scaleValue = useRef(new Animated.Value(1)).current;
-  const opacityValue = useRef(new Animated.Value(1)).current;
-
-  const handlePressIn = () => {
-    if (soundFile) {
-      playSound(packName.toLowerCase().replace(' ', '_'), soundFile);
+  const handlePressIn = async () => {
+    if (!sound) {
+      return;
     }
 
-    Animated.parallel([
-      Animated.timing(scaleValue, {
-        toValue: 0.9,
-        duration: 80,
-        easing: Easing.bezier(0.0, 0.0, 0.2, 1),
-        useNativeDriver: true,
-      }),
-      Animated.timing(opacityValue, {
-        toValue: 0.7,
-        duration: 80,
-        easing: Easing.bezier(0.0, 0.0, 0.2, 1),
-        useNativeDriver: true,
-      }),
-    ]).start();
+    setIsPressed(true);
+    Vibration.vibrate(50);
+    Animated.spring(scale, {
+      toValue: 0.95,
+      useNativeDriver: true,
+    }).start();
+
+    try {
+      await AudioService.playSound(soundPack, sound);
+    } catch (error) {
+      console.error('Error playing sound:', error);
+    }
   };
 
   const handlePressOut = () => {
-    Animated.parallel([
-      Animated.timing(scaleValue, {
-        toValue: 1,
-        duration: 100,
-        easing: Easing.bezier(0.0, 0.0, 0.2, 1),
-        useNativeDriver: true,
-      }),
-      Animated.timing(opacityValue, {
-        toValue: 1,
-        duration: 100,
-        easing: Easing.bezier(0.0, 0.0, 0.2, 1),
-        useNativeDriver: true,
-      }),
-    ]).start();
+    setIsPressed(false);
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
   };
 
   return (
     <Animated.View
-      style={{transform: [{scale: scaleValue}], opacity: opacityValue}}>
+      style={[
+        styles.container,
+        {
+          transform: [{scale}],
+          opacity: sound ? 1 : 0.5,
+        },
+      ]}>
       <TouchableOpacity
-        style={[styles.pad, {backgroundColor: padColor}]}
+        style={[styles.pad, isPressed && styles.padPressed]}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        activeOpacity={1}>
-        <Text style={styles.padText}>
-          {/* Can display padId or sound name */}
-        </Text>
+        activeOpacity={0.8}
+        disabled={!sound}>
+        <Text style={styles.label}>{label}</Text>
       </TouchableOpacity>
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    width: '30%',
+    aspectRatio: 1,
+    margin: '1.5%',
+  },
   pad: {
-    width: 90,
-    height: 110,
+    flex: 1,
+    backgroundColor: '#333',
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 8,
-    borderRadius: 10,
-    elevation: 3,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  padText: {
+  padPressed: {
+    backgroundColor: '#444',
+  },
+  label: {
     color: '#fff',
-    fontSize: 12,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontWeight: '500',
   },
 });
 

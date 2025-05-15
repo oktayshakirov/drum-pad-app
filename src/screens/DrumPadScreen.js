@@ -1,14 +1,35 @@
 import React, {useContext} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, ActivityIndicator} from 'react-native';
 import Pad from '../components/Pad';
 import SoundPackSelector from '../components/SoundPackSelector';
 import Metronome from '../components/Metronome';
 import {AppContext} from '../contexts/AppContext';
 
 const DrumPadScreen = () => {
-  const {currentSoundPack} = useContext(AppContext);
+  const {currentSoundPack, isLoading} = useContext(AppContext);
 
-  const padIds = Array.from({length: 12}, (_, i) => i);
+  const padConfigs = [
+    {id: 1, sound: 'kick', label: 'Kick'},
+    {id: 2, sound: 'snare', label: 'Snare'},
+    {id: 3, sound: 'hi_hat', label: 'Hi-Hat'},
+    {id: 4, sound: 'clap', label: 'Clap'},
+    {id: 5, sound: null, label: 'Pad 5'},
+    {id: 6, sound: null, label: 'Pad 6'},
+    {id: 7, sound: null, label: 'Pad 7'},
+    {id: 8, sound: null, label: 'Pad 8'},
+    {id: 9, sound: null, label: 'Pad 9'},
+    {id: 10, sound: null, label: 'Pad 10'},
+    {id: 11, sound: null, label: 'Pad 11'},
+    {id: 12, sound: null, label: 'Pad 12'},
+  ];
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#fff" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -17,12 +38,12 @@ const DrumPadScreen = () => {
         <Metronome />
       </View>
       <View style={styles.grid}>
-        {padIds.map(id => (
+        {padConfigs.map(pad => (
           <Pad
-            key={id}
-            padId={id}
-            soundFile={currentSoundPack.sounds[id]}
-            packName={currentSoundPack.name}
+            key={pad.id}
+            sound={pad.sound}
+            label={pad.label}
+            soundPack={currentSoundPack}
           />
         ))}
       </View>
@@ -37,12 +58,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#1e1e1e',
+  },
   headerControls: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     width: '100%',
-    marginBottom: 20,
+    marginBottom: 10,
     paddingHorizontal: 10,
   },
   grid: {

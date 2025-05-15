@@ -1,108 +1,177 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {View, Text, Button, StyleSheet, Platform} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Animated} from 'react-native';
 import {AppContext} from '../contexts/AppContext';
 import {playMetronomeTick} from '../services/AudioService';
-import Slider from '@react-native-community/slider';
+import AudioService from '../services/AudioService';
 
 const Metronome = () => {
-  const {metronomeBPM, setMetronomeBPM, isMetronomeOn, setIsMetronomeOn} =
-    useContext(AppContext);
+  useContext(AppContext);
 
   const intervalRef = useRef(null);
-  const [beatVisual, setBeatVisual] = useState(false);
+  const [bpm, setBpm] = useState(120);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const beatAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    if (isMetronomeOn) {
-      const intervalTime = (60 / metronomeBPM) * 1000;
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isPlaying) {
+      const intervalTime = (60 / bpm) * 1000;
       intervalRef.current = setInterval(() => {
         playMetronomeTick();
-        setBeatVisual(v => !v);
-        setTimeout(() => setBeatVisual(false), 100);
+        Animated.sequence([
+          Animated.timing(beatAnim, {
+            toValue: 1.3,
+            duration: 80,
+            useNativeDriver: true,
+          }),
+          Animated.timing(beatAnim, {
+            toValue: 1,
+            duration: 120,
+            useNativeDriver: true,
+          }),
+        ]).start();
       }, intervalTime);
     } else {
-      clearInterval(intervalRef.current);
-      setBeatVisual(false);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
     }
-    return () => clearInterval(intervalRef.current);
-  }, [isMetronomeOn, metronomeBPM]);
+  }, [beatAnim, isPlaying, bpm]);
 
-  const handleToggleMetronome = () => {
-    setIsMetronomeOn(!isMetronomeOn);
+  const handleToggleMetronome = async () => {
+    if (isPlaying) {
+      await AudioService.stopMetronome();
+    } else {
+      await AudioService.startMetronome(bpm);
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const handleBPMChange = value => {
+    const clampedBpm = Math.max(40, Math.min(200, value));
+    setBpm(clampedBpm);
+    if (isPlaying) {
+      AudioService.stopMetronome();
+      AudioService.startMetronome(clampedBpm);
+    }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.bpmText}>BPM: {metronomeBPM}</Text>
-      <View
-        style={[styles.beatIndicator, beatVisual && styles.beatIndicatorActive]}
-      />
-      <View style={styles.controls}>
-        <View style={styles.sliderContainer}>
-          <Slider
-            style={styles.slider}
-            minimumValue={60}
-            maximumValue={200}
-            step={1}
-            value={metronomeBPM}
-            onValueChange={value => setMetronomeBPM(value)}
-            minimumTrackTintColor="#FFFFFF"
-            maximumTrackTintColor="#AAAAAA"
-            thumbTintColor="#FFFFFF"
-          />
+    <View style={styles.wrapper}>
+      <View style={styles.centeredColumn}>
+        <Animated.View
+          style={[styles.bpmCircle, {transform: [{scale: beatAnim}]}]}>
+          <Text style={styles.bpmValue}>{bpm}</Text>
+          <Text style={styles.bpmLabel}>BPM</Text>
+        </Animated.View>
+        <View style={styles.bpmStepRow}>
+          <TouchableOpacity
+            style={styles.bpmStepButton}
+            onPress={() => handleBPMChange(bpm - 5)}>
+            <Text style={styles.bpmStepText}>-5</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.bpmStepButton}
+            onPress={() => handleBPMChange(bpm + 5)}>
+            <Text style={styles.bpmStepText}>+5</Text>
+          </TouchableOpacity>
         </View>
-        <View style={styles.buttonWrapper}>
-          <Button
-            title={isMetronomeOn ? 'Stop' : 'Start'}
-            onPress={handleToggleMetronome}
-            color={
-              Platform.OS === 'ios' ? '#fff' : isMetronomeOn ? 'red' : 'green'
-            }
-          />
-        </View>
+        <TouchableOpacity
+          style={[styles.startStopButton, isPlaying && styles.startStopActive]}
+          onPress={handleToggleMetronome}>
+          <Text style={styles.startStopText}>
+            {isPlaying ? 'Stop' : 'Start'}
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  wrapper: {
     alignItems: 'center',
-    marginVertical: 10,
+    justifyContent: 'center',
+    marginBottom: 20,
+    marginTop: 10,
+    width: '100%',
   },
-  bpmText: {
-    fontSize: 18,
+  centeredColumn: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 120,
+  },
+  bpmCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#222',
+    borderWidth: 2,
+    borderColor: '#4CAF50',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
+    shadowColor: '#4CAF50',
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: {width: 0, height: 2},
+  },
+  bpmValue: {
     color: '#fff',
-    marginBottom: 10,
+    fontSize: 28,
+    fontWeight: 'bold',
   },
-  beatIndicator: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    marginBottom: 10,
-    borderColor: '#fff',
-    borderWidth: 1,
-    backgroundColor: 'transparent',
+  bpmLabel: {
+    color: '#aaa',
+    fontSize: 13,
+    marginTop: -2,
   },
-  beatIndicatorActive: {
-    backgroundColor: 'rgba(255,255,255,0.5)',
-  },
-  controls: {
+  bpmStepRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '100%',
-    paddingHorizontal: 20,
+    justifyContent: 'center',
+    marginBottom: 12,
+    gap: 10,
   },
-  sliderContainer: {
-    flex: 1,
-    marginRight: 10,
+  bpmStepButton: {
+    backgroundColor: '#333',
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+    borderRadius: 18,
+    marginHorizontal: 4,
+    elevation: 2,
   },
-  slider: {
-    width: '100%',
-    height: 40,
+  bpmStepText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
-  buttonWrapper: {
+  startStopButton: {
     backgroundColor: '#444',
-    borderRadius: 5,
+    paddingHorizontal: 32,
+    paddingVertical: 14,
+    borderRadius: 24,
+    marginTop: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    shadowOffset: {width: 0, height: 2},
+  },
+  startStopActive: {
+    backgroundColor: '#4CAF50',
+  },
+  startStopText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    letterSpacing: 1,
   },
 });
 
