@@ -1,10 +1,11 @@
 import React, {createContext, useState, useEffect} from 'react';
 import AudioService from '../services/AudioService';
+import {SOUND_PACKS} from '../utils/soundUtils';
 
 export const AppContext = createContext();
 
 export const AppProvider = ({children}) => {
-  const [currentSoundPack, setCurrentSoundPack] = useState('hiphop');
+  const [currentSoundPack, setCurrentSoundPack] = useState(SOUND_PACKS[0]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {

@@ -1,10 +1,11 @@
 import TrackPlayer from 'react-native-track-player';
-import {getSoundPath} from '../utils/soundUtils';
+import {getSoundPath, getAvailableSounds} from '../utils/soundUtils';
 
 class AudioService {
   constructor() {
     this.currentSoundPack = null;
     this.isInitialized = false;
+    this.metronomeInterval = null;
     this.initializePlayer();
   }
 
@@ -33,11 +34,24 @@ class AudioService {
 
     try {
       console.log(`Preloading sound pack: ${soundPack}`);
-      const sounds = await this.getSoundPackSounds(soundPack);
+      const sounds = getAvailableSounds(soundPack);
 
-      await TrackPlayer.reset();
+      // Only reset if we're changing sound packs
+      if (this.currentSoundPack !== soundPack) {
+        await TrackPlayer.reset();
+      }
 
-      await TrackPlayer.add(sounds);
+      const tracks = sounds.map(sound => ({
+        id: `${soundPack}_${sound.name}`,
+        url: sound.path,
+        title: sound.name,
+        artist: soundPack,
+        duration: 1,
+        type: 'default',
+      }));
+
+      console.log('Adding tracks:', tracks);
+      await TrackPlayer.add(tracks);
 
       this.currentSoundPack = soundPack;
       console.log(`Sound pack ${soundPack} loaded successfully`);
@@ -46,18 +60,6 @@ class AudioService {
       console.error(`Error preloading sound pack ${soundPack}:`, error);
       return false;
     }
-  }
-
-  async getSoundPackSounds(soundPack) {
-    const soundFiles = ['kick', 'snare', 'hi_hat', 'clap'];
-
-    return soundFiles.map(sound => ({
-      id: `${soundPack}_${sound}`,
-      url: getSoundPath(soundPack, sound),
-      title: sound,
-      artist: soundPack,
-      duration: 1,
-    }));
   }
 
   async playSound(soundPack, sound) {
@@ -73,6 +75,8 @@ class AudioService {
       }
 
       const trackId = `${soundPack}_${sound}`;
+      console.log(`Playing sound: ${trackId}`);
+
       const queue = await TrackPlayer.getQueue();
       const track = queue.find(t => t.id === trackId);
 
@@ -81,9 +85,14 @@ class AudioService {
         return false;
       }
 
+      // Stop any currently playing sound
+      await TrackPlayer.stop();
+
+      // Reset the queue and add only the track we want to play
       await TrackPlayer.reset();
       await TrackPlayer.add(track);
       await TrackPlayer.play();
+
       return true;
     } catch (error) {
       console.error(`Error playing sound ${sound}:`, error);
@@ -109,13 +118,18 @@ class AudioService {
     }
 
     try {
+      this.stopMetronome();
+
       const tickSound = {
         id: 'metronome_tick',
         url: getSoundPath('metronome', 'tick'),
         title: 'Metronome Tick',
         artist: 'Metronome',
         duration: 0.1,
+        type: 'default',
       };
+
+      console.log('Metronome sound path:', tickSound.url);
 
       await TrackPlayer.reset();
       await TrackPlayer.add(tickSound);
@@ -123,8 +137,8 @@ class AudioService {
       const interval = (60 / bpm) * 1000;
       this.metronomeInterval = setInterval(async () => {
         try {
-          await TrackPlayer.play();
           await TrackPlayer.seekTo(0);
+          await TrackPlayer.play();
         } catch (error) {
           console.error('Error playing metronome tick:', error);
         }
@@ -139,6 +153,7 @@ class AudioService {
       clearInterval(this.metronomeInterval);
       this.metronomeInterval = null;
     }
+    TrackPlayer.stop();
   }
 }
 

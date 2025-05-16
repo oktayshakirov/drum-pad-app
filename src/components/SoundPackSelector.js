@@ -2,19 +2,21 @@ import React, {useContext, useState} from 'react';
 import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
 import {AppContext} from '../contexts/AppContext';
 import {Picker} from '@react-native-picker/picker';
+import {SOUND_PACKS} from '../utils/soundUtils';
 
 const SoundPackSelector = () => {
-  const {soundPack, setSoundPack, isLoading} = useContext(AppContext);
+  const {currentSoundPack, setCurrentSoundPack, isLoading} =
+    useContext(AppContext);
   const [isChanging, setIsChanging] = useState(false);
 
   const handleSoundPackChange = async newSoundPack => {
-    if (newSoundPack === soundPack) {
+    if (newSoundPack === currentSoundPack) {
       return;
     }
 
     setIsChanging(true);
     try {
-      await setSoundPack(newSoundPack);
+      await setCurrentSoundPack(newSoundPack);
     } finally {
       setIsChanging(false);
     }
@@ -30,16 +32,20 @@ const SoundPackSelector = () => {
           </View>
         )}
         <Picker
-          selectedValue={soundPack}
+          selectedValue={currentSoundPack}
           onValueChange={handleSoundPackChange}
           style={styles.picker}
           dropdownIconColor="#fff"
           mode="dropdown"
           enabled={!isLoading && !isChanging}>
-          <Picker.Item label="808" value="808" color="#fff" />
-          <Picker.Item label="909" value="909" color="#fff" />
-          <Picker.Item label="707" value="707" color="#fff" />
-          <Picker.Item label="606" value="606" color="#fff" />
+          {SOUND_PACKS.map(pack => (
+            <Picker.Item
+              key={pack}
+              label={pack.charAt(0).toUpperCase() + pack.slice(1)}
+              value={pack}
+              color="#fff"
+            />
+          ))}
         </Picker>
       </View>
     </View>
