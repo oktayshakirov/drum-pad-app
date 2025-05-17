@@ -1,159 +1,231 @@
-import TrackPlayer from 'react-native-track-player';
+import TrackPlayer, {
+  RepeatMode,
+  State as PlaybackState,
+} from 'react-native-track-player';
 import {getSoundPath, getAvailableSounds} from '../utils/soundUtils';
+
+const LOG_PREFIX = 'AudioService:';
 
 class AudioService {
   constructor() {
     this.currentSoundPack = null;
-    this.isInitialized = false;
     this.metronomeInterval = null;
-    this.initializePlayer();
+    this.isPlayerSetup = false;
+    this._initializePlayer();
   }
 
-  async initializePlayer() {
-    if (this.isInitialized) {
+  async _initializePlayer() {
+    if (this.isPlayerSetup) {
       return;
     }
-
     try {
+      console.log(`${LOG_PREFIX} Initializing TrackPlayer...`);
       await TrackPlayer.setupPlayer({
         autoHandleInterruptions: true,
         waitForBuffer: true,
       });
-      this.isInitialized = true;
-      console.log('TrackPlayer initialized successfully');
+      this.isPlayerSetup = true;
+      await TrackPlayer.setRepeatMode(RepeatMode.Off);
+      console.log(`${LOG_PREFIX} TrackPlayer initialized successfully.`);
     } catch (error) {
-      console.error('Error initializing TrackPlayer:', error);
+      console.error(
+        `${LOG_PREFIX} Error initializing TrackPlayer:`,
+        error.message,
+      );
+      this.isPlayerSetup = false;
     }
   }
 
-  async preloadSoundPack(soundPack) {
-    if (!this.isInitialized) {
-      console.log('Waiting for TrackPlayer initialization...');
-      await this.initializePlayer();
+  async _ensureInitialized() {
+    if (!this.isPlayerSetup) {
+      await this._initializePlayer();
     }
+    if (!this.isPlayerSetup) {
+      console.error(`${LOG_PREFIX} FATAL: Player initialization failed.`);
+      throw new Error('PlayerNotInitialized');
+    }
+  }
 
-    try {
-      console.log(`Preloading sound pack: ${soundPack}`);
-      const sounds = getAvailableSounds(soundPack);
+  async setSoundPack(soundPack) {
+    await this._ensureInitialized();
 
-      // Only reset if we're changing sound packs
-      if (this.currentSoundPack !== soundPack) {
-        await TrackPlayer.reset();
-      }
-
-      const tracks = sounds.map(sound => ({
-        id: `${soundPack}_${sound.name}`,
-        url: sound.path,
-        title: sound.name,
-        artist: soundPack,
-        duration: 1,
-        type: 'default',
-      }));
-
-      console.log('Adding tracks:', tracks);
-      await TrackPlayer.add(tracks);
-
-      this.currentSoundPack = soundPack;
-      console.log(`Sound pack ${soundPack} loaded successfully`);
-      return true;
-    } catch (error) {
-      console.error(`Error preloading sound pack ${soundPack}:`, error);
+    const sounds = getAvailableSounds(soundPack);
+    if (!sounds || sounds.length === 0) {
+      console.error(
+        `${LOG_PREFIX} No sounds found for sound pack ${soundPack}.`,
+      );
+      this.currentSoundPack = null;
       return false;
     }
+
+    if (this.currentSoundPack !== soundPack && this.currentSoundPack !== null) {
+      try {
+        await TrackPlayer.reset();
+        console.log(
+          `${LOG_PREFIX} Player reset due to sound pack change from ${this.currentSoundPack} to ${soundPack}.`,
+        );
+      } catch (e) {
+        console.warn(
+          `${LOG_PREFIX} Error resetting player during sound pack change:`,
+          e.message,
+        );
+      }
+    }
+    this.currentSoundPack = soundPack;
+    console.log(`${LOG_PREFIX} Sound pack context set to: ${soundPack}.`);
+    return true;
   }
 
-  async playSound(soundPack, sound) {
-    if (!this.isInitialized) {
-      console.log('Waiting for TrackPlayer initialization...');
-      await this.initializePlayer();
-    }
+  async playSound(soundPack, soundName) {
+    await this._ensureInitialized();
 
     try {
       if (this.currentSoundPack !== soundPack) {
-        console.log(`Sound pack ${soundPack} not preloaded`);
-        await this.preloadSoundPack(soundPack);
+        console.warn(
+          `${LOG_PREFIX} Sound pack context mismatch. Current: ${this.currentSoundPack}, Requested: ${soundPack}. Attempting to switch...`,
+        );
+        if (!(await this.setSoundPack(soundPack))) {
+          console.error(
+            `${LOG_PREFIX} Failed to switch to sound pack ${soundPack}. Cannot play sound.`,
+          );
+          return false;
+        }
       }
 
-      const trackId = `${soundPack}_${sound}`;
-      console.log(`Playing sound: ${trackId}`);
+      const trackId = `${soundPack}_${soundName}`;
+      const soundsInPack = getAvailableSounds(soundPack);
+      const soundData = soundsInPack.find(s => s.name === soundName);
 
-      const queue = await TrackPlayer.getQueue();
-      const track = queue.find(t => t.id === trackId);
-
-      if (!track) {
-        console.error(`Track ${trackId} not found in queue`);
+      if (
+        !soundData ||
+        soundData.path === undefined ||
+        soundData.path === null
+      ) {
+        console.error(
+          `${LOG_PREFIX} Sound data or path for '${trackId}' is missing or invalid.`,
+        );
         return false;
       }
 
-      // Stop any currently playing sound
+      const trackToPlay = {
+        id: trackId,
+        url: soundData.path,
+        title: String(soundData.name || soundName),
+        artist: String(soundPack || 'DrumPadApp'),
+        duration: 1,
+        type: 'default',
+      };
+
       await TrackPlayer.stop();
-
-      // Reset the queue and add only the track we want to play
       await TrackPlayer.reset();
-      await TrackPlayer.add(track);
+      await TrackPlayer.add([trackToPlay]);
       await TrackPlayer.play();
-
       return true;
     } catch (error) {
-      console.error(`Error playing sound ${sound}:`, error);
+      console.error(
+        `${LOG_PREFIX} CRITICAL ERROR playing sound ${soundName} from ${soundPack}:`,
+        error.message,
+        error.code ? `(Code: ${error.code})` : '',
+      );
       return false;
     }
   }
 
-  async stopSound() {
-    if (!this.isInitialized) {
+  async stopAllSounds() {
+    if (!this.isPlayerSetup) {
       return;
     }
     try {
       await TrackPlayer.stop();
     } catch (error) {
-      console.error('Error stopping sound:', error);
+      console.warn(`${LOG_PREFIX} Error stopping sound:`, error.message);
     }
   }
 
   async startMetronome(bpm) {
-    if (!this.isInitialized) {
-      console.log('Waiting for TrackPlayer initialization...');
-      await this.initializePlayer();
-    }
+    await this._ensureInitialized();
 
     try {
       this.stopMetronome();
 
-      const tickSound = {
+      const tickSoundPath = getSoundPath('metronome', 'tick');
+      if (tickSoundPath === undefined || tickSoundPath === null) {
+        console.error(
+          `${LOG_PREFIX} Metronome tick sound path not found or invalid.`,
+        );
+        return;
+      }
+
+      const metronomeTrack = {
         id: 'metronome_tick',
-        url: getSoundPath('metronome', 'tick'),
+        url: tickSoundPath,
         title: 'Metronome Tick',
         artist: 'Metronome',
         duration: 0.1,
         type: 'default',
       };
 
-      console.log('Metronome sound path:', tickSound.url);
-
       await TrackPlayer.reset();
-      await TrackPlayer.add(tickSound);
+      await TrackPlayer.add([metronomeTrack]);
 
-      const interval = (60 / bpm) * 1000;
+      const intervalTime = (60 / bpm) * 1000;
       this.metronomeInterval = setInterval(async () => {
         try {
           await TrackPlayer.seekTo(0);
           await TrackPlayer.play();
-        } catch (error) {
-          console.error('Error playing metronome tick:', error);
+        } catch (playError) {
+          console.warn(
+            `${LOG_PREFIX} Metronome tick playback error, attempting reload:`,
+            playError.message,
+          );
+          try {
+            await TrackPlayer.reset();
+            await TrackPlayer.add([metronomeTrack]);
+            await TrackPlayer.seekTo(0);
+            await TrackPlayer.play();
+          } catch (reloadError) {
+            console.error(
+              `${LOG_PREFIX} Fatal error playing metronome tick after reload:`,
+              reloadError.message,
+            );
+            this.stopMetronome();
+          }
         }
-      }, interval);
+      }, intervalTime);
+      console.log(`${LOG_PREFIX} Metronome started at ${bpm} BPM.`);
     } catch (error) {
-      console.error('Error starting metronome:', error);
+      console.error(
+        `${LOG_PREFIX} Error starting metronome:`,
+        error.message,
+        error.code ? `(Code: ${error.code})` : '',
+      );
     }
   }
 
-  stopMetronome() {
+  async stopMetronome() {
     if (this.metronomeInterval) {
       clearInterval(this.metronomeInterval);
       this.metronomeInterval = null;
+      console.log(`${LOG_PREFIX} Metronome interval cleared.`);
     }
-    TrackPlayer.stop();
+    if (!this.isPlayerSetup) {
+      return;
+    }
+
+    try {
+      const state = await TrackPlayer.getPlaybackState();
+      if (
+        state.state === PlaybackState.Playing ||
+        state.state === PlaybackState.Buffering
+      ) {
+        await TrackPlayer.stop();
+      }
+    } catch (e) {
+      console.warn(
+        `${LOG_PREFIX} Issue stopping/checking player in stopMetronome:`,
+        e.message,
+      );
+    }
   }
 }
 

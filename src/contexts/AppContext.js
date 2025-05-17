@@ -1,4 +1,4 @@
-import React, {createContext, useState, useEffect} from 'react';
+import React, {createContext, useState, useEffect, useContext} from 'react';
 import AudioService from '../services/AudioService';
 import {SOUND_PACKS} from '../utils/soundUtils';
 
@@ -12,28 +12,39 @@ export const AppProvider = ({children}) => {
     const loadInitialSoundPack = async () => {
       setIsLoading(true);
       try {
-        await AudioService.preloadSoundPack(currentSoundPack);
+        await AudioService.setSoundPack(currentSoundPack);
       } catch (error) {
-        console.error('Error loading initial sound pack:', error);
+        console.error(
+          'AppContext.js: Error loading initial sound pack:',
+          error,
+        );
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadInitialSoundPack();
+    if (AudioService) {
+      loadInitialSoundPack();
+    }
   }, [currentSoundPack]);
 
   const handleSoundPackChange = async newPack => {
-    if (newPack === currentSoundPack) {
+    if (newPack === currentSoundPack || isLoading) {
       return;
     }
 
     setIsLoading(true);
     try {
-      await AudioService.preloadSoundPack(newPack);
-      setCurrentSoundPack(newPack);
+      const success = await AudioService.setSoundPack(newPack);
+      if (success) {
+        setCurrentSoundPack(newPack);
+      } else {
+        console.warn(
+          'AppContext.js: Failed to set new sound pack in AudioService.',
+        );
+      }
     } catch (error) {
-      console.error('Error changing sound pack:', error);
+      console.error('AppContext.js: Error changing sound pack:', error);
     } finally {
       setIsLoading(false);
     }
@@ -45,8 +56,17 @@ export const AppProvider = ({children}) => {
         currentSoundPack,
         setCurrentSoundPack: handleSoundPackChange,
         isLoading,
+        availableSoundPacks: SOUND_PACKS,
       }}>
       {children}
     </AppContext.Provider>
   );
+};
+
+export const useAppContext = () => {
+  const context = useContext(AppContext);
+  if (context === undefined) {
+    throw new Error('useAppContext must be used within an AppProvider');
+  }
+  return context;
 };
