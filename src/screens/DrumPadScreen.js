@@ -13,14 +13,14 @@ const DrumPadScreen = () => {
     {id: 2, sound: 'snare', label: 'Snare'},
     {id: 3, sound: 'hi_hat', label: 'Hi-Hat'},
     {id: 4, sound: 'clap', label: 'Clap'},
-    {id: 5, sound: null, label: 'Pad 5'},
-    {id: 6, sound: null, label: 'Pad 6'},
-    {id: 7, sound: null, label: 'Pad 7'},
-    {id: 8, sound: null, label: 'Pad 8'},
-    {id: 9, sound: null, label: 'Pad 9'},
-    {id: 10, sound: null, label: 'Pad 10'},
-    {id: 11, sound: null, label: 'Pad 11'},
-    {id: 12, sound: null, label: 'Pad 12'},
+    {id: 5, sound: 'snap', label: 'Snap'},
+    {id: 6, sound: 'open_hat', label: 'Open Hat'},
+    {id: 7, sound: 'melody1', label: 'Melody 1'},
+    {id: 8, sound: 'melody2', label: 'Melody 2'},
+    {id: 9, sound: 'gun_sfx', label: 'Gun SFX'},
+    {id: 10, sound: 'adlib1_sfx', label: 'Adlib 1'},
+    {id: 11, sound: 'adlib2_sfx', label: 'Adlib 2'},
+    {id: 12, sound: '808', label: '808'},
   ];
 
   if (isLoading) {
