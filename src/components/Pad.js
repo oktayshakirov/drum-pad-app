@@ -18,7 +18,7 @@ const Pad = ({sound, label, soundPack}) => {
     }
 
     setIsPressed(true);
-    Vibration.vibrate(50);
+    // Vibration.vibrate(50);
     Animated.spring(scale, {
       toValue: 0.95,
       useNativeDriver: true,

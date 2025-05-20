@@ -1,49 +1,20 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Animated} from 'react-native';
 import {AppContext} from '../contexts/AppContext';
-import {playMetronomeTick} from '../services/AudioService';
 import AudioService from '../services/AudioService';
 
 const Metronome = () => {
   useContext(AppContext);
 
-  const intervalRef = useRef(null);
   const [bpm, setBpm] = useState(120);
   const [isPlaying, setIsPlaying] = useState(false);
   const beatAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+      AudioService.stopMetronome();
     };
   }, []);
-
-  useEffect(() => {
-    if (isPlaying) {
-      const intervalTime = (60 / bpm) * 1000;
-      intervalRef.current = setInterval(() => {
-        playMetronomeTick();
-        Animated.sequence([
-          Animated.timing(beatAnim, {
-            toValue: 1.3,
-            duration: 80,
-            useNativeDriver: true,
-          }),
-          Animated.timing(beatAnim, {
-            toValue: 1,
-            duration: 120,
-            useNativeDriver: true,
-          }),
-        ]).start();
-      }, intervalTime);
-    } else {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    }
-  }, [beatAnim, isPlaying, bpm]);
 
   const handleToggleMetronome = async () => {
     if (isPlaying) {

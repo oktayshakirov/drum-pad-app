@@ -11,29 +11,38 @@ class AudioService {
     this.currentSoundPack = null;
     this.metronomeInterval = null;
     this.isPlayerSetup = false;
+    this._initializationPromise = null;
     this._initializePlayer();
   }
 
   async _initializePlayer() {
-    if (this.isPlayerSetup) {
-      return;
+    if (this._initializationPromise) {
+      return this._initializationPromise;
     }
-    try {
-      console.log(`${LOG_PREFIX} Initializing TrackPlayer...`);
-      await TrackPlayer.setupPlayer({
-        autoHandleInterruptions: true,
-        waitForBuffer: true,
-      });
-      this.isPlayerSetup = true;
-      await TrackPlayer.setRepeatMode(RepeatMode.Off);
-      console.log(`${LOG_PREFIX} TrackPlayer initialized successfully.`);
-    } catch (error) {
-      console.error(
-        `${LOG_PREFIX} Error initializing TrackPlayer:`,
-        error.message,
-      );
-      this.isPlayerSetup = false;
-    }
+
+    this._initializationPromise = new Promise(async (resolve, reject) => {
+      try {
+        console.log(`${LOG_PREFIX} Initializing TrackPlayer...`);
+        await TrackPlayer.setupPlayer({
+          autoHandleInterruptions: true,
+          waitForBuffer: true,
+        });
+        this.isPlayerSetup = true;
+        await TrackPlayer.setRepeatMode(RepeatMode.Off);
+        console.log(`${LOG_PREFIX} TrackPlayer initialized successfully.`);
+        resolve();
+      } catch (error) {
+        console.error(
+          `${LOG_PREFIX} Error initializing TrackPlayer:`,
+          error.message,
+        );
+        this.isPlayerSetup = false;
+        this._initializationPromise = null;
+        reject(error);
+      }
+    });
+
+    return this._initializationPromise;
   }
 
   async _ensureInitialized() {
