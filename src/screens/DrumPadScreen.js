@@ -4,24 +4,11 @@ import Pad from '../components/Pad';
 import SoundPackSelector from '../components/SoundPackSelector';
 import Metronome from '../components/Metronome';
 import {AppContext} from '../contexts/AppContext';
+import {getPadConfigs} from '../utils/soundUtils';
 
 const DrumPadScreen = () => {
   const {currentSoundPack, isLoading} = useContext(AppContext);
-
-  const padConfigs = [
-    {id: 1, sound: 'kick', label: 'Kick'},
-    {id: 2, sound: 'snare', label: 'Snare'},
-    {id: 3, sound: 'hi_hat', label: 'Hi-Hat'},
-    {id: 4, sound: 'clap', label: 'Clap'},
-    {id: 5, sound: 'snap', label: 'Snap'},
-    {id: 6, sound: 'open_hat', label: 'Open Hat'},
-    {id: 7, sound: 'melody1', label: 'Melody 1'},
-    {id: 8, sound: 'melody2', label: 'Melody 2'},
-    {id: 9, sound: 'gun_sfx', label: 'Gun SFX'},
-    {id: 10, sound: 'adlib1_sfx', label: 'Adlib 1'},
-    {id: 11, sound: 'adlib2_sfx', label: 'Adlib 2'},
-    {id: 12, sound: '808', label: '808'},
-  ];
+  const padConfigs = getPadConfigs(currentSoundPack);
 
   if (isLoading) {
     return (

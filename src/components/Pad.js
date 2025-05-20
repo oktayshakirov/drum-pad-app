@@ -1,11 +1,5 @@
 import React, {useState} from 'react';
-import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  Animated,
-  Vibration,
-} from 'react-native';
+import {TouchableOpacity, Text, StyleSheet, Animated} from 'react-native';
 import AudioService from '../services/AudioService';
 
 const Pad = ({sound, label, soundPack}) => {
@@ -18,7 +12,6 @@ const Pad = ({sound, label, soundPack}) => {
     }
 
     setIsPressed(true);
-    // Vibration.vibrate(50);
     Animated.spring(scale, {
       toValue: 0.95,
       useNativeDriver: true,
@@ -43,10 +36,8 @@ const Pad = ({sound, label, soundPack}) => {
     <Animated.View
       style={[
         styles.container,
-        {
-          transform: [{scale}],
-          opacity: sound ? 1 : 0.5,
-        },
+        {transform: [{scale}]},
+        sound ? styles.opaque : styles.semiTransparent,
       ]}>
       <TouchableOpacity
         style={[styles.pad, isPressed && styles.padPressed]}

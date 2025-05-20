@@ -1,5 +1,11 @@
 import React, {useContext, useState} from 'react';
-import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  Platform,
+} from 'react-native';
 import {AppContext} from '../contexts/AppContext';
 import {Picker} from '@react-native-picker/picker';
 import {SOUND_PACKS} from '../utils/soundUtils';
@@ -24,7 +30,7 @@ const SoundPackSelector = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Genre Pack</Text>
+      <Text style={styles.title}>Sound Pack</Text>
       <View style={styles.pickerContainer}>
         {(isLoading || isChanging) && (
           <View style={styles.loadingOverlay}>
@@ -34,9 +40,8 @@ const SoundPackSelector = () => {
         <Picker
           selectedValue={currentSoundPack}
           onValueChange={handleSoundPackChange}
-          style={styles.picker}
+          style={[styles.picker, Platform.OS === 'ios' && styles.pickerIOS]}
           dropdownIconColor="#fff"
-          mode="dropdown"
           enabled={!isLoading && !isChanging}>
           {SOUND_PACKS.map(pack => (
             <Picker.Item
@@ -55,6 +60,7 @@ const SoundPackSelector = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 15,
+    width: '50%',
     backgroundColor: '#2a2a2a',
     borderRadius: 10,
     marginBottom: 20,
@@ -74,6 +80,10 @@ const styles = StyleSheet.create({
   picker: {
     height: 50,
     color: '#fff',
+  },
+  pickerIOS: {
+    height: 150,
+    width: '100%',
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
