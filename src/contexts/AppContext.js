@@ -5,8 +5,8 @@ import {SOUND_PACKS} from '../utils/soundUtils';
 export const AppContext = createContext();
 
 export const AppProvider = ({children}) => {
-  const [currentSoundPack, setCurrentSoundPack] = useState(SOUND_PACKS[0]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [currentSoundPack, setCurrentSoundPackState] = useState(SOUND_PACKS[0]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadInitialSoundPack = async () => {
@@ -22,10 +22,7 @@ export const AppProvider = ({children}) => {
         setIsLoading(false);
       }
     };
-
-    if (AudioService) {
-      loadInitialSoundPack();
-    }
+    loadInitialSoundPack();
   }, [currentSoundPack]);
 
   const handleSoundPackChange = async newPack => {
@@ -37,7 +34,7 @@ export const AppProvider = ({children}) => {
     try {
       const success = await AudioService.setSoundPack(newPack);
       if (success) {
-        setCurrentSoundPack(newPack);
+        setCurrentSoundPackState(newPack);
       } else {
         console.warn(
           'AppContext.js: Failed to set new sound pack in AudioService.',

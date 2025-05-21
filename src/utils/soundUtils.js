@@ -31,7 +31,7 @@ const PAD_CONFIGS = {
   ],
 };
 
-const SOUND_PATHS = {
+const SOUND_MODULE_IDS = {
   hiphop: {
     kick: require('../assets/sounds/hiphop/hiphop_kick.wav'),
     snare: require('../assets/sounds/hiphop/hiphop_snare.wav'),
@@ -65,19 +65,15 @@ const SOUND_PATHS = {
   },
 };
 
-export const getSoundPath = (packName, soundName) => {
-  return SOUND_PATHS[packName]?.[soundName] || null;
+export const getSoundModuleId = (packName, soundName) => {
+  return SOUND_MODULE_IDS[packName]?.[soundName] || null;
 };
 
-export const getAvailableSounds = packName => {
-  if (!SOUND_PATHS[packName]) {
+export const getAvailableSoundNames = packName => {
+  if (!SOUND_MODULE_IDS[packName]) {
     return [];
   }
-  return Object.keys(SOUND_PATHS[packName]).map(sound => ({
-    id: `${packName}_${sound}`,
-    name: sound,
-    path: getSoundPath(packName, sound),
-  }));
+  return Object.keys(SOUND_MODULE_IDS[packName]);
 };
 
 export const getPadConfigs = packName => {
