@@ -1,4 +1,17 @@
-export const SOUND_PACKS = ['hiphop', 'edm'];
+export const SOUND_PACKS = {
+  hiphop: {
+    id: 'hiphop',
+    name: "Flexin'",
+    genre: 'Hip-Hop',
+    image: require('../assets/sounds/hiphop/cover.jpeg'),
+  },
+  edm: {
+    id: 'edm',
+    name: 'Along Trap',
+    genre: 'EDM',
+    image: require('../assets/sounds/hiphop/cover.jpeg'),
+  },
+};
 
 const PAD_COLORS = [
   '#BA55D3', // MediumOrchid - for drums
@@ -45,9 +58,9 @@ const SOUND_MODULE_IDS = {
     808: require('../assets/sounds/hiphop/hiphop_808.wav'),
   },
   edm: {
-    kick: require('../assets/sounds/hiphop/hiphop_kick.wav'),
+    kick: require('../assets/sounds/hiphop/hiphop_snare.wav'),
     snare: require('../assets/sounds/hiphop/hiphop_snare.wav'),
-    hi_hat: require('../assets/sounds/hiphop/hiphop_hi_hat.wav'),
+    hi_hat: require('../assets/sounds/hiphop/hiphop_snare.wav'),
     clap: require('../assets/sounds/hiphop/hiphop_clap.wav'),
     snap: require('../assets/sounds/hiphop/hiphop_snap.wav'),
     open_hat: require('../assets/sounds/hiphop/hiphop_open_hat.wav'),
