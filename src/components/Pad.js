@@ -1,21 +1,28 @@
-import React, {useState} from 'react';
-import {TouchableOpacity, Text, StyleSheet, Animated} from 'react-native';
+import React, {useRef} from 'react';
+import {TouchableOpacity, StyleSheet, Animated, View} from 'react-native';
 import AudioService from '../services/AudioService';
 
-const Pad = ({sound, label, soundPack}) => {
-  const [scale] = useState(new Animated.Value(1));
-  const [isPressed, setIsPressed] = useState(false);
+const Pad = ({sound, soundPack, color}) => {
+  const scale = useRef(new Animated.Value(1)).current;
+  const glowOpacity = useRef(new Animated.Value(0.4)).current;
 
   const handlePressIn = async () => {
     if (!sound) {
       return;
     }
 
-    setIsPressed(true);
-    Animated.spring(scale, {
-      toValue: 0.95,
-      useNativeDriver: true,
-    }).start();
+    Animated.parallel([
+      Animated.spring(scale, {
+        toValue: 0.9,
+        friction: 9,
+        useNativeDriver: true,
+      }),
+      Animated.timing(glowOpacity, {
+        toValue: 1,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+    ]).start();
 
     try {
       await AudioService.playSound(soundPack, sound);
@@ -25,27 +32,39 @@ const Pad = ({sound, label, soundPack}) => {
   };
 
   const handlePressOut = () => {
-    setIsPressed(false);
-    Animated.spring(scale, {
-      toValue: 1,
-      useNativeDriver: true,
-    }).start();
+    Animated.parallel([
+      Animated.spring(scale, {
+        toValue: 1,
+        friction: 9,
+        useNativeDriver: true,
+      }),
+      Animated.timing(glowOpacity, {
+        toValue: 0.4,
+        duration: 150,
+        useNativeDriver: true,
+      }),
+    ]).start();
   };
 
+  const padColor = sound ? color : '#333';
+
   return (
-    <Animated.View
-      style={[
-        styles.container,
-        {transform: [{scale}]},
-        sound ? styles.opaque : styles.semiTransparent,
-      ]}>
+    <Animated.View style={[styles.container, {transform: [{scale}]}]}>
       <TouchableOpacity
-        style={[styles.pad, isPressed && styles.padPressed]}
+        style={styles.touchable}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        activeOpacity={0.8}
+        activeOpacity={1}
         disabled={!sound}>
-        <Text style={styles.label}>{label}</Text>
+        <View style={[styles.pad, {backgroundColor: padColor}]}>
+          {sound && (
+            <Animated.Image
+              source={require('../assets/images/glow.png')}
+              style={[styles.glow, {opacity: glowOpacity}]}
+              resizeMode="contain"
+            />
+          )}
+        </View>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -57,28 +76,28 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     margin: '1.5%',
   },
+  touchable: {
+    flex: 1,
+    borderRadius: 15,
+  },
   pad: {
     flex: 1,
-    backgroundColor: '#333',
-    borderRadius: 10,
+    borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 6,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 10,
   },
-  padPressed: {
-    backgroundColor: '#444',
-  },
-  label: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '500',
+  glow: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
   },
 });
 

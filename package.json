@@ -1,5 +1,5 @@
 {
-  "name": "DrumPadApp",
+  "name": "drumpadapp",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -14,7 +14,8 @@
     "@react-native-picker/picker": "^2.11.0",
     "react": "19.0.0",
     "react-native": "0.79.2",
-    "react-native-audio-api": "^0.6.0"
+    "react-native-audio-api": "^0.6.0",
+    "react-native-linear-gradient": "^2.8.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

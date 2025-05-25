@@ -1,34 +1,32 @@
 export const SOUND_PACKS = ['hiphop', 'edm'];
 
+const PAD_COLORS = [
+  '#BA55D3', // MediumOrchid - for drums
+  '#FFA500', // Orange - for kick and 808
+  '#32CD32', // LimeGreen - for melodies
+  '#1E90FF', // DodgerBlue - for SFX
+];
+
+const generatePadConfig = () => {
+  return [
+    {id: 1, sound: 'kick', color: PAD_COLORS[1]},
+    {id: 2, sound: 'snare', color: PAD_COLORS[0]},
+    {id: 3, sound: 'hi_hat', color: PAD_COLORS[0]},
+    {id: 4, sound: 'clap', color: PAD_COLORS[0]},
+    {id: 5, sound: 'snap', color: PAD_COLORS[0]},
+    {id: 6, sound: 'open_hat', color: PAD_COLORS[0]},
+    {id: 7, sound: 'melody1', color: PAD_COLORS[2]},
+    {id: 8, sound: 'melody2', color: PAD_COLORS[2]},
+    {id: 9, sound: 'gun_sfx', color: PAD_COLORS[3]},
+    {id: 10, sound: 'adlib1_sfx', color: PAD_COLORS[3]},
+    {id: 11, sound: 'adlib2_sfx', color: PAD_COLORS[3]},
+    {id: 12, sound: '808', color: PAD_COLORS[1]},
+  ];
+};
+
 const PAD_CONFIGS = {
-  hiphop: [
-    {id: 1, sound: 'kick', label: 'Kick'},
-    {id: 2, sound: 'snare', label: 'Snare'},
-    {id: 3, sound: 'hi_hat', label: 'Hi-Hat'},
-    {id: 4, sound: 'clap', label: 'Clap'},
-    {id: 5, sound: 'snap', label: 'Snap'},
-    {id: 6, sound: 'open_hat', label: 'Open Hat'},
-    {id: 7, sound: 'melody1', label: 'Melody 1'},
-    {id: 8, sound: 'melody2', label: 'Melody 2'},
-    {id: 9, sound: 'gun_sfx', label: 'Gun SFX'},
-    {id: 10, sound: 'adlib1_sfx', label: 'Adlib 1'},
-    {id: 11, sound: 'adlib2_sfx', label: 'Adlib 2'},
-    {id: 12, sound: '808', label: '808'},
-  ],
-  edm: [
-    {id: 1, sound: 'kick', label: 'EDM'},
-    {id: 2, sound: 'snare', label: 'Snare'},
-    {id: 3, sound: 'hi_hat', label: 'Hi-Hat'},
-    {id: 4, sound: 'clap', label: 'Clap'},
-    {id: 5, sound: 'snap', label: 'Snap'},
-    {id: 6, sound: 'open_hat', label: 'Open Hat'},
-    {id: 7, sound: 'melody1', label: 'Melody 1'},
-    {id: 8, sound: 'melody2', label: 'Melody 2'},
-    {id: 9, sound: 'gun_sfx', label: 'Gun SFX'},
-    {id: 10, sound: 'adlib1_sfx', label: 'Adlib 1'},
-    {id: 11, sound: 'adlib2_sfx', label: 'Adlib 2'},
-    {id: 12, sound: '808', label: '808'},
-  ],
+  hiphop: generatePadConfig(),
+  edm: generatePadConfig(),
 };
 
 const SOUND_MODULE_IDS = {

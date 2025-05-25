@@ -29,8 +29,8 @@ const DrumPadScreen = () => {
           <Pad
             key={pad.id}
             sound={pad.sound}
-            label={pad.label}
             soundPack={currentSoundPack}
+            color={pad.color}
           />
         ))}
       </View>
