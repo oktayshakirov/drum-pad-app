@@ -12,12 +12,12 @@ class AudioService {
     this.metronomeBuffer = null;
     this.activeMetronomeSourceNodes = new Set();
     this._initializationPromise = this._initializeAudioContext();
-
     this.bpm = 120;
     this.nextBeatTime = 0.0;
     this.schedulerLookahead = 25.0;
     this.scheduleAheadTime = 0.1;
     this.metronomeTimerId = null;
+    this.onTickCallback = null;
   }
 
   async _initializeAudioContext() {
@@ -235,8 +235,6 @@ class AudioService {
     }
   }
 
-  // --- METRONOME LOGIC ---
-
   _metronomeScheduler() {
     while (
       this.nextBeatTime <
@@ -264,6 +262,11 @@ class AudioService {
       source.connect(this.audioContext.destination);
       source.start(time);
 
+      if (this.onTickCallback) {
+        const delay = (time - this.audioContext.currentTime) * 1000;
+        setTimeout(this.onTickCallback, Math.max(0, delay));
+      }
+
       this.activeMetronomeSourceNodes.add(source);
       source.onended = () => {
         this.activeMetronomeSourceNodes.delete(source);
@@ -276,7 +279,7 @@ class AudioService {
     }
   }
 
-  async startMetronome(bpm) {
+  async startMetronome(bpm, onTick) {
     if (bpm <= 0) {
       console.error(
         `${LOG_PREFIX} Invalid BPM: ${bpm}. Metronome not started.`,
@@ -296,6 +299,7 @@ class AudioService {
     await this.stopMetronome();
 
     this.bpm = bpm;
+    this.onTickCallback = onTick;
 
     if (this.audioContext.state === 'suspended') {
       await this.audioContext.resume();
@@ -312,15 +316,20 @@ class AudioService {
       this.metronomeTimerId = null;
     }
 
+    this.onTickCallback = null;
+
     this.activeMetronomeSourceNodes.forEach(node => {
       try {
         node.stop();
-      } catch (e) {
-        // Ignore errors if node already stopped
-      }
+      } catch (e) {}
     });
     this.activeMetronomeSourceNodes.clear();
-    console.log(`${LOG_PREFIX} Metronome stopped.`);
+  }
+
+  async stopAllSounds() {
+    console.warn(
+      `${LOG_PREFIX} stopAllSounds() is a no-op. Pad sounds play out. For metronome, use stopMetronome().`,
+    );
   }
 }
 
