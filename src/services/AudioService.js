@@ -10,9 +10,14 @@ class AudioService {
     this.currentSoundPack = null;
     this.soundBuffers = new Map();
     this.metronomeBuffer = null;
-    this.metronomeIntervalId = null;
     this.activeMetronomeSourceNodes = new Set();
     this._initializationPromise = this._initializeAudioContext();
+
+    this.bpm = 120;
+    this.nextBeatTime = 0.0;
+    this.schedulerLookahead = 25.0;
+    this.scheduleAheadTime = 0.1;
+    this.metronomeTimerId = null;
   }
 
   async _initializeAudioContext() {
@@ -230,6 +235,47 @@ class AudioService {
     }
   }
 
+  // --- METRONOME LOGIC ---
+
+  _metronomeScheduler() {
+    while (
+      this.nextBeatTime <
+      this.audioContext.currentTime + this.scheduleAheadTime
+    ) {
+      this._scheduleMetronomeTick(this.nextBeatTime);
+      const secondsPerBeat = 60.0 / this.bpm;
+      this.nextBeatTime += secondsPerBeat;
+    }
+    this.metronomeTimerId = setTimeout(
+      () => this._metronomeScheduler(),
+      this.schedulerLookahead,
+    );
+  }
+
+  _scheduleMetronomeTick(time) {
+    if (!this.metronomeBuffer) {
+      console.warn(`${LOG_PREFIX} Metronome tick skipped: Buffer missing.`);
+      return;
+    }
+
+    try {
+      const source = this.audioContext.createBufferSource();
+      source.buffer = this.metronomeBuffer;
+      source.connect(this.audioContext.destination);
+      source.start(time);
+
+      this.activeMetronomeSourceNodes.add(source);
+      source.onended = () => {
+        this.activeMetronomeSourceNodes.delete(source);
+      };
+    } catch (error) {
+      console.error(
+        `${LOG_PREFIX} Error scheduling metronome tick:`,
+        error.message,
+      );
+    }
+  }
+
   async startMetronome(bpm) {
     if (bpm <= 0) {
       console.error(
@@ -247,68 +293,34 @@ class AudioService {
       return;
     }
 
-    this.stopMetronome();
+    await this.stopMetronome();
 
-    const intervalTime = (60 / bpm) * 1000;
+    this.bpm = bpm;
 
-    const playTick = async () => {
-      if (
-        !this.audioContext ||
-        this.audioContext.state === 'closed' ||
-        !this.metronomeBuffer
-      ) {
-        console.warn(
-          `${LOG_PREFIX} Metronome tick skipped: AudioContext not ready or buffer missing.`,
-        );
-        return;
-      }
-      try {
-        if (this.audioContext.state === 'suspended') {
-          await this.audioContext.resume();
-        }
-        const source = this.audioContext.createBufferSource();
-        source.buffer = this.metronomeBuffer;
-        source.connect(this.audioContext.destination);
-        source.start(this.audioContext.currentTime);
+    if (this.audioContext.state === 'suspended') {
+      await this.audioContext.resume();
+    }
 
-        this.activeMetronomeSourceNodes.add(source);
-        source.onended = () => {
-          this.activeMetronomeSourceNodes.delete(source);
-        };
-      } catch (error) {
-        console.error(
-          `${LOG_PREFIX} Error playing metronome tick:`,
-          error.message,
-        );
-      }
-    };
-
-    this.metronomeIntervalId = setInterval(playTick, intervalTime);
-    playTick();
+    this.nextBeatTime = this.audioContext.currentTime + 0.1;
+    this._metronomeScheduler();
     console.log(`${LOG_PREFIX} Metronome started at ${bpm} BPM.`);
   }
 
   async stopMetronome() {
-    if (this.metronomeIntervalId) {
-      clearInterval(this.metronomeIntervalId);
-      this.metronomeIntervalId = null;
-      console.log(`${LOG_PREFIX} Metronome interval cleared.`);
+    if (this.metronomeTimerId) {
+      clearTimeout(this.metronomeTimerId);
+      this.metronomeTimerId = null;
     }
 
     this.activeMetronomeSourceNodes.forEach(node => {
       try {
         node.stop();
       } catch (e) {
-        // Ignore errors if node already stopped or in an invalid state
+        // Ignore errors if node already stopped
       }
     });
     this.activeMetronomeSourceNodes.clear();
-  }
-
-  async stopAllSounds() {
-    console.warn(
-      `${LOG_PREFIX} stopAllSounds() is a no-op. Pad sounds play out. For metronome, use stopMetronome().`,
-    );
+    console.log(`${LOG_PREFIX} Metronome stopped.`);
   }
 }
 

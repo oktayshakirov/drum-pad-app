@@ -21,7 +21,7 @@ const DrumPadScreen = () => {
   return (
     <View style={styles.container}>
       <CurrentPack />
-      {/* <Metronome /> */}
+      <Metronome />
       <View style={styles.grid}>
         {padConfigs.map(pad => (
           <Pad
