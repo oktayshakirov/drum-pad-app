@@ -6,6 +6,7 @@ import Metronome from '../components/Metronome';
 import ChannelSwitch from '../components/ChannelSwitch';
 import {AppContext} from '../contexts/AppContext';
 import {getPadConfigs} from '../utils/soundUtils';
+import AdBanner from '../components/AdBanner';
 
 const DrumPadScreen = () => {
   const {currentSoundPack, isLoading} = useContext(AppContext);
@@ -29,6 +30,7 @@ const DrumPadScreen = () => {
 
   return (
     <View style={styles.container}>
+      <AdBanner />
       <CurrentPack />
       <View style={styles.controlsRow}>
         {hasTwoChannels && (
@@ -60,7 +62,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingBottom: 20,
   },
   loadingContainer: {
     flex: 1,

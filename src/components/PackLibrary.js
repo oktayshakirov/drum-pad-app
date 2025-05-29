@@ -123,6 +123,7 @@ const styles = StyleSheet.create({
     margin: 10,
     alignItems: 'flex-start',
     flexDirection: 'column',
+    marginTop: 20,
   },
   packImage: {
     width: 170,
