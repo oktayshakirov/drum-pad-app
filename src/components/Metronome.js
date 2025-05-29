@@ -94,8 +94,6 @@ const styles = StyleSheet.create({
   wrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
     paddingHorizontal: 20,
     marginTop: 10,
     marginBottom: 20,

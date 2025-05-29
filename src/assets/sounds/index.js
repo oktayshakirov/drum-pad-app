@@ -4,7 +4,7 @@ import vintage from './packs/vintage';
 import vendetta from './packs/vendetta';
 import shiva from './packs/shiva';
 import lowrider from './packs/lowrider';
-import locoContigo from './packs/loco-contigo';
+import locoContigo from './packs/locoContigo';
 import katana from './packs/katana';
 import brabus from './packs/brabus';
 

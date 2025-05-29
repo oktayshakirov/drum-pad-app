@@ -14,7 +14,7 @@ const PAD_COLORS = {
 };
 
 export default {
-  id: 'loco-contigo',
+  id: 'locoContigo',
   name: 'Loco Contigo',
   genre: 'Latin',
   cover: require('./cover.jpg'),

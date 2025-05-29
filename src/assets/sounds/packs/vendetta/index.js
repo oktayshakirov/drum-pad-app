@@ -1,16 +1,16 @@
 const PAD_COLORS = {
-  // Drums group - Deep Black shades
-  DRUMS_MAIN: '#000000', // Black
-  DRUMS_ACCENT: '#1A1A1A', // Dark Gray
-  // Bass group - Deep Red shades
-  BASS_MAIN: '#8B0000', // DarkRed
-  BASS_ACCENT: '#A52A2A', // Brown
-  // Melody group - Deep Purple shades
-  MELODY_MAIN: '#4B0082', // Indigo
-  MELODY_ACCENT: '#663399', // RebeccaPurple
-  // SFX group - Deep Blue shades
-  SFX_MAIN: '#000080', // Navy
-  SFX_ACCENT: '#00008B', // DarkBlue
+  // Drums group - Light Sky Blue shades
+  DRUMS_MAIN: '#81D4FA', // Sky Blue
+  DRUMS_ACCENT: '#B3E5FC', // Lighter Sky Blue
+  // Bass group - Light Salmon shades
+  BASS_MAIN: '#FFAB91', // Light Salmon
+  BASS_ACCENT: '#FFD180', // Light Orange
+  // Melody group - Light Purple shades
+  MELODY_MAIN: '#CE93D8', // Light Purple
+  MELODY_ACCENT: '#E1BEE7', // Lighter Purple
+  // SFX group - Light Green shades
+  SFX_MAIN: '#A5D6A7', // Light Green
+  SFX_ACCENT: '#C8E6C9', // Lighter Green
 };
 
 export default {
