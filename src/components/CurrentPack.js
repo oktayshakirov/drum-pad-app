@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a1a1a',
   },
   packImage: {
-    width: 60,
+    width: 100,
     height: 60,
     borderRadius: 12,
   },

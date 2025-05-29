@@ -1,6 +1,7 @@
 import {AudioContext} from 'react-native-audio-api';
 import {Image} from 'react-native';
 import {getSoundModuleId, getAvailableSoundNames} from '../utils/soundUtils.js';
+import {soundPacks} from '../assets/sounds';
 
 const LOG_PREFIX = 'AudioService:';
 
@@ -18,6 +19,8 @@ class AudioService {
     this.scheduleAheadTime = 0.1;
     this.metronomeTimerId = null;
     this.onTickCallback = null;
+    this.demoBuffers = null;
+    this._activeDemoSource = null;
   }
 
   async _initializeAudioContext() {
@@ -330,6 +333,60 @@ class AudioService {
     console.warn(
       `${LOG_PREFIX} stopAllSounds() is a no-op. Pad sounds play out. For metronome, use stopMetronome().`,
     );
+  }
+
+  async playDemo(packId) {
+    await this._ensureInitialized();
+    try {
+      const pack = soundPacks[packId];
+      if (!pack || !pack.demo) {
+        console.warn(`${LOG_PREFIX} No demo found for pack ${packId}`);
+        return false;
+      }
+      if (!this.demoBuffers) {
+        this.demoBuffers = new Map();
+      }
+      let buffer = this.demoBuffers.get(packId);
+      if (!buffer) {
+        const assetSource = Image.resolveAssetSource(pack.demo);
+        if (!assetSource || !assetSource.uri) {
+          console.error(`${LOG_PREFIX} Missing URI for demo in pack ${packId}`);
+          return false;
+        }
+        const response = await fetch(assetSource.uri);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch demo for pack ${packId}`);
+        }
+        const arrayBuffer = await response.arrayBuffer();
+        buffer = await this.audioContext.decodeAudioData(arrayBuffer);
+        this.demoBuffers.set(packId, buffer);
+      }
+      if (this.audioContext.state === 'suspended') {
+        await this.audioContext.resume();
+      }
+      const source = this.audioContext.createBufferSource();
+      source.buffer = buffer;
+      source.connect(this.audioContext.destination);
+      source.start();
+      this._activeDemoSource = source;
+      return true;
+    } catch (error) {
+      console.error(
+        `${LOG_PREFIX} Error playing demo for pack ${packId}:`,
+        error.message,
+        error,
+      );
+      return false;
+    }
+  }
+
+  stopDemo(packId) {
+    if (this._activeDemoSource) {
+      try {
+        this._activeDemoSource.stop();
+      } catch (e) {}
+      this._activeDemoSource = null;
+    }
   }
 }
 
