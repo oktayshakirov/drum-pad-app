@@ -1,10 +1,16 @@
 {
-  "name": "DrumPadApp",
-  "displayName": "DrumPadApp",
+  "name": "Shape Beats",
+  "displayName": "Shape Beats",
+  "icon": "./src/assets/images/icon.png",
   "android": {
-    "package": "com.oktay.shakirov.drumpadapp"
+    "package": "com.shadev.shapebeats",
+    "adaptiveIcon": {
+      "foregroundImage": "./src/assets/images/icon.png",
+      "backgroundColor": "#FFFFFF"
+    }
   },
   "ios": {
-    "bundleIdentifier": "com.oktay.shakirov.drumpadapp"
+    "bundleIdentifier": "com.shadev.shapebeats",
+    "supportsTablet": true
   }
 }

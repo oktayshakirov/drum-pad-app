@@ -1,12 +1,25 @@
-# Resolve react_native_pods.rb with node to allow for hoisting
-require Pod::Executable.execute_command('node', ['-p',
-  'require.resolve(
-    "react-native/scripts/react_native_pods.rb",
-    {paths: [process.argv[1]]},
-  )', __dir__]).strip
+require_relative '../node_modules/react-native/scripts/react_native_pods'
 
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
+
+# Enables Flipper.
+#
+# Note that if you have use_frameworks! enabled, Flipper will not work and
+# you should disable the next line.
+flipper_config = ENV['NO_FLIPPER'] == "1" ? nil : {
+  'Flipper' => '0.125.0',
+  'Flipper-Folly' => '2.6.10',
+  'Flipper-RSocket' => '1.4.3',
+  'FlipperKit' => '0.125.0',
+  'Flipper-DoubleConversion' => '3.2.0',
+  'Flipper-Glog' => '0.5.0',
+  'Flipper-PeerTalk' => '0.0.4',
+  'FlipperKit/SKIOSNetworkPlugin' => '0.125.0',
+  'FlipperKit/FlipperKitLayoutPlugin' => '0.125.0',
+  'FlipperKit/FlipperKitUserDefaultsPlugin' => '0.125.0',
+  'FlipperKit/FlipperKitReactPlugin' => '0.125.0'
+}
 
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
@@ -14,29 +27,25 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'DrumPadApp' do
+target 'ShapeBeatsApp' do
   config = use_native_modules!
+
+  # Flags change depending on the env values.
+  flags = get_default_flags()
 
   use_react_native!(
     :path => config[:reactNativePath],
+    :hermes_enabled => flags[:hermes_enabled],
+    :fabric_enabled => flags[:fabric_enabled],
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
   post_install do |installer|
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
     react_native_post_install(
       installer,
       config[:reactNativePath],
-      :mac_catalyst_enabled => false,
-      # :ccache_enabled => true
+      :mac_catalyst_enabled => false
     )
-
-    installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-        config.build_settings['ENABLE_BITCODE'] = 'NO'
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
-      end
-    end
   end
 end

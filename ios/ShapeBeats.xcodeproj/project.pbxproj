@@ -11,20 +11,24 @@
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		ACB2CACBBFADC2395383F179 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
-		ADF54243023260F5D6948126 /* libPods-DrumPadApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 74C6560CA5436A54A12FAB46 /* libPods-DrumPadApp.a */; };
+		ADF54243023260F5D6948126 /* libPods-ShapeBeatsApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 74C6560CA5436A54A12FAB46 /* libPods-ShapeBeatsApp.a */; };
+		40EABB021841430EB7BFC7B3 /* glow.png in Resources */ = {isa = PBXBuildFile; fileRef = D55A16DF9C0E4C068FA76F4A /* glow.png */; };
+		10006D30A33245A3811B80C2 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80728E157FDA4283B26E1FE5 /* icon.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		13B07F961A680F5B00A75B9A /* DrumPadApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DrumPadApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = DrumPadApp/Images.xcassets; sourceTree = "<group>"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = DrumPadApp/Info.plist; sourceTree = "<group>"; };
-		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = DrumPadApp/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		35CBE446EC34D627FB50F0E7 /* Pods-DrumPadApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DrumPadApp.release.xcconfig"; path = "Target Support Files/Pods-DrumPadApp/Pods-DrumPadApp.release.xcconfig"; sourceTree = "<group>"; };
-		74C6560CA5436A54A12FAB46 /* libPods-DrumPadApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DrumPadApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = DrumPadApp/AppDelegate.swift; sourceTree = "<group>"; };
-		7A0101E6D10F553031ECD5C8 /* Pods-DrumPadApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DrumPadApp.debug.xcconfig"; path = "Target Support Files/Pods-DrumPadApp/Pods-DrumPadApp.debug.xcconfig"; sourceTree = "<group>"; };
-		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = DrumPadApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		13B07F961A680F5B00A75B9A /* ShapeBeatsApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShapeBeatsApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ShapeBeatsApp/Images.xcassets; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ShapeBeatsApp/Info.plist; sourceTree = "<group>"; };
+		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = ShapeBeatsApp/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		35CBE446EC34D627FB50F0E7 /* Pods-ShapeBeatsApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShapeBeatsApp.release.xcconfig"; path = "Target Support Files/Pods-ShapeBeatsApp/Pods-ShapeBeatsApp.release.xcconfig"; sourceTree = "<group>"; };
+		74C6560CA5436A54A12FAB46 /* libPods-ShapeBeatsApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ShapeBeatsApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = ShapeBeatsApp/AppDelegate.swift; sourceTree = "<group>"; };
+		7A0101E6D10F553031ECD5C8 /* Pods-ShapeBeatsApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShapeBeatsApp.debug.xcconfig"; path = "Target Support Files/Pods-ShapeBeatsApp/Pods-ShapeBeatsApp.debug.xcconfig"; sourceTree = "<group>"; };
+		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ShapeBeatsApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		D55A16DF9C0E4C068FA76F4A /* glow.png */ = {isa = PBXFileReference; name = "glow.png"; path = "../src/assets/images/glow.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		80728E157FDA4283B26E1FE5 /* icon.png */ = {isa = PBXFileReference; name = "icon.png"; path = "../src/assets/images/icon.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,14 +36,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ADF54243023260F5D6948126 /* libPods-DrumPadApp.a in Frameworks */,
+				ADF54243023260F5D6948126 /* libPods-ShapeBeatsApp.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		13B07FAE1A68108700A75B9A /* DrumPadApp */ = {
+		13B07FAE1A68108700A75B9A /* ShapeBeatsApp */ = {
 			isa = PBXGroup;
 			children = (
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -48,14 +52,14 @@
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
 			);
-			name = DrumPadApp;
+			name = ShapeBeatsApp;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				74C6560CA5436A54A12FAB46 /* libPods-DrumPadApp.a */,
+				74C6560CA5436A54A12FAB46 /* libPods-ShapeBeatsApp.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -70,11 +74,12 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				13B07FAE1A68108700A75B9A /* DrumPadApp */,
+				13B07FAE1A68108700A75B9A /* ShapeBeatsApp */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				ED8AA93C13434A498C9DEAF7 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -84,7 +89,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* DrumPadApp.app */,
+				13B07F961A680F5B00A75B9A /* ShapeBeatsApp.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -92,18 +97,28 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				7A0101E6D10F553031ECD5C8 /* Pods-DrumPadApp.debug.xcconfig */,
-				35CBE446EC34D627FB50F0E7 /* Pods-DrumPadApp.release.xcconfig */,
+				7A0101E6D10F553031ECD5C8 /* Pods-ShapeBeatsApp.debug.xcconfig */,
+				35CBE446EC34D627FB50F0E7 /* Pods-ShapeBeatsApp.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		ED8AA93C13434A498C9DEAF7 /* Resources */ = {
+			isa = "PBXGroup";
+			children = (
+				D55A16DF9C0E4C068FA76F4A /* glow.png */,
+				80728E157FDA4283B26E1FE5 /* icon.png */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+			path = "";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		13B07F861A680F5B00A75B9A /* DrumPadApp */ = {
+		13B07F861A680F5B00A75B9A /* ShapeBeatsApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "DrumPadApp" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "ShapeBeatsApp" */;
 			buildPhases = (
 				C37822C0DAEEFFF2D413D6CA /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
@@ -117,9 +132,9 @@
 			);
 			dependencies = (
 			);
-			name = DrumPadApp;
-			productName = DrumPadApp;
-			productReference = 13B07F961A680F5B00A75B9A /* DrumPadApp.app */;
+			name = ShapeBeatsApp;
+			productName = ShapeBeatsApp;
+			productReference = 13B07F961A680F5B00A75B9A /* ShapeBeatsApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -135,7 +150,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "DrumPadApp" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "ShapeBeats" */;
 			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -148,7 +163,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* DrumPadApp */,
+				13B07F861A680F5B00A75B9A /* ShapeBeatsApp */,
 			);
 		};
 /* End PBXProject section */
@@ -161,6 +176,8 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				ACB2CACBBFADC2395383F179 /* PrivacyInfo.xcprivacy in Resources */,
+				40EABB021841430EB7BFC7B3 /* glow.png in Resources */,
+				10006D30A33245A3811B80C2 /* icon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -189,15 +206,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-DrumPadApp/Pods-DrumPadApp-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-ShapeBeatsApp/Pods-ShapeBeatsApp-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-DrumPadApp/Pods-DrumPadApp-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-ShapeBeatsApp/Pods-ShapeBeatsApp-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-DrumPadApp/Pods-DrumPadApp-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ShapeBeatsApp/Pods-ShapeBeatsApp-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		C37822C0DAEEFFF2D413D6CA /* [CP] Check Pods Manifest.lock */ = {
@@ -215,7 +232,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-DrumPadApp-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-ShapeBeatsApp-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -228,15 +245,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-DrumPadApp/Pods-DrumPadApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-ShapeBeatsApp/Pods-ShapeBeatsApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-DrumPadApp/Pods-DrumPadApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-ShapeBeatsApp/Pods-ShapeBeatsApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-DrumPadApp/Pods-DrumPadApp-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ShapeBeatsApp/Pods-ShapeBeatsApp-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -255,14 +272,14 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7A0101E6D10F553031ECD5C8 /* Pods-DrumPadApp.debug.xcconfig */;
+			baseConfigurationReference = 7A0101E6D10F553031ECD5C8 /* Pods-ShapeBeatsApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2UNNRK9L5Q;
 				ENABLE_BITCODE = NO;
-				INFOPLIST_FILE = DrumPadApp/Info.plist;
+				INFOPLIST_FILE = ShapeBeatsApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -274,8 +291,8 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.shadev.drumpad;
-				PRODUCT_NAME = DrumPadApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shadev.shapebeats;
+				PRODUCT_NAME = ShapeBeatsApp;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -284,13 +301,13 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 35CBE446EC34D627FB50F0E7 /* Pods-DrumPadApp.release.xcconfig */;
+			baseConfigurationReference = 35CBE446EC34D627FB50F0E7 /* Pods-ShapeBeatsApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2UNNRK9L5Q;
-				INFOPLIST_FILE = DrumPadApp/Info.plist;
+				INFOPLIST_FILE = ShapeBeatsApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -302,8 +319,8 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.shadev.drumpad;
-				PRODUCT_NAME = DrumPadApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shadev.shapebeats;
+				PRODUCT_NAME = ShapeBeatsApp;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -464,7 +481,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "DrumPadApp" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "ShapeBeatsApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -473,7 +490,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "DrumPadApp" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "ShapeBeats" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
