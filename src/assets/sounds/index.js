@@ -7,6 +7,7 @@ import lowrider from './packs/lowrider';
 import locoContigo from './packs/locoContigo';
 import katana from './packs/katana';
 import brabus from './packs/brabus';
+import maskOff from './packs/maskOff';
 
 export const soundPacks = {
   zenith,
@@ -18,6 +19,7 @@ export const soundPacks = {
   locoContigo,
   katana,
   brabus,
+  maskOff,
 };
 
 export const metronome = {

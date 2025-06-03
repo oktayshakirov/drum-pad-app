@@ -20,17 +20,21 @@ export default {
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
   sounds: {
+    // Melodies first
+    melody_1: require('./samples/melody_1.mp3'),
+    melody_2_1: require('./samples/melody_2_1.mp3'),
+    melody_2_2: require('./samples/melody_2_2.mp3'),
+    // Drums
     kick: require('./samples/kick.mp3'),
     clap: require('./samples/clap.mp3'),
     hi_hat: require('./samples/hi_hat.mp3'),
     crash: require('./samples/crash.mp3'),
     drums: require('./samples/drums.mp3'),
+    // Percussion
     shaker: require('./samples/shaker.mp3'),
     percussion_1: require('./samples/percussion_1.mp3'),
     percussion_2: require('./samples/percussion_2.mp3'),
-    melody_1: require('./samples/melody_1.mp3'),
-    melody_2_1: require('./samples/melody_2_1.mp3'),
-    melody_2_2: require('./samples/melody_2_2.mp3'),
+    // Vocals
     vocal: require('./samples/vocal.mp3'),
   },
   padConfig: [
