@@ -42,7 +42,7 @@ export default {
     drums_1: require('./samples/drums_1.mp3'),
     drums_2: require('./samples/drums_2.mp3'),
     percussion: require('./samples/percussion.mp3'),
-    808: require('./samples/808.mp3'),
+    bass_808: require('./samples/808.mp3'),
     // SFX
     sfx_chains: require('./samples/sfx_chains.mp3'),
     sfx_distortion: require('./samples/sfx_distortion.mp3'),
@@ -60,7 +60,7 @@ export default {
     {id: 7, sound: 'drums_1', color: PAD_COLORS.BASS_MAIN},
     {id: 8, sound: 'drums_2', color: PAD_COLORS.BASS_MAIN},
     {id: 9, sound: 'percussion', color: PAD_COLORS.BASS_ACCENT},
-    {id: 10, sound: '808', color: PAD_COLORS.BASS_ACCENT},
+    {id: 10, sound: 'bass_808', color: PAD_COLORS.BASS_ACCENT},
     {id: 11, sound: 'melody_1', color: PAD_COLORS.MELODY_MAIN},
     {id: 12, sound: 'melody_2', color: PAD_COLORS.MELODY_MAIN},
     {id: 13, sound: 'melody_3', color: PAD_COLORS.MELODY_MAIN},

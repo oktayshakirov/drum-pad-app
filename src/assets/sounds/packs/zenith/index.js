@@ -22,16 +22,16 @@ export default {
   sounds: {
     // Melodies first
     melody_1: require('./samples/melody_1.mp3'),
-    melody_2_1: require('./samples/melody_2_1.mp3'),
-    melody_2_2: require('./samples/melody_2_2.mp3'),
+    melody_2: require('./samples/melody_2.mp3'),
+    melody_3: require('./samples/melody_3.mp3'),
     // Drums
     kick: require('./samples/kick.mp3'),
     clap: require('./samples/clap.mp3'),
     hi_hat: require('./samples/hi_hat.mp3'),
     crash: require('./samples/crash.mp3'),
-    drums: require('./samples/drums.mp3'),
+    bass_808_1: require('./samples/808_1.mp3'),
+    bass_808_2: require('./samples/808_2.mp3'),
     // Percussion
-    shaker: require('./samples/shaker.mp3'),
     percussion_1: require('./samples/percussion_1.mp3'),
     percussion_2: require('./samples/percussion_2.mp3'),
     // Vocals
@@ -42,13 +42,13 @@ export default {
     {id: 2, sound: 'clap', color: PAD_COLORS.DRUMS_MAIN},
     {id: 3, sound: 'hi_hat', color: PAD_COLORS.DRUMS_MAIN},
     {id: 4, sound: 'crash', color: PAD_COLORS.DRUMS_ACCENT},
-    {id: 5, sound: 'drums', color: PAD_COLORS.DRUMS_ACCENT},
-    {id: 6, sound: 'shaker', color: PAD_COLORS.DRUMS_ACCENT},
+    {id: 5, sound: 'bass_808_1', color: PAD_COLORS.DRUMS_ACCENT},
+    {id: 6, sound: 'bass_808_2', color: PAD_COLORS.DRUMS_ACCENT},
     {id: 7, sound: 'percussion_1', color: PAD_COLORS.BASS_MAIN},
     {id: 8, sound: 'percussion_2', color: PAD_COLORS.BASS_ACCENT},
     {id: 9, sound: 'melody_1', color: PAD_COLORS.MELODY_MAIN},
-    {id: 10, sound: 'melody_2_1', color: PAD_COLORS.MELODY_MAIN},
-    {id: 11, sound: 'melody_2_2', color: PAD_COLORS.MELODY_ACCENT},
+    {id: 10, sound: 'melody_2', color: PAD_COLORS.MELODY_MAIN},
+    {id: 11, sound: 'melody_3', color: PAD_COLORS.MELODY_ACCENT},
     {id: 12, sound: 'vocal', color: PAD_COLORS.MELODY_ACCENT},
   ],
 };

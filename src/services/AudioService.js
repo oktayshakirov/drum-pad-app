@@ -33,14 +33,11 @@ class AudioService {
 
     this._initializationPromise = (async () => {
       try {
-        console.log(`${LOG_PREFIX} Initializing AudioContext...`);
         this.audioContext = new AudioContext();
-        console.log(`${LOG_PREFIX} AudioContext initialized successfully.`);
       } catch (error) {
         console.error(
           `${LOG_PREFIX} Error initializing AudioContext:`,
           error.message,
-          error,
         );
         this.audioContext = null;
         this._initializationPromise = null;
@@ -53,71 +50,52 @@ class AudioService {
   async _ensureInitialized() {
     try {
       await this._initializationPromise;
-    } catch (initError) {
-      console.error(
-        `${LOG_PREFIX} AudioContext initialization failed during ensureInitialized:`,
-        initError.message,
-      );
+    } catch (error) {
       throw new Error('AudioContextInitializationFailed');
     }
     if (!this.audioContext) {
-      console.error(
-        `${LOG_PREFIX} FATAL: AudioContext is null after initialization attempt.`,
-      );
       throw new Error('AudioContextNotAvailable');
     }
   }
 
   async _loadAndDecodeSound(soundModuleId, soundIdentifier = 'UnknownSound') {
     if (!soundModuleId) {
-      console.error(
-        `${LOG_PREFIX} Invalid sound module ID for ${soundIdentifier}.`,
-      );
       return null;
     }
 
     let assetSource;
     try {
       assetSource = Image.resolveAssetSource(soundModuleId);
-    } catch (resolveError) {
+    } catch (error) {
       console.error(
-        `${LOG_PREFIX} Failed to resolve asset source for ${soundIdentifier} (module ID: ${soundModuleId}):`,
-        resolveError.message,
+        `${LOG_PREFIX} Failed to resolve asset source for ${soundIdentifier}:`,
+        error.message,
       );
       return null;
     }
 
-    if (!assetSource || !assetSource.uri) {
-      console.error(
-        `${LOG_PREFIX} Missing URI for resolved asset ${soundIdentifier} (module ID: ${soundModuleId}).`,
-      );
+    if (!assetSource?.uri) {
       return null;
     }
 
     try {
-      console.log(
-        `${LOG_PREFIX} Fetching ${soundIdentifier} from URI: ${assetSource.uri}`,
-      );
       const response = await fetch(assetSource.uri);
       if (!response.ok) {
         throw new Error(
-          `Workspace failed with status ${response.status}: ${response.statusText}`,
+          `Failed with status ${response.status}: ${response.statusText}`,
         );
       }
-      const arrayBuffer = await response.arrayBuffer();
 
+      const arrayBuffer = await response.arrayBuffer();
       if (!this.audioContext || this.audioContext.state === 'closed') {
-        console.error(
-          `${LOG_PREFIX} AudioContext not available or closed during decodeAudioData for ${soundIdentifier}.`,
-        );
         throw new Error('AudioContextUnavailableForDecoding');
       }
+
       return await this.audioContext.decodeAudioData(arrayBuffer);
     } catch (error) {
       console.error(
-        `${LOG_PREFIX} Error loading/decoding ${soundIdentifier} (URI: ${assetSource.uri}):`,
+        `${LOG_PREFIX} Error loading/decoding ${soundIdentifier}:`,
         error.message,
-        error,
       );
       return null;
     }
@@ -125,10 +103,8 @@ class AudioService {
 
   async setSoundPack(soundPack) {
     await this._ensureInitialized();
-    console.log(`${LOG_PREFIX} Setting sound pack to: ${soundPack}`);
 
     if (this.currentSoundPack === soundPack && this.soundBuffers.size > 0) {
-      console.log(`${LOG_PREFIX} Sound pack ${soundPack} already loaded.`);
       return true;
     }
 
@@ -136,10 +112,7 @@ class AudioService {
     this.currentSoundPack = soundPack;
     const soundNames = getAvailableSoundNames(soundPack);
 
-    if (!soundNames || soundNames.length === 0) {
-      console.warn(
-        `${LOG_PREFIX} No sounds found for sound pack ${soundPack}.`,
-      );
+    if (!soundNames?.length) {
       this.currentSoundPack = null;
       return false;
     }
@@ -157,13 +130,10 @@ class AudioService {
 
     try {
       await Promise.all(loadPromises);
-      console.log(
-        `${LOG_PREFIX} Sound pack ${soundPack} loaded with ${this.soundBuffers.size} of ${soundNames.length} expected sounds.`,
-      );
       return true;
     } catch (error) {
       console.error(
-        `${LOG_PREFIX} Error during batch sound loading for pack ${soundPack}:`,
+        `${LOG_PREFIX} Error during batch sound loading:`,
         error.message,
       );
       return false;
@@ -174,23 +144,14 @@ class AudioService {
     await this._ensureInitialized();
 
     if (this.currentSoundPack !== soundPack) {
-      console.warn(
-        `${LOG_PREFIX} Sound pack mismatch. Current: ${this.currentSoundPack}, Requested: ${soundPack}. Switching...`,
-      );
       const switched = await this.setSoundPack(soundPack);
       if (!switched) {
-        console.error(
-          `${LOG_PREFIX} Failed to switch to sound pack ${soundPack}. Cannot play ${soundName}.`,
-        );
         return false;
       }
     }
 
     let audioBuffer = this.soundBuffers.get(soundName);
     if (!audioBuffer) {
-      console.warn(
-        `${LOG_PREFIX} Buffer for '${soundName}' (pack '${soundPack}') not pre-loaded. Attempting lazy load...`,
-      );
       const moduleId = getSoundModuleId(soundPack, soundName);
       audioBuffer = await this._loadAndDecodeSound(
         moduleId,
@@ -199,7 +160,6 @@ class AudioService {
       if (audioBuffer) {
         this.soundBuffers.set(soundName, audioBuffer);
       } else {
-        console.error(`${LOG_PREFIX} Failed to lazy load sound ${soundName}.`);
         return false;
       }
     }
@@ -214,11 +174,7 @@ class AudioService {
       source.start();
       return true;
     } catch (error) {
-      console.error(
-        `${LOG_PREFIX} Error playing sound ${soundName} from ${soundPack}:`,
-        error.message,
-        error,
-      );
+      console.error(`${LOG_PREFIX} Error playing sound:`, error.message);
       return false;
     }
   }
@@ -227,15 +183,13 @@ class AudioService {
     if (this.metronomeBuffer) {
       return;
     }
+
     await this._ensureInitialized();
     const tickModuleId = getSoundModuleId('metronome', 'tick');
     this.metronomeBuffer = await this._loadAndDecodeSound(
       tickModuleId,
       'metronome/tick',
     );
-    if (!this.metronomeBuffer) {
-      console.error(`${LOG_PREFIX} Metronome tick sound failed to load.`);
-    }
   }
 
   _metronomeScheduler() {
@@ -244,8 +198,7 @@ class AudioService {
       this.audioContext.currentTime + this.scheduleAheadTime
     ) {
       this._scheduleMetronomeTick(this.nextBeatTime);
-      const secondsPerBeat = 60.0 / this.bpm;
-      this.nextBeatTime += secondsPerBeat;
+      this.nextBeatTime += 60.0 / this.bpm;
     }
     this.metronomeTimerId = setTimeout(
       () => this._metronomeScheduler(),
@@ -255,7 +208,6 @@ class AudioService {
 
   _scheduleMetronomeTick(time) {
     if (!this.metronomeBuffer) {
-      console.warn(`${LOG_PREFIX} Metronome tick skipped: Buffer missing.`);
       return;
     }
 
@@ -271,9 +223,7 @@ class AudioService {
       }
 
       this.activeMetronomeSourceNodes.add(source);
-      source.onended = () => {
-        this.activeMetronomeSourceNodes.delete(source);
-      };
+      source.onended = () => this.activeMetronomeSourceNodes.delete(source);
     } catch (error) {
       console.error(
         `${LOG_PREFIX} Error scheduling metronome tick:`,
@@ -284,18 +234,13 @@ class AudioService {
 
   async startMetronome(bpm, onTick) {
     if (bpm <= 0) {
-      console.error(
-        `${LOG_PREFIX} Invalid BPM: ${bpm}. Metronome not started.`,
-      );
       return;
     }
+
     await this._ensureInitialized();
     await this._loadMetronomeSound();
 
     if (!this.metronomeBuffer) {
-      console.error(
-        `${LOG_PREFIX} Cannot start metronome: tick sound not loaded.`,
-      );
       return;
     }
 
@@ -310,7 +255,6 @@ class AudioService {
 
     this.nextBeatTime = this.audioContext.currentTime + 0.1;
     this._metronomeScheduler();
-    console.log(`${LOG_PREFIX} Metronome started at ${bpm} BPM.`);
   }
 
   async stopMetronome() {
@@ -320,7 +264,6 @@ class AudioService {
     }
 
     this.onTickCallback = null;
-
     this.activeMetronomeSourceNodes.forEach(node => {
       try {
         node.stop();
@@ -329,63 +272,96 @@ class AudioService {
     this.activeMetronomeSourceNodes.clear();
   }
 
-  async stopAllSounds() {
-    console.warn(
-      `${LOG_PREFIX} stopAllSounds() is a no-op. Pad sounds play out. For metronome, use stopMetronome().`,
-    );
-  }
-
   async playDemo(packId) {
+    if (!packId) {
+      return false;
+    }
+
     await this._ensureInitialized();
+
     try {
+      if (this._activeDemoSource) {
+        await this.stopDemo();
+      }
+
       const pack = soundPacks[packId];
-      if (!pack || !pack.demo) {
-        console.warn(`${LOG_PREFIX} No demo found for pack ${packId}`);
+      if (!pack?.demo) {
         return false;
       }
-      if (!this.demoBuffers) {
-        this.demoBuffers = new Map();
-      }
-      let buffer = this.demoBuffers.get(packId);
+
+      const buffer = await this._loadDemoBuffer(packId, pack.demo);
       if (!buffer) {
-        const assetSource = Image.resolveAssetSource(pack.demo);
-        if (!assetSource || !assetSource.uri) {
-          console.error(`${LOG_PREFIX} Missing URI for demo in pack ${packId}`);
-          return false;
-        }
-        const response = await fetch(assetSource.uri);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch demo for pack ${packId}`);
-        }
-        const arrayBuffer = await response.arrayBuffer();
-        buffer = await this.audioContext.decodeAudioData(arrayBuffer);
-        this.demoBuffers.set(packId, buffer);
+        return false;
       }
+
       if (this.audioContext.state === 'suspended') {
         await this.audioContext.resume();
       }
+
       const source = this.audioContext.createBufferSource();
       source.buffer = buffer;
       source.connect(this.audioContext.destination);
+
+      const playPromise = new Promise(resolve => {
+        source.onended = () => {
+          if (this._activeDemoSource === source) {
+            this._activeDemoSource = null;
+            resolve(true);
+          }
+        };
+      });
+
       source.start();
       this._activeDemoSource = source;
-      return true;
+      return playPromise;
     } catch (error) {
-      console.error(
-        `${LOG_PREFIX} Error playing demo for pack ${packId}:`,
-        error.message,
-        error,
-      );
+      console.error(`${LOG_PREFIX} Error playing demo:`, error.message);
+      this._activeDemoSource = null;
       return false;
     }
   }
 
-  stopDemo(packId) {
+  async stopDemo() {
     if (this._activeDemoSource) {
       try {
         this._activeDemoSource.stop();
-      } catch (e) {}
-      this._activeDemoSource = null;
+      } catch (error) {
+        console.warn(`${LOG_PREFIX} Error stopping demo:`, error.message);
+      } finally {
+        this._activeDemoSource = null;
+      }
+    }
+  }
+
+  async _loadDemoBuffer(packId, demoModuleId) {
+    if (!this.demoBuffers) {
+      this.demoBuffers = new Map();
+    }
+
+    const cachedBuffer = this.demoBuffers.get(packId);
+    if (cachedBuffer) {
+      return cachedBuffer;
+    }
+
+    try {
+      const assetSource = Image.resolveAssetSource(demoModuleId);
+      if (!assetSource?.uri) {
+        return null;
+      }
+
+      const response = await fetch(assetSource.uri);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch demo: ${response.statusText}`);
+      }
+
+      const arrayBuffer = await response.arrayBuffer();
+      const buffer = await this.audioContext.decodeAudioData(arrayBuffer);
+
+      this.demoBuffers.set(packId, buffer);
+      return buffer;
+    } catch (error) {
+      console.error(`${LOG_PREFIX} Error loading demo buffer:`, error.message);
+      return null;
     }
   }
 }
