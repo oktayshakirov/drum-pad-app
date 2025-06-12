@@ -37,6 +37,11 @@ export default {
     percussion_1: require('./samples/percussion_1.mp3'),
     percussion_2: require('./samples/percussion_2.mp3'),
   },
+  soundGroups: {
+    melodies: ['melody_1', 'melody_2'],
+    drums: ['drums_1_1', 'drums_1_2', 'drums_2'],
+    percussion: ['percussion_1', 'percussion_2'],
+  },
   padConfig: [
     {id: 1, sound: 'drums_1_1', color: PAD_COLORS.DRUMS_MAIN},
     {id: 2, sound: 'drums_1_2', color: PAD_COLORS.DRUMS_MAIN},

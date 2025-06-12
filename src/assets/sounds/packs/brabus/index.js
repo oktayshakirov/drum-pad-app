@@ -49,6 +49,14 @@ export default {
     chant_fight: require('./samples/chant_fight.mp3'),
     chant_countdown: require('./samples/chant_countdown.mp3'),
   },
+  soundGroups: {
+    drums: ['drums_1', 'drums_2', 'drums_3', 'drums_4', 'drums_5', 'drums_6'],
+    melody_1and3: ['melody_1', 'melody_3'],
+    melody_2: ['melody_2_1', 'melody_2_2'],
+    synth: ['synth_1', 'synth_2'],
+    choir: ['choir_1', 'choir_2'],
+    chant: ['chant_fight', 'chant_countdown'],
+  },
   padConfig: [
     {id: 1, sound: 'drums_1', color: PAD_COLORS.DRUMS_MAIN},
     {id: 2, sound: 'drums_2', color: PAD_COLORS.DRUMS_MAIN},

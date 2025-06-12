@@ -37,6 +37,10 @@ export default {
     // SFX
     sfx_dubstep_filler: require('./samples/sfx_dubstep_filler.mp3'),
   },
+  soundGroups: {
+    drums: ['drums_1', 'drums_2', 'drums_3'],
+    melodies: ['melody_1', 'melody_2'],
+  },
   padConfig: [
     {id: 1, sound: 'drums_1', color: PAD_COLORS.DRUMS_MAIN},
     {id: 2, sound: 'drums_2', color: PAD_COLORS.DRUMS_MAIN},

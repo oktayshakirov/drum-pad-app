@@ -37,6 +37,9 @@ export default {
     // SFX
     sfx_gun: require('./samples/sfx_gun.mp3'),
   },
+  soundGroups: {
+    drums: ['drums_1', 'drums_2'],
+  },
   padConfig: [
     {id: 1, sound: 'kick', color: PAD_COLORS.DRUMS_MAIN},
     {id: 2, sound: 'snare', color: PAD_COLORS.DRUMS_MAIN},

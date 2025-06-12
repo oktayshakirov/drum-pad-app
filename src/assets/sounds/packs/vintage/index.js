@@ -36,6 +36,10 @@ export default {
     open_hat: require('./samples/open_hat.mp3'),
     crash: require('./samples/crash.mp3'),
   },
+  soundGroups: {
+    melodies: ['melody_1', 'melody_2', 'melody_3', 'melody_4'],
+    vocals: ['vocals_1', 'vocals_2', 'vocals_3'],
+  },
   padConfig: [
     {id: 1, sound: 'kick', color: PAD_COLORS.DRUMS_MAIN},
     {id: 2, sound: 'clap', color: PAD_COLORS.DRUMS_MAIN},

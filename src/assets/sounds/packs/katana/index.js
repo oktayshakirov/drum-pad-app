@@ -36,6 +36,11 @@ export default {
     sfx_sword_2: require('./samples/sfx_sword_2.mp3'),
     sfx_reverse: require('./samples/sfx_reverse.mp3'),
   },
+  soundGroups: {
+    drums: ['drums_1', 'drums_2', 'drums_3'],
+    melody_1: ['melody_1_1', 'melody_1_2'],
+    melody_2and3: ['melody_2', 'melody_3'],
+  },
   padConfig: [
     {id: 1, sound: 'drums_1', color: PAD_COLORS.DRUMS_MAIN},
     {id: 2, sound: 'drums_2', color: PAD_COLORS.DRUMS_MAIN},

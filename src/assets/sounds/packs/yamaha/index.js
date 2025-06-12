@@ -37,6 +37,10 @@ export default {
     // SFX
     sfx_motorbike: require('./samples/sfx_motorbike.mp3'),
   },
+  soundGroups: {
+    melodies: ['choir_1', 'choir_2', 'choir_3'],
+    drums: ['drums_1', 'drums_2'],
+  },
   padConfig: [
     {id: 1, sound: 'kick', color: PAD_COLORS.DRUMS_MAIN},
     {id: 2, sound: 'snare_1', color: PAD_COLORS.DRUMS_MAIN},

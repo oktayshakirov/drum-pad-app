@@ -36,6 +36,11 @@ export default {
     melody_3_1: require('./samples/melody_3_1.mp3'),
     melody_3_2: require('./samples/melody_3_2.mp3'),
   },
+  soundGroups: {
+    melody_1: ['melody_1_1', 'melody_1_2'],
+    melody_2: ['melody_2_1', 'melody_2_2'],
+    melody_3: ['melody_3_1', 'melody_3_2'],
+  },
   padConfig: [
     {id: 1, sound: 'drums', color: PAD_COLORS.DRUMS_MAIN},
     {id: 2, sound: 'open_hat', color: PAD_COLORS.DRUMS_MAIN},

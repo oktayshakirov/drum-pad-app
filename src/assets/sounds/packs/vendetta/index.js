@@ -50,6 +50,18 @@ export default {
     sfx_dubstep_filler: require('./samples/sfx_dubstep_filler.mp3'),
     sfx_glass: require('./samples/sfx_glass.mp3'),
   },
+  soundGroups: {
+    melodies: ['melody_1', 'melody_2', 'melody_3', 'melody_4'],
+    sfx: [
+      'sfx_chains',
+      'sfx_distortion',
+      'sfx_dubstep_drop',
+      'sfx_dubstep_filler',
+      'sfx_glass',
+    ],
+    chants: ['chant_demon', 'chant_die', 'chant_sorry'],
+    drums: ['drums_1', 'drums_2'],
+  },
   padConfig: [
     {id: 1, sound: 'snare', color: PAD_COLORS.DRUMS_MAIN},
     {id: 2, sound: 'hi_hat', color: PAD_COLORS.DRUMS_MAIN},
