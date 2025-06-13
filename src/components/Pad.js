@@ -5,6 +5,7 @@ import AudioService from '../services/AudioService';
 const Pad = ({sound, soundPack, color}) => {
   const scale = useRef(new Animated.Value(1)).current;
   const glowOpacity = useRef(new Animated.Value(0.4)).current;
+  const brightnessOpacity = useRef(new Animated.Value(0)).current;
 
   const handlePressIn = async () => {
     if (!sound) {
@@ -13,12 +14,17 @@ const Pad = ({sound, soundPack, color}) => {
 
     Animated.parallel([
       Animated.spring(scale, {
-        toValue: 0.9,
+        toValue: 0.95,
         friction: 9,
         useNativeDriver: true,
       }),
       Animated.timing(glowOpacity, {
         toValue: 1,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(brightnessOpacity, {
+        toValue: 0.3,
         duration: 50,
         useNativeDriver: true,
       }),
@@ -43,6 +49,11 @@ const Pad = ({sound, soundPack, color}) => {
         duration: 150,
         useNativeDriver: true,
       }),
+      Animated.timing(brightnessOpacity, {
+        toValue: 0,
+        duration: 150,
+        useNativeDriver: true,
+      }),
     ]).start();
   };
 
@@ -58,11 +69,16 @@ const Pad = ({sound, soundPack, color}) => {
         disabled={!sound}>
         <View style={[styles.pad, {backgroundColor: padColor}]}>
           {sound && (
-            <Animated.Image
-              source={require('../assets/images/glow.png')}
-              style={[styles.glow, {opacity: glowOpacity}]}
-              resizeMode="contain"
-            />
+            <>
+              <Animated.Image
+                source={require('../assets/images/glow.png')}
+                style={[styles.glow, {opacity: glowOpacity}]}
+                resizeMode="contain"
+              />
+              <Animated.View
+                style={[styles.brightnessOverlay, {opacity: brightnessOpacity}]}
+              />
+            </>
           )}
         </View>
       </TouchableOpacity>
@@ -98,6 +114,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '100%',
+  },
+  brightnessOverlay: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'white',
+    borderRadius: 15,
   },
 });
 
