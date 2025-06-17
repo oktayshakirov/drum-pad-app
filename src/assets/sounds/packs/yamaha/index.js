@@ -17,6 +17,7 @@ export default {
   id: 'yamaha',
   name: 'Yamaha',
   genre: 'Hip Hop',
+  bpm: '140',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
   sounds: {

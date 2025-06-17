@@ -16,7 +16,8 @@ const PAD_COLORS = {
 export default {
   id: 'brabus',
   name: 'Brabus',
-  genre: 'Electronic',
+  genre: 'Drill',
+  bpm: '150',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
   sounds: {

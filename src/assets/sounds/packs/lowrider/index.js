@@ -17,6 +17,7 @@ export default {
   id: 'lowrider',
   name: 'Lowrider',
   genre: 'Hip Hop',
+  bpm: '138',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
   sounds: {

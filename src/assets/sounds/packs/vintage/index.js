@@ -16,7 +16,8 @@ const PAD_COLORS = {
 export default {
   id: 'vintage',
   name: 'Vintage',
-  genre: 'Hip Hop',
+  genre: 'Pop',
+  bpm: '124',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
   sounds: {

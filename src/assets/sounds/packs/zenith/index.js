@@ -16,7 +16,8 @@ const PAD_COLORS = {
 export default {
   id: 'zenith',
   name: 'Zenith',
-  genre: 'Hip Hop',
+  genre: 'R&B',
+  bpm: '120',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
   sounds: {

@@ -16,7 +16,8 @@ const PAD_COLORS = {
 export default {
   id: 'vendetta',
   name: 'Vendetta',
-  genre: 'Dubstep',
+  genre: 'Trap',
+  bpm: '100',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
   sounds: {

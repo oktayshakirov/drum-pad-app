@@ -16,7 +16,8 @@ const PAD_COLORS = {
 export default {
   id: 'locoContigo',
   name: 'Loco Contigo',
-  genre: 'Latin',
+  genre: 'R&B',
+  bpm: '113',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
   sounds: {

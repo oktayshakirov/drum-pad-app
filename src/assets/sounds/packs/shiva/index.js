@@ -16,7 +16,8 @@ const PAD_COLORS = {
 export default {
   id: 'shiva',
   name: 'Shiva',
-  genre: 'Hip Hop',
+  genre: 'Indian Trap',
+  bpm: '95',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
   sounds: {

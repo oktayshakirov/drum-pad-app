@@ -16,7 +16,8 @@ const PAD_COLORS = {
 export default {
   id: 'katana',
   name: 'Katana',
-  genre: 'Electronic',
+  genre: 'Trap',
+  bpm: '140',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
   sounds: {

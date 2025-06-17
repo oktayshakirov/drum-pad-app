@@ -16,7 +16,8 @@ const PAD_COLORS = {
 export default {
   id: 'maskOff',
   name: 'Mask Off',
-  genre: 'Hip Hop',
+  genre: 'Trap',
+  bpm: '134',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
   sounds: {
