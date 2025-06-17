@@ -2,6 +2,11 @@
   "name": "Shape Beats",
   "displayName": "Shape Beats",
   "icon": "./src/assets/images/icon.png",
+  "splash": {
+    "image": "./src/assets/images/splash-icon.png",
+    "resizeMode": "contain",
+    "backgroundColor": "#000000"
+  },
   "android": {
     "package": "com.shadev.shapebeats",
     "adaptiveIcon": {
