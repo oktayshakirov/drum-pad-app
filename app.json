@@ -9,6 +9,7 @@
   },
   "android": {
     "package": "com.shadev.shapebeats",
+    "versionCode": 1,
     "adaptiveIcon": {
       "foregroundImage": "./src/assets/images/icon.png",
       "backgroundColor": "#FFFFFF"
@@ -16,6 +17,7 @@
   },
   "ios": {
     "bundleIdentifier": "com.shadev.shapebeats",
+    "buildNumber": "1",
     "supportsTablet": true
   }
 }
