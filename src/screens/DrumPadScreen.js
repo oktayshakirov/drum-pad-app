@@ -11,6 +11,7 @@ import AdBanner from '../components/AdBanner';
 const DrumPadScreen = () => {
   const {currentSoundPack, isLoading} = useContext(AppContext);
   const [activeChannel, setActiveChannel] = useState('A');
+  const [isMetronomePlaying, setIsMetronomePlaying] = useState(false);
   const padConfigs = getPadConfigs(currentSoundPack);
   const hasTwoChannels = padConfigs.length > 12;
   const visiblePads = hasTwoChannels
@@ -19,6 +20,10 @@ const DrumPadScreen = () => {
         activeChannel === 'A' ? 12 : 24,
       )
     : padConfigs;
+
+  const handleOpenPackLibrary = () => {
+    setIsMetronomePlaying(false);
+  };
 
   if (isLoading) {
     return (
@@ -31,7 +36,7 @@ const DrumPadScreen = () => {
   return (
     <View style={styles.container}>
       <AdBanner />
-      <CurrentPack />
+      <CurrentPack onOpenPackLibrary={handleOpenPackLibrary} />
       <View style={styles.controlsRow}>
         {hasTwoChannels && (
           <ChannelSwitch
@@ -40,7 +45,10 @@ const DrumPadScreen = () => {
           />
         )}
         {hasTwoChannels && <View />}
-        <Metronome />
+        <Metronome
+          isPlaying={isMetronomePlaying}
+          setIsPlaying={setIsMetronomePlaying}
+        />
       </View>
       <View style={styles.grid}>
         {visiblePads.map(pad => (

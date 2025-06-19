@@ -4,7 +4,7 @@ import {AppContext} from '../contexts/AppContext';
 import {SOUND_PACKS} from '../utils/soundUtils';
 import SoundPackModal from './PackLibrary';
 
-const CurrentPackHeader = () => {
+const CurrentPackHeader = ({onOpenPackLibrary}) => {
   const {currentSoundPack, setCurrentSoundPack} = useContext(AppContext);
   const [isModalVisible, setModalVisible] = useState(false);
 
@@ -13,6 +13,13 @@ const CurrentPackHeader = () => {
   if (!activePack) {
     return null;
   }
+
+  const handleOpenModal = () => {
+    if (onOpenPackLibrary) {
+      onOpenPackLibrary();
+    }
+    setModalVisible(true);
+  };
 
   return (
     <>
@@ -25,7 +32,7 @@ const CurrentPackHeader = () => {
         <View style={styles.buttonsContainer}>
           <TouchableOpacity
             style={styles.allPacksButton}
-            onPress={() => setModalVisible(true)}>
+            onPress={handleOpenModal}>
             <Text style={styles.allPacksText}>ALL PACKS</Text>
           </TouchableOpacity>
         </View>

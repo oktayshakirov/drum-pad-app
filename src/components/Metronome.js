@@ -10,13 +10,11 @@ import {AppContext} from '../contexts/AppContext';
 import AudioService from '../services/AudioService';
 import BpmEditorModal from './BpmEditorModal';
 
-const Metronome = () => {
-  useContext(AppContext);
+const Metronome = ({isPlaying, setIsPlaying}) => {
+  const {bpm, setBpm} = useContext(AppContext);
 
-  const [isPlaying, setIsPlaying] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [displayBpm, setDisplayBpm] = useState(120);
-  const [audioBpm, setAudioBpm] = useState(120);
+  const [audioBpm, setAudioBpm] = useState(bpm);
 
   const beatAnim = useRef(new Animated.Value(1)).current;
 
@@ -37,11 +35,11 @@ const Metronome = () => {
 
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      setAudioBpm(displayBpm);
+      setAudioBpm(bpm);
     }, 200);
 
     return () => clearTimeout(debounceTimer);
-  }, [displayBpm]);
+  }, [bpm]);
 
   useEffect(() => {
     if (isPlaying) {
@@ -68,7 +66,7 @@ const Metronome = () => {
             style={[styles.bpmCircle, {transform: [{scale: beatAnim}]}]}
           />
           <View style={styles.bpmTextContainer}>
-            <Text style={styles.bpmValue}>{displayBpm}</Text>
+            <Text style={styles.bpmValue}>{bpm}</Text>
             <Text style={styles.bpmLabel}>BPM</Text>
           </View>
         </TouchableOpacity>
@@ -83,8 +81,8 @@ const Metronome = () => {
       <BpmEditorModal
         isVisible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
-        currentBpm={displayBpm}
-        onBpmChange={setDisplayBpm}
+        currentBpm={bpm}
+        onBpmChange={setBpm}
       />
     </>
   );
