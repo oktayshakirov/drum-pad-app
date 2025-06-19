@@ -9,6 +9,7 @@ import outtaControl from './packs/outtaControl';
 import shiva from './packs/shiva';
 import vendetta from './packs/vendetta';
 import vintage from './packs/vintage';
+import xmas from './packs/xmas';
 import yamaha from './packs/yamaha';
 import zenith from './packs/zenith';
 
@@ -24,6 +25,7 @@ export const soundPacks = {
   shiva,
   vendetta,
   vintage,
+  xmas,
   yamaha,
   zenith,
 };
