@@ -10,7 +10,9 @@ class AudioService {
     this.audioContext = null;
     this.currentSoundPack = null;
     this.soundBuffers = new Map();
-    this.metronomeBuffer = null;
+    this.metronomeSoundBuffers = new Map();
+    this.metronomeGainNode = null;
+    this.currentMetronomeSound = 'tick';
     this.activeMetronomeSourceNodes = new Set();
     this._initializationPromise = this._initializeAudioContext();
     this.bpm = 120;
@@ -36,6 +38,8 @@ class AudioService {
     this._initializationPromise = (async () => {
       try {
         this.audioContext = new AudioContext();
+        this.metronomeGainNode = this.audioContext.createGain();
+        this.metronomeGainNode.connect(this.audioContext.destination);
       } catch (error) {
         console.error(
           `${LOG_PREFIX} Error initializing AudioContext:`,
@@ -214,16 +218,20 @@ class AudioService {
     }
   }
 
-  async _loadMetronomeSound() {
-    if (this.metronomeBuffer) {
-      return;
+  async _loadMetronomeSound(soundName) {
+    if (this.metronomeSoundBuffers.has(soundName)) {
+      return this.metronomeSoundBuffers.get(soundName);
     }
     await this._ensureInitialized();
-    const tickModuleId = getSoundModuleId('metronome', 'tick');
-    this.metronomeBuffer = await this._loadAndDecodeSound(
+    const tickModuleId = getSoundModuleId('metronome', soundName);
+    const buffer = await this._loadAndDecodeSound(
       tickModuleId,
-      'metronome/tick',
+      `metronome/${soundName}`,
     );
+    if (buffer) {
+      this.metronomeSoundBuffers.set(soundName, buffer);
+    }
+    return buffer;
   }
 
   _metronomeScheduler() {
@@ -241,13 +249,14 @@ class AudioService {
   }
 
   _scheduleMetronomeTick(time) {
-    if (!this.metronomeBuffer) {
+    const buffer = this.metronomeSoundBuffers.get(this.currentMetronomeSound);
+    if (!buffer || !this.metronomeGainNode) {
       return;
     }
     try {
       const source = this.audioContext.createBufferSource();
-      source.buffer = this.metronomeBuffer;
-      source.connect(this.audioContext.destination);
+      source.buffer = buffer;
+      source.connect(this.metronomeGainNode);
       source.start(time);
       if (this.onTickCallback) {
         const delay = (time - this.audioContext.currentTime) * 1000;
@@ -263,18 +272,29 @@ class AudioService {
     }
   }
 
-  async startMetronome(bpm, onTick) {
+  async startMetronome(bpm, onTick, soundName = 'tick', volume = 1) {
     if (bpm <= 0) {
       return;
     }
     await this._ensureInitialized();
-    await this._loadMetronomeSound();
-    if (!this.metronomeBuffer) {
+    await this._loadMetronomeSound(soundName);
+
+    const buffer = this.metronomeSoundBuffers.get(soundName);
+    if (!buffer) {
       return;
     }
     await this.stopMetronome();
     this.bpm = bpm;
     this.onTickCallback = onTick;
+    this.currentMetronomeSound = soundName;
+
+    if (this.metronomeGainNode) {
+      this.metronomeGainNode.gain.setValueAtTime(
+        volume,
+        this.audioContext.currentTime,
+      );
+    }
+
     if (this.audioContext.state === 'suspended') {
       await this.audioContext.resume();
     }

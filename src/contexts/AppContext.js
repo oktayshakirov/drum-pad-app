@@ -11,6 +11,8 @@ export const AppProvider = ({children}) => {
   );
   const [isLoading, setIsLoading] = useState(true);
   const [bpm, setBpm] = useState(120);
+  const [metronomeSound, setMetronomeSound] = useState('tick');
+  const [metronomeVolume, setMetronomeVolume] = useState(1);
 
   useEffect(() => {
     const loadInitialSoundPack = async () => {
@@ -69,6 +71,10 @@ export const AppProvider = ({children}) => {
         availableSoundPacks: Object.values(SOUND_PACKS),
         bpm,
         setBpm,
+        metronomeSound,
+        setMetronomeSound,
+        metronomeVolume,
+        setMetronomeVolume,
       }}>
       {children}
     </AppContext.Provider>

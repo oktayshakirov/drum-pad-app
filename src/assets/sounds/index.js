@@ -31,5 +31,7 @@ export const soundPacks = {
 };
 
 export const metronome = {
-  tick: require('./metronome/tick.wav'),
+  tick: require('./metronome/tick.mp3'),
+  beep: require('./metronome/beep.mp3'),
+  block: require('./metronome/block.mp3'),
 };
