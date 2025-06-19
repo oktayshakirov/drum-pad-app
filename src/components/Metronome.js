@@ -5,10 +5,13 @@ import React, {
   useRef,
   useCallback,
 } from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Animated} from 'react-native';
+import {View, Text, StyleSheet, Pressable, Animated, Image} from 'react-native';
 import {AppContext} from '../contexts/AppContext';
 import AudioService from '../services/AudioService';
 import MetronomeSettings from './MetronomeSettings';
+import playIcon from '../assets/images/play.png';
+import pauseIcon from '../assets/images/pause.png';
+import settingsIcon from '../assets/images/settings.png';
 
 const Metronome = ({isPlaying, setIsPlaying}) => {
   const {
@@ -21,6 +24,8 @@ const Metronome = ({isPlaying, setIsPlaying}) => {
   } = useContext(AppContext);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const beatAnim = useRef(new Animated.Value(1)).current;
+  const playPauseScale = useRef(new Animated.Value(1)).current;
+  const settingsScale = useRef(new Animated.Value(1)).current;
 
   const triggerBeatAnimation = useCallback(() => {
     Animated.sequence([
@@ -58,18 +63,39 @@ const Metronome = ({isPlaying, setIsPlaying}) => {
   };
 
   const openSettingsModal = () => {
-    // FIX: The metronome no longer stops when opening the settings.
     setIsModalVisible(true);
+  };
+
+  const handlePressIn = scaleRef => {
+    Animated.spring(scaleRef, {
+      toValue: 0.7,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = scaleRef => {
+    Animated.spring(scaleRef, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
   };
 
   return (
     <>
       <View style={styles.wrapper}>
-        <TouchableOpacity
+        <Pressable
           style={styles.controlButton}
-          onPress={handleToggleMetronome}>
-          <View style={isPlaying ? styles.pauseIcon : styles.playIcon} />
-        </TouchableOpacity>
+          onPress={handleToggleMetronome}
+          onPressIn={() => handlePressIn(playPauseScale)}
+          onPressOut={() => handlePressOut(playPauseScale)}>
+          <Animated.View style={{transform: [{scale: playPauseScale}]}}>
+            <Image
+              source={isPlaying ? pauseIcon : playIcon}
+              style={styles.iconImage}
+              resizeMode="contain"
+            />
+          </Animated.View>
+        </Pressable>
 
         <View style={styles.bpmDisplay}>
           <Animated.View
@@ -81,14 +107,21 @@ const Metronome = ({isPlaying, setIsPlaying}) => {
           </View>
         </View>
 
-        <TouchableOpacity
+        <Pressable
           style={styles.controlButton}
-          onPress={openSettingsModal}>
-          <Text style={styles.settingsIcon}>⚙️</Text>
-        </TouchableOpacity>
+          onPress={openSettingsModal}
+          onPressIn={() => handlePressIn(settingsScale)}
+          onPressOut={() => handlePressOut(settingsScale)}>
+          <Animated.View style={{transform: [{scale: settingsScale}]}}>
+            <Image
+              source={settingsIcon}
+              style={styles.iconImage}
+              resizeMode="contain"
+            />
+          </Animated.View>
+        </Pressable>
       </View>
 
-      {/* FIX: Pass all values and setters as props to ensure sliders are correct */}
       <MetronomeSettings
         isVisible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
@@ -111,11 +144,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginTop: 10,
     marginBottom: 20,
-    gap: 20,
+    gap: 15,
   },
   bpmDisplay: {
-    width: 80,
-    height: 80,
+    width: 65,
+    height: 65,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -124,12 +157,11 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 40,
     backgroundColor: '#222',
-    borderWidth: 3,
+    borderWidth: 3.5,
     borderColor: '#4CAF50',
-    shadowColor: '#4CAF50',
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    shadowOffset: {width: 0, height: 2},
+    shadowColor: '#aaa',
+    shadowOpacity: 0.7,
+    shadowRadius: 5,
   },
   bpmTextContainer: {
     position: 'absolute',
@@ -138,7 +170,7 @@ const styles = StyleSheet.create({
   },
   bpmValue: {
     color: '#fff',
-    fontSize: 28,
+    fontSize: 22,
     fontWeight: 'bold',
   },
   bpmLabel: {
@@ -146,42 +178,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   controlButton: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     borderRadius: 25,
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#fff',
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    shadowOffset: {width: 0, height: 0},
   },
-  playIcon: {
-    width: 0,
-    height: 0,
-    backgroundColor: 'transparent',
-    borderStyle: 'solid',
-    borderTopWidth: 8,
-    borderBottomWidth: 8,
-    borderLeftWidth: 14,
-    borderTopColor: 'transparent',
-    borderBottomColor: 'transparent',
-    borderLeftColor: '#000',
-    marginLeft: 3,
-  },
-  pauseIcon: {
-    width: 14,
-    height: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    borderRightWidth: 5,
-    borderLeftWidth: 5,
-    borderColor: '#000',
-  },
-  settingsIcon: {
-    fontSize: 24,
-    color: '#000',
+  iconImage: {
+    width: 20,
+    height: 20,
   },
 });
 

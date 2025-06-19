@@ -1,5 +1,5 @@
-import React, {useContext, useState} from 'react';
-import {View, StyleSheet, ActivityIndicator} from 'react-native';
+import React, {useContext, useState, useRef, useEffect} from 'react';
+import {View, StyleSheet, ActivityIndicator, Animated} from 'react-native';
 import Pad from '../components/Pad';
 import CurrentPack from '../components/CurrentPack';
 import Metronome from '../components/Metronome';
@@ -24,6 +24,42 @@ const DrumPadScreen = () => {
   const handleOpenPackLibrary = () => {
     setIsMetronomePlaying(false);
   };
+
+  const gridOpacity = useRef(new Animated.Value(1)).current;
+  const gridScale = useRef(new Animated.Value(1)).current;
+  const prevChannel = useRef(activeChannel);
+
+  useEffect(() => {
+    if (prevChannel.current !== activeChannel) {
+      Animated.sequence([
+        Animated.parallel([
+          Animated.timing(gridOpacity, {
+            toValue: 0,
+            duration: 100,
+            useNativeDriver: true,
+          }),
+          Animated.timing(gridScale, {
+            toValue: 0.85,
+            duration: 100,
+            useNativeDriver: true,
+          }),
+        ]),
+        Animated.parallel([
+          Animated.timing(gridOpacity, {
+            toValue: 1,
+            duration: 100,
+            useNativeDriver: true,
+          }),
+          Animated.timing(gridScale, {
+            toValue: 1,
+            duration: 100,
+            useNativeDriver: true,
+          }),
+        ]),
+      ]).start();
+      prevChannel.current = activeChannel;
+    }
+  }, [activeChannel, gridOpacity, gridScale]);
 
   if (isLoading) {
     return (
@@ -50,7 +86,11 @@ const DrumPadScreen = () => {
           setIsPlaying={setIsMetronomePlaying}
         />
       </View>
-      <View style={styles.grid}>
+      <Animated.View
+        style={[
+          styles.grid,
+          {opacity: gridOpacity, transform: [{scale: gridScale}]},
+        ]}>
         {visiblePads.map(pad => (
           <Pad
             key={pad.id}
@@ -60,7 +100,7 @@ const DrumPadScreen = () => {
             color={pad.color}
           />
         ))}
-      </View>
+      </Animated.View>
     </View>
   );
 };

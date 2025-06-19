@@ -1,8 +1,18 @@
-import React from 'react';
-import {Modal, View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import Slider from '@react-native-community/slider';
+import React, {useRef, useEffect} from 'react';
+import {
+  Modal,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+} from 'react-native';
 
 const SOUND_OPTIONS = ['tick', 'beep', 'block'];
+const BPM_MIN = 40;
+const BPM_MAX = 220;
+const VOLUME_MIN = 0;
+const VOLUME_MAX = 1;
 
 const MetronomeSettings = ({
   isVisible,
@@ -14,9 +24,87 @@ const MetronomeSettings = ({
   metronomeVolume,
   setMetronomeVolume,
 }) => {
-  const handleBpmChange = value => {
-    setBpm(Math.floor(value));
+  const timeoutRef = useRef(null);
+  const intervalRef = useRef(null);
+  const scaleAnim = useRef(new Animated.Value(0.8)).current;
+  const opacityAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isVisible) {
+      scaleAnim.setValue(0.8);
+      opacityAnim.setValue(0);
+      Animated.parallel([
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacityAnim, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      Animated.parallel([
+        Animated.timing(scaleAnim, {
+          toValue: 0.8,
+          duration: 150,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacityAnim, {
+          toValue: 0,
+          duration: 150,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [isVisible, scaleAnim, opacityAnim]);
+
+  const changeBpm = amount => {
+    setBpm(prevBpm => Math.max(BPM_MIN, Math.min(BPM_MAX, prevBpm + amount)));
   };
+
+  const changeVolume = amount => {
+    setMetronomeVolume(prevVolume => {
+      const newVolume = Math.max(
+        VOLUME_MIN,
+        Math.min(VOLUME_MAX, parseFloat((prevVolume + amount).toFixed(1))),
+      );
+      return newVolume;
+    });
+  };
+
+  const handlePressIn = action => {
+    action();
+    timeoutRef.current = setTimeout(() => {
+      intervalRef.current = setInterval(action, 100);
+    }, 400);
+  };
+
+  const handlePressOut = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+  };
+
+  const isBpmMin = bpm <= BPM_MIN;
+  const isBpmMax = bpm >= BPM_MAX;
+  const isVolumeMin = metronomeVolume <= VOLUME_MIN;
+  const isVolumeMax = metronomeVolume >= VOLUME_MAX;
 
   return (
     <Modal
@@ -25,24 +113,35 @@ const MetronomeSettings = ({
       animationType="fade"
       onRequestClose={onClose}>
       <View style={styles.modalBackdrop}>
-        <View style={styles.modalContainer}>
+        <Animated.View
+          style={[
+            styles.modalContainer,
+            {
+              transform: [{scale: scaleAnim}],
+              opacity: opacityAnim,
+            },
+          ]}>
           <Text style={styles.title}>Metronome Settings</Text>
 
-          {/* BPM Section */}
-          <Text style={styles.bpmDisplay}>{bpm}</Text>
-          <Slider
-            style={styles.slider}
-            minimumValue={40}
-            maximumValue={220}
-            step={1}
-            value={bpm}
-            onValueChange={handleBpmChange}
-            minimumTrackTintColor="#FFD700"
-            maximumTrackTintColor="#555"
-            thumbTintColor="#FFFFFF"
-          />
+          <Text style={styles.sectionTitle}>BPM</Text>
+          <View style={styles.buttonControlContainer}>
+            <TouchableOpacity
+              onPressIn={() => handlePressIn(() => changeBpm(-1))}
+              onPressOut={handlePressOut}
+              style={[styles.controlButton, isBpmMin && styles.disabledButton]}
+              disabled={isBpmMin}>
+              <Text style={styles.controlButtonText}>-</Text>
+            </TouchableOpacity>
+            <Text style={styles.bpmDisplay}>{bpm}</Text>
+            <TouchableOpacity
+              onPressIn={() => handlePressIn(() => changeBpm(1))}
+              onPressOut={handlePressOut}
+              style={[styles.controlButton, isBpmMax && styles.disabledButton]}
+              disabled={isBpmMax}>
+              <Text style={styles.controlButtonText}>+</Text>
+            </TouchableOpacity>
+          </View>
 
-          {/* Sound Section */}
           <Text style={styles.sectionTitle}>Sound</Text>
           <View style={styles.soundOptionsContainer}>
             {SOUND_OPTIONS.map(sound => (
@@ -64,24 +163,37 @@ const MetronomeSettings = ({
             ))}
           </View>
 
-          {/* Volume Section */}
           <Text style={styles.sectionTitle}>Volume</Text>
-          <Slider
-            style={styles.slider}
-            minimumValue={0}
-            maximumValue={1}
-            step={0.1}
-            value={metronomeVolume}
-            onValueChange={setMetronomeVolume}
-            minimumTrackTintColor="#FFD700"
-            maximumTrackTintColor="#555"
-            thumbTintColor="#FFFFFF"
-          />
+          <View style={styles.buttonControlContainer}>
+            <TouchableOpacity
+              onPressIn={() => handlePressIn(() => changeVolume(-0.1))}
+              onPressOut={handlePressOut}
+              style={[
+                styles.controlButton,
+                isVolumeMin && styles.disabledButton,
+              ]}
+              disabled={isVolumeMin}>
+              <Text style={styles.controlButtonText}>-</Text>
+            </TouchableOpacity>
+            <Text style={styles.valueText}>
+              {(metronomeVolume * 100).toFixed(0)}%
+            </Text>
+            <TouchableOpacity
+              onPressIn={() => handlePressIn(() => changeVolume(0.1))}
+              onPressOut={handlePressOut}
+              style={[
+                styles.controlButton,
+                isVolumeMax && styles.disabledButton,
+              ]}
+              disabled={isVolumeMax}>
+              <Text style={styles.controlButtonText}>+</Text>
+            </TouchableOpacity>
+          </View>
 
           <TouchableOpacity style={styles.doneButton} onPress={onClose}>
             <Text style={styles.doneButtonText}>Done</Text>
           </TouchableOpacity>
-        </View>
+        </Animated.View>
       </View>
     </Modal>
   );
@@ -119,23 +231,49 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginTop: 20,
     marginBottom: 10,
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
   },
   bpmDisplay: {
     color: '#fff',
     fontSize: 64,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginHorizontal: 20,
   },
-  slider: {
+  buttonControlContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     width: '100%',
-    height: 40,
+    marginTop: 5,
+  },
+  controlButton: {
+    backgroundColor: '#444',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  disabledButton: {
+    opacity: 0.3,
+  },
+  controlButtonText: {
+    color: '#fff',
+    fontSize: 30,
+    fontWeight: 'bold',
+  },
+  valueText: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: '600',
+    width: 80,
+    textAlign: 'center',
   },
   soundOptionsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
-    marginBottom: 10,
+    marginVertical: 10,
   },
   soundOption: {
     backgroundColor: '#444',

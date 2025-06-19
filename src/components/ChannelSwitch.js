@@ -1,7 +1,36 @@
-import React from 'react';
-import {View, TouchableOpacity, Text, StyleSheet} from 'react-native';
+import React, {useRef, useEffect} from 'react';
+import {View, TouchableOpacity, Text, StyleSheet, Animated} from 'react-native';
 
 const ChannelSwitch = ({activeChannel, onChannelChange}) => {
+  const scaleA = useRef(
+    new Animated.Value(activeChannel === 'A' ? 1 : 0.8),
+  ).current;
+  const scaleB = useRef(
+    new Animated.Value(activeChannel === 'B' ? 1 : 0.8),
+  ).current;
+
+  useEffect(() => {
+    if (activeChannel === 'A') {
+      Animated.spring(scaleA, {
+        toValue: 1,
+        useNativeDriver: true,
+      }).start();
+      Animated.spring(scaleB, {
+        toValue: 0.8,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.spring(scaleA, {
+        toValue: 0.8,
+        useNativeDriver: true,
+      }).start();
+      Animated.spring(scaleB, {
+        toValue: 1,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [activeChannel, scaleA, scaleB]);
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -10,13 +39,15 @@ const ChannelSwitch = ({activeChannel, onChannelChange}) => {
           activeChannel === 'A' && styles.activeChannel,
         ]}
         onPress={() => onChannelChange('A')}>
-        <Text
-          style={[
-            styles.channelText,
-            activeChannel === 'A' && styles.activeChannelText,
-          ]}>
-          A
-        </Text>
+        <Animated.View style={{transform: [{scale: scaleA}]}}>
+          <Text
+            style={[
+              styles.channelText,
+              activeChannel === 'A' && styles.activeChannelText,
+            ]}>
+            A
+          </Text>
+        </Animated.View>
       </TouchableOpacity>
       <TouchableOpacity
         style={[
@@ -24,13 +55,15 @@ const ChannelSwitch = ({activeChannel, onChannelChange}) => {
           activeChannel === 'B' && styles.activeChannel,
         ]}
         onPress={() => onChannelChange('B')}>
-        <Text
-          style={[
-            styles.channelText,
-            activeChannel === 'B' && styles.activeChannelText,
-          ]}>
-          B
-        </Text>
+        <Animated.View style={{transform: [{scale: scaleB}]}}>
+          <Text
+            style={[
+              styles.channelText,
+              activeChannel === 'B' && styles.activeChannelText,
+            ]}>
+            B
+          </Text>
+        </Animated.View>
       </TouchableOpacity>
     </View>
   );
