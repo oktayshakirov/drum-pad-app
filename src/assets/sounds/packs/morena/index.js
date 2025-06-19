@@ -34,11 +34,8 @@ export default {
     // Chants
     chant_azis: require('./samples/chant_azis.mp3'),
   },
-  // Define sound groups for playback control
   soundGroups: {
-    // Drum group - only one drum pattern can play at a time
     drums: ['drums_1', 'drums_2'],
-    // Melody group - only one melody can play at a time
     melody: ['melody_1', 'melody_2', 'melody_3', 'melody_4', 'melody_5'],
   },
   padConfig: [
