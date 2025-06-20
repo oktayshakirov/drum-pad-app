@@ -23,6 +23,7 @@ export default {
   bpm: 140,
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
+  background: ['#1a1a1a', '#2d2d2d'], // Dark gradient
   sounds: {
     // Drums
     kick: require('./samples/kick.mp3'),
