@@ -52,7 +52,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 15,
     paddingVertical: 10,
-    backgroundColor: '#1a1a1a',
   },
   packImage: {
     width: 100,

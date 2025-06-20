@@ -157,11 +157,8 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 40,
     backgroundColor: '#222',
-    borderWidth: 3.5,
+    borderWidth: 4,
     borderColor: '#4CAF50',
-    shadowColor: '#aaa',
-    shadowOpacity: 0.7,
-    shadowRadius: 5,
   },
   bpmTextContainer: {
     position: 'absolute',
@@ -170,7 +167,7 @@ const styles = StyleSheet.create({
   },
   bpmValue: {
     color: '#fff',
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   bpmLabel: {
