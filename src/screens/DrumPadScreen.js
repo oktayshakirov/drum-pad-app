@@ -1,5 +1,5 @@
-import React, {useContext, useState, useRef, useEffect} from 'react';
-import {View, StyleSheet, ActivityIndicator, Animated} from 'react-native';
+import React, {useContext, useState} from 'react';
+import {View, StyleSheet} from 'react-native';
 import Pad from '../components/Pad';
 import CurrentPack from '../components/CurrentPack';
 import Metronome from '../components/Metronome';
@@ -9,7 +9,7 @@ import {getPadConfigs} from '../utils/soundUtils';
 import AdBanner from '../components/AdBanner';
 
 const DrumPadScreen = () => {
-  const {currentSoundPack, isLoading} = useContext(AppContext);
+  const {currentSoundPack} = useContext(AppContext);
   const [activeChannel, setActiveChannel] = useState('A');
   const [isMetronomePlaying, setIsMetronomePlaying] = useState(false);
   const padConfigs = getPadConfigs(currentSoundPack);
@@ -24,50 +24,6 @@ const DrumPadScreen = () => {
   const handleOpenPackLibrary = () => {
     setIsMetronomePlaying(false);
   };
-
-  const gridOpacity = useRef(new Animated.Value(1)).current;
-  const gridScale = useRef(new Animated.Value(1)).current;
-  const prevChannel = useRef(activeChannel);
-
-  useEffect(() => {
-    if (prevChannel.current !== activeChannel) {
-      Animated.sequence([
-        Animated.parallel([
-          Animated.timing(gridOpacity, {
-            toValue: 0,
-            duration: 100,
-            useNativeDriver: true,
-          }),
-          Animated.timing(gridScale, {
-            toValue: 0.85,
-            duration: 100,
-            useNativeDriver: true,
-          }),
-        ]),
-        Animated.parallel([
-          Animated.timing(gridOpacity, {
-            toValue: 1,
-            duration: 100,
-            useNativeDriver: true,
-          }),
-          Animated.timing(gridScale, {
-            toValue: 1,
-            duration: 100,
-            useNativeDriver: true,
-          }),
-        ]),
-      ]).start();
-      prevChannel.current = activeChannel;
-    }
-  }, [activeChannel, gridOpacity, gridScale]);
-
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#fff" />
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
@@ -86,11 +42,7 @@ const DrumPadScreen = () => {
           setIsPlaying={setIsMetronomePlaying}
         />
       </View>
-      <Animated.View
-        style={[
-          styles.grid,
-          {opacity: gridOpacity, transform: [{scale: gridScale}]},
-        ]}>
+      <View style={styles.grid}>
         {visiblePads.map(pad => (
           <Pad
             key={pad.id}
@@ -100,7 +52,7 @@ const DrumPadScreen = () => {
             color={pad.color}
           />
         ))}
-      </Animated.View>
+      </View>
     </View>
   );
 };
@@ -110,16 +62,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: 'transparent',
   },
   controlsRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    width: '100%',
+    maxWidth: 400,
+    marginBottom: 10,
   },
   grid: {
     flexDirection: 'row',

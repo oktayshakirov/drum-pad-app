@@ -142,8 +142,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
-    marginTop: 10,
-    marginBottom: 20,
     gap: 15,
   },
   bpmDisplay: {

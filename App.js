@@ -1,24 +1,50 @@
 import React from 'react';
-import {SafeAreaView, StatusBar, StyleSheet} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import {
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  View,
+  ImageBackground,
+  ActivityIndicator,
+} from 'react-native';
+import {BlurView} from '@react-native-community/blur';
 import DrumPadScreen from './src/screens/DrumPadScreen';
 import {AppProvider, useAppContext} from './src/contexts/AppContext';
 import {soundPacks} from './src/assets/sounds';
 
 const AppContent = () => {
-  const {currentSoundPack} = useAppContext();
-
-  // Get gradient colors from current sound pack or use default
+  const {currentSoundPack, isLoading} = useAppContext();
   const currentPack = soundPacks[currentSoundPack];
-  const background = currentPack?.background || ['#232526', '#414345'];
+
+  if (isLoading || !currentPack) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#fff" />
+      </View>
+    );
+  }
 
   return (
-    <LinearGradient colors={background} style={styles.container}>
+    <View style={styles.container}>
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor="transparent"
+        translucent
+      />
+      <ImageBackground
+        source={currentPack.cover}
+        style={StyleSheet.absoluteFill}
+        resizeMode="cover"
+      />
+      <BlurView
+        style={StyleSheet.absoluteFill}
+        blurType="dark"
+        blurAmount={25}
+      />
       <SafeAreaView style={styles.safeArea}>
-        <StatusBar barStyle="light-content" />
         <DrumPadScreen />
       </SafeAreaView>
-    </LinearGradient>
+    </View>
   );
 };
 
@@ -36,6 +62,12 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000',
   },
 });
 

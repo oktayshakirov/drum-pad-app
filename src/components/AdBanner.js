@@ -3,19 +3,19 @@ import {View, Text, StyleSheet} from 'react-native';
 
 const AdBanner = () => (
   <View style={styles.banner}>
-    <Text style={styles.text}>Ad Banner Example</Text>
+    <Text style={styles.text}>Ad Banner</Text>
   </View>
 );
 
 const styles = StyleSheet.create({
   banner: {
-    width: '100%',
+    width: '95%',
     height: 50,
-    backgroundColor: '#333',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
-    marginTop: 10,
+    borderWidth: 2,
+    borderColor: '#fff',
     marginBottom: 5,
   },
   text: {

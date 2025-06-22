@@ -1,96 +1,52 @@
-import React, {useRef, useEffect} from 'react';
-import {View, TouchableOpacity, Text, StyleSheet, Animated} from 'react-native';
+import React, {useRef} from 'react';
+import {Pressable, Text, StyleSheet, Animated} from 'react-native';
 
 const ChannelSwitch = ({activeChannel, onChannelChange}) => {
-  const scaleA = useRef(
-    new Animated.Value(activeChannel === 'A' ? 1 : 0.8),
-  ).current;
-  const scaleB = useRef(
-    new Animated.Value(activeChannel === 'B' ? 1 : 0.8),
-  ).current;
+  const scale = useRef(new Animated.Value(1)).current;
 
-  useEffect(() => {
-    if (activeChannel === 'A') {
-      Animated.spring(scaleA, {
-        toValue: 1,
-        useNativeDriver: true,
-      }).start();
-      Animated.spring(scaleB, {
-        toValue: 0.8,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      Animated.spring(scaleA, {
-        toValue: 0.8,
-        useNativeDriver: true,
-      }).start();
-      Animated.spring(scaleB, {
-        toValue: 1,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [activeChannel, scaleA, scaleB]);
+  const handlePress = () => {
+    onChannelChange(activeChannel === 'A' ? 'B' : 'A');
+  };
+
+  const handlePressIn = () => {
+    Animated.spring(scale, {
+      toValue: 0.8,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
+  };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={[
-          styles.channelButton,
-          activeChannel === 'A' && styles.activeChannel,
-        ]}
-        onPress={() => onChannelChange('A')}>
-        <Animated.View style={{transform: [{scale: scaleA}]}}>
-          <Text
-            style={[
-              styles.channelText,
-              activeChannel === 'A' && styles.activeChannelText,
-            ]}>
-            A
-          </Text>
-        </Animated.View>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={[
-          styles.channelButton,
-          activeChannel === 'B' && styles.activeChannel,
-        ]}
-        onPress={() => onChannelChange('B')}>
-        <Animated.View style={{transform: [{scale: scaleB}]}}>
-          <Text
-            style={[
-              styles.channelText,
-              activeChannel === 'B' && styles.activeChannelText,
-            ]}>
-            B
-          </Text>
-        </Animated.View>
-      </TouchableOpacity>
-    </View>
+    <Pressable
+      onPress={handlePress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}>
+      <Animated.View style={[styles.button, {transform: [{scale}]}]}>
+        <Text style={styles.text}>{activeChannel}</Text>
+      </Animated.View>
+    </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    backgroundColor: '#2a2a2a',
-    borderRadius: 8,
-    padding: 4,
+  button: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  channelButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-  },
-  activeChannel: {
-    backgroundColor: '#3a3a3a',
-  },
-  channelText: {
-    color: '#888',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  activeChannelText: {
-    color: '#fff',
+  text: {
+    color: '#000',
+    fontSize: 25,
+    fontWeight: 'bold',
   },
 });
 
