@@ -4,6 +4,7 @@ import Pad from '../components/Pad';
 import CurrentPack from '../components/CurrentPack';
 import Metronome from '../components/Metronome';
 import ChannelSwitch from '../components/ChannelSwitch';
+import RecordingButton from '../components/RecordingButton';
 import {AppContext} from '../contexts/AppContext';
 import {getPadConfigs} from '../utils/soundUtils';
 import AdBanner from '../components/AdBanner';
@@ -30,17 +31,23 @@ const DrumPadScreen = () => {
       <AdBanner />
       <CurrentPack onOpenPackLibrary={handleOpenPackLibrary} />
       <View style={styles.controlsRow}>
-        {hasTwoChannels && (
-          <ChannelSwitch
-            activeChannel={activeChannel}
-            onChannelChange={setActiveChannel}
+        <View style={styles.leftSection}>
+          {hasTwoChannels && (
+            <ChannelSwitch
+              activeChannel={activeChannel}
+              onChannelChange={setActiveChannel}
+            />
+          )}
+        </View>
+        <View style={styles.centerSection}>
+          <Metronome
+            isPlaying={isMetronomePlaying}
+            setIsPlaying={setIsMetronomePlaying}
           />
-        )}
-        {hasTwoChannels && <View />}
-        <Metronome
-          isPlaying={isMetronomePlaying}
-          setIsPlaying={setIsMetronomePlaying}
-        />
+        </View>
+        <View style={styles.rightSection}>
+          <RecordingButton />
+        </View>
       </View>
       <View style={styles.grid}>
         {visiblePads.map(pad => (
@@ -67,10 +74,27 @@ const styles = StyleSheet.create({
   controlsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     width: '100%',
     maxWidth: 400,
     marginBottom: 10,
+  },
+  leftSection: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    paddingLeft: 40,
+  },
+  centerSection: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  rightSection: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    paddingRight: 40,
   },
   grid: {
     flexDirection: 'row',

@@ -143,6 +143,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 20,
     gap: 15,
+    width: '100%',
   },
   bpmDisplay: {
     width: 65,
