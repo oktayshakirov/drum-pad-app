@@ -1,16 +1,16 @@
 const PAD_COLORS = {
-  // Drums group - Light Lavender shades
-  DRUMS_MAIN: '#B39DDB', // Lavender
-  DRUMS_ACCENT: '#D1C4E9', // Light Lavender
-  // Percussion group - Light Coral shades
-  PERCUSSION_MAIN: '#FFB6B3', // Light Coral
-  PERCUSSION_ACCENT: '#FFD1DC', // Very Light Pink
-  // Melody group - Light Indigo shades
-  MELODY_MAIN: '#B3B6E8', // Light Indigo
-  MELODY_ACCENT: '#D6D6F7', // Pale Lavender
-  // SFX group - Light Blue shades
-  SFX_MAIN: '#90CAF9', // Light Blue
-  SFX_ACCENT: '#B3E5FC', // Lighter Blue
+  // Drums group - Very light Lavender shades
+  DRUMS_MAIN: '#F8F0FF', // Very Light Lavender
+  DRUMS_ACCENT: '#FCF8FF', // Extremely Light Lavender
+  // Percussion group - Very light Coral shades
+  PERCUSSION_MAIN: '#FFF0F0', // Very Light Coral
+  PERCUSSION_ACCENT: '#FFF8F8', // Extremely Light Pink
+  // Melody group - Very light Indigo shades
+  MELODY_MAIN: '#F0F0FF', // Very Light Indigo
+  MELODY_ACCENT: '#F8F8FF', // Extremely Light Lavender
+  // SFX group - Very light Blue shades
+  SFX_MAIN: '#F0F8FF', // Very Light Blue
+  SFX_ACCENT: '#F8FCFF', // Extremely Light Blue
 };
 
 export default {
@@ -20,7 +20,6 @@ export default {
   bpm: '120',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
-  background: ['#1a1a1a', '#2d2d2d'], // Dark gradient
   sounds: {
     // Melodies first
     melody_1: require('./samples/melody_1.mp3'),

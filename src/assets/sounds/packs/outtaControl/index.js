@@ -1,19 +1,19 @@
 const PAD_COLORS = {
-  // Drums group - Electric Blue shades
-  DRUMS_MAIN: '#1976D2', // Blue
-  DRUMS_ACCENT: '#64B5F6', // Light Blue
-  // Percussion group - Green shades
-  PERC_MAIN: '#43A047', // Green
-  PERC_ACCENT: '#A5D6A7', // Light Green
-  // Melody group - Orange shades
-  MELODY_MAIN: '#FFB300', // Vivid Orange
-  MELODY_ACCENT: '#FFD54F', // Light Orange
-  // Brass group - Gold shades
-  BRASS_MAIN: '#FFD700', // Gold
-  BRASS_ACCENT: '#FFF8DC', // Cornsilk
-  // SFX/Chant group - Red shades
-  SFX_MAIN: '#E53935', // Red
-  SFX_ACCENT: '#FF8A80', // Light Red
+  // Drums group - Very light Blue shades
+  DRUMS_MAIN: '#F0F8FF', // Very Light Blue
+  DRUMS_ACCENT: '#F8FCFF', // Extremely Light Blue
+  // Percussion group - Very light Green shades
+  PERC_MAIN: '#F0FFF0', // Very Light Green
+  PERC_ACCENT: '#F8FFF8', // Extremely Light Green
+  // Melody group - Very light Orange shades
+  MELODY_MAIN: '#FFF8F0', // Very Light Orange
+  MELODY_ACCENT: '#FFFCF8', // Extremely Light Orange
+  // Brass group - Very light Gold shades
+  BRASS_MAIN: '#FFFEF0', // Very Light Gold
+  BRASS_ACCENT: '#FFFFF8', // Extremely Light Gold
+  // SFX/Chant group - Very light Red shades
+  SFX_MAIN: '#FFF0F0', // Very Light Red
+  SFX_ACCENT: '#FFF8F8', // Extremely Light Red
 };
 
 export default {
@@ -23,7 +23,6 @@ export default {
   bpm: 160,
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
-  background: ['#1a1a1a', '#2d2d2d'], // Dark gradient
   sounds: {
     // Drums
     drums: require('./samples/drums.mp3'),

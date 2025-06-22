@@ -1,16 +1,16 @@
 const PAD_COLORS = {
-  // Drums group - Warm Brown shades
-  DRUMS_MAIN: '#8B4513', // SaddleBrown
-  DRUMS_ACCENT: '#A0522D', // Sienna
-  // Bass group - Deep Brown shades
-  BASS_MAIN: '#654321', // DarkBrown
-  BASS_ACCENT: '#8B4513', // SaddleBrown
-  // Melody group - Warm Orange shades
-  MELODY_MAIN: '#FF7F50', // Coral
-  MELODY_ACCENT: '#FF6347', // Tomato
-  // SFX group - Turquoise shades
-  SFX_MAIN: '#40E0D0', // Turquoise
-  SFX_ACCENT: '#48D1CC', // MediumTurquoise
+  // Drums group - Very light Brown shades
+  DRUMS_MAIN: '#F8F4F0', // Very Light Brown
+  DRUMS_ACCENT: '#FCF8F4', // Extremely Light Brown
+  // Bass group - Very light Brown shades
+  BASS_MAIN: '#F4F0E8', // Very Light Brown
+  BASS_ACCENT: '#F8F4F0', // Extremely Light Brown
+  // Melody group - Very light Orange shades
+  MELODY_MAIN: '#FFF8F0', // Very Light Orange
+  MELODY_ACCENT: '#FFFCF8', // Extremely Light Orange
+  // SFX group - Very light Turquoise shades
+  SFX_MAIN: '#F0FFFF', // Very Light Turquoise
+  SFX_ACCENT: '#F8FFFF', // Extremely Light Turquoise
 };
 
 export default {
@@ -20,7 +20,6 @@ export default {
   bpm: '124',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
-  background: ['#1a1a1a', '#2d2d2d'], // Dark gradient
   sounds: {
     // Melodies
     melody_1: require('./samples/melody_1.mp3'),

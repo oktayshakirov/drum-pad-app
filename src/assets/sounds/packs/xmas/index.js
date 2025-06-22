@@ -1,19 +1,19 @@
 const PAD_COLORS = {
-  // Drums group - Red shades
-  DRUMS_MAIN: '#D32F2F', // Red
-  DRUMS_ACCENT: '#FFCDD2', // Light Red
-  // Percussion group - Green shades
-  PERC_MAIN: '#388E3C', // Green
-  PERC_ACCENT: '#A5D6A7', // Light Green
-  // Melody group - Gold shades
-  MELODY_MAIN: '#FFD700', // Gold
-  MELODY_ACCENT: '#FFF8DC', // Cornsilk
-  // Bells group - Silver/Blue shades
-  BELLS_MAIN: '#90CAF9', // Light Blue
-  BELLS_ACCENT: '#E1F5FE', // Very Light Blue
-  // Chants group - Purple shades
-  CHANT_MAIN: '#8E24AA', // Purple
-  CHANT_ACCENT: '#CE93D8', // Light Purple
+  // Drums group - Very light Red shades
+  DRUMS_MAIN: '#FFE6E6', // Very Light Red
+  DRUMS_ACCENT: '#FFF0F0', // Extremely Light Red
+  // Percussion group - Very light Green shades
+  PERC_MAIN: '#F0FFF0', // Very Light Green
+  PERC_ACCENT: '#F8FFF8', // Extremely Light Green
+  // Melody group - Very light Gold shades
+  MELODY_MAIN: '#FFFEF0', // Very Light Gold
+  MELODY_ACCENT: '#FFFFF8', // Extremely Light Gold
+  // Bells group - Very light Blue shades
+  BELLS_MAIN: '#F0F8FF', // Very Light Blue
+  BELLS_ACCENT: '#F8FCFF', // Extremely Light Blue
+  // Chants group - Very light Purple shades
+  CHANT_MAIN: '#F8F0FF', // Very Light Purple
+  CHANT_ACCENT: '#FCF8FF', // Extremely Light Purple
 };
 
 export default {
@@ -23,7 +23,6 @@ export default {
   bpm: 120,
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
-  background: ['#1a1a1a', '#2d2d2d'], // Dark gradient
   sounds: {
     // Drums
     kick: require('./samples/kick.mp3'),

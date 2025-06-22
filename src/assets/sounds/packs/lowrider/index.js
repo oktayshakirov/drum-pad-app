@@ -1,16 +1,16 @@
 const PAD_COLORS = {
-  // Drums group - Light Purple shades
-  DRUMS_MAIN: '#E1BEE7', // Light Purple
-  DRUMS_ACCENT: '#F3E5F5', // Very Light Purple
-  // Bass group - Light Blue shades
-  BASS_MAIN: '#B3E5FC', // Light Blue
-  BASS_ACCENT: '#E1F5FE', // Very Light Blue
-  // Melody group - Light Yellow shades
-  MELODY_MAIN: '#FFF59D', // Light Yellow
-  MELODY_ACCENT: '#FFE082', // Light Gold
-  // SFX group - Light Silver shades
-  SFX_MAIN: '#F5F5F5', // Very Light Silver
-  SFX_ACCENT: '#E5E4E2', // Platinum
+  // Drums group - Very light Purple shades
+  DRUMS_MAIN: '#F8F0FF', // Very Light Purple
+  DRUMS_ACCENT: '#FCF8FF', // Extremely Light Purple
+  // Bass group - Very light Blue shades
+  BASS_MAIN: '#F0F8FF', // Very Light Blue
+  BASS_ACCENT: '#F8FCFF', // Extremely Light Blue
+  // Melody group - Very light Yellow shades
+  MELODY_MAIN: '#FFFEF0', // Very Light Yellow
+  MELODY_ACCENT: '#FFFFF8', // Extremely Light Yellow
+  // SFX group - Very light Silver shades
+  SFX_MAIN: '#F8F8F8', // Very Light Silver
+  SFX_ACCENT: '#FCFCFC', // Extremely Light Silver
 };
 
 export default {
@@ -20,7 +20,6 @@ export default {
   bpm: '138',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
-  background: ['#1a1a1a', '#2d2d2d'], // Dark gradient
   sounds: {
     // Drums
     kick: require('./samples/kick.mp3'),

@@ -1,16 +1,16 @@
 const PAD_COLORS = {
-  // Drums group - Warm Red shades
-  DRUMS_MAIN: '#CD5C5C', // IndianRed
-  DRUMS_ACCENT: '#DC143C', // Crimson
-  // Bass group - Deep Red shades
-  BASS_MAIN: '#8B0000', // DarkRed
-  BASS_ACCENT: '#A52A2A', // Brown
-  // Melody group - Warm Yellow shades
-  MELODY_MAIN: '#FFD700', // Gold
-  MELODY_ACCENT: '#FFA500', // Orange
-  // SFX group - Warm Orange shades
-  SFX_MAIN: '#FF8C00', // DarkOrange
-  SFX_ACCENT: '#FF4500', // OrangeRed
+  // Drums group - Soft Pastel Red shades
+  DRUMS_MAIN: '#F7A8A8', // Soft Pastel Red
+  DRUMS_ACCENT: '#FADCD9', // Lighter Pastel Red
+  // Bass group - Soft Pastel Brown shades
+  BASS_MAIN: '#E2CFC3', // Soft Pastel Brown
+  BASS_ACCENT: '#F6E2B3', // Lighter Pastel Brown
+  // Melody group - Soft Pastel Yellow shades
+  MELODY_MAIN: '#FFF2A2', // Soft Pastel Yellow
+  MELODY_ACCENT: '#FFF9CC', // Lighter Pastel Yellow
+  // SFX group - Soft Pastel Orange shades
+  SFX_MAIN: '#FFD8B1', // Soft Pastel Orange
+  SFX_ACCENT: '#FFE5B4', // Lighter Pastel Orange
 };
 
 export default {
@@ -20,7 +20,6 @@ export default {
   bpm: '113',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
-  background: ['#1a1a1a', '#2d2d2d'], // Dark gradient
   sounds: {
     // Drums
     drums: require('./samples/drums.mp3'),

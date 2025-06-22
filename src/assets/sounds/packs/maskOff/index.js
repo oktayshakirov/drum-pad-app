@@ -1,16 +1,16 @@
 const PAD_COLORS = {
-  // Drums group - Dark Gray shades
-  DRUMS_MAIN: '#2C2C2C', // Dark Gray
-  DRUMS_ACCENT: '#404040', // Lighter Dark Gray
-  // Bass group - Deep Purple shades
-  BASS_MAIN: '#4B0082', // Indigo
-  BASS_ACCENT: '#663399', // RebeccaPurple
-  // Melody group - Electric Blue shades
-  MELODY_MAIN: '#00BFFF', // Deep Sky Blue
-  MELODY_ACCENT: '#1E90FF', // Dodger Blue
-  // SFX group - Neon Green shades
-  SFX_MAIN: '#32CD32', // Lime Green
-  SFX_ACCENT: '#7CFC00', // Lawn Green
+  // Drums group - Soft Pastel Gray shades
+  DRUMS_MAIN: '#CFCFCF', // Soft Pastel Gray
+  DRUMS_ACCENT: '#E5E5E5', // Lighter Pastel Gray
+  // Bass group - Soft Pastel Purple shades
+  BASS_MAIN: '#BFA2DB', // Soft Pastel Purple
+  BASS_ACCENT: '#D6C1E6', // Lighter Pastel Purple
+  // Melody group - Soft Pastel Blue shades
+  MELODY_MAIN: '#A7C7E7', // Soft Pastel Blue
+  MELODY_ACCENT: '#D0E6FA', // Lighter Pastel Blue
+  // SFX group - Soft Pastel Green shades
+  SFX_MAIN: '#B7EFC5', // Soft Pastel Green
+  SFX_ACCENT: '#D6F5E3', // Lighter Pastel Green
 };
 
 export default {
@@ -20,7 +20,6 @@ export default {
   bpm: '134',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
-  background: ['#1a1a1a', '#2d2d2d'], // Dark gradient
   sounds: {
     // Melodies
     melody_1: require('./samples/melody_1.mp3'),

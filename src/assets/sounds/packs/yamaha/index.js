@@ -1,16 +1,16 @@
 const PAD_COLORS = {
-  // Drums group - Deep Blue shades
-  DRUMS_MAIN: '#000080', // Navy
-  DRUMS_ACCENT: '#00008B', // DarkBlue
-  // Bass group - Deep Purple shades
-  BASS_MAIN: '#4B0082', // Indigo
-  BASS_ACCENT: '#663399', // RebeccaPurple
-  // Melody group - Gold shades
-  MELODY_MAIN: '#FFD700', // Gold
-  MELODY_ACCENT: '#DAA520', // GoldenRod
-  // SFX group - Silver shades
-  SFX_MAIN: '#C0C0C0', // Silver
-  SFX_ACCENT: '#A9A9A9', // DarkGray
+  // Drums group - Soft Pastel Blue shades
+  DRUMS_MAIN: '#A7C7E7', // Soft Pastel Blue
+  DRUMS_ACCENT: '#D0E6FA', // Lighter Pastel Blue
+  // Bass group - Soft Pastel Purple shades
+  BASS_MAIN: '#BFA2DB', // Soft Pastel Purple
+  BASS_ACCENT: '#D6C1E6', // Lighter Pastel Purple
+  // Melody group - Soft Pastel Gold shades
+  MELODY_MAIN: '#FFE5A2', // Soft Pastel Gold
+  MELODY_ACCENT: '#FFF2CC', // Lighter Pastel Gold
+  // SFX group - Soft Pastel Silver shades
+  SFX_MAIN: '#D3D3D3', // Soft Pastel Silver
+  SFX_ACCENT: '#E9E9E9', // Lighter Pastel Silver
 };
 
 export default {
@@ -20,7 +20,6 @@ export default {
   bpm: '140',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
-  background: ['#1a1a1a', '#2d2d2d'], // Dark gradient
   sounds: {
     // Melodies (Choir)
     choir_1: require('./samples/choir_1.mp3'),

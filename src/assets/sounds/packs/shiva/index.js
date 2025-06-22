@@ -1,16 +1,16 @@
 const PAD_COLORS = {
-  // Drums group - Deep Red shades
-  DRUMS_MAIN: '#8B0000', // DarkRed
-  DRUMS_ACCENT: '#A52A2A', // Brown
-  // Bass group - Deep Orange shades
-  BASS_MAIN: '#FF4500', // OrangeRed
-  BASS_ACCENT: '#FF8C00', // DarkOrange
-  // Melody group - Gold shades
-  MELODY_MAIN: '#FFD700', // Gold
-  MELODY_ACCENT: '#DAA520', // GoldenRod
-  // SFX group - Silver shades
-  SFX_MAIN: '#C0C0C0', // Silver
-  SFX_ACCENT: '#A9A9A9', // DarkGray
+  // Drums group - Very light Red shades
+  DRUMS_MAIN: '#FFE6E6', // Very Light Red
+  DRUMS_ACCENT: '#FFF0F0', // Extremely Light Red
+  // Bass group - Very light Orange shades
+  BASS_MAIN: '#FFF8F0', // Very Light Orange
+  BASS_ACCENT: '#FFFCF8', // Extremely Light Orange
+  // Melody group - Very light Gold shades
+  MELODY_MAIN: '#FFFEF0', // Very Light Gold
+  MELODY_ACCENT: '#FFFFF8', // Extremely Light Gold
+  // SFX group - Very light Silver shades
+  SFX_MAIN: '#F8F8F8', // Very Light Silver
+  SFX_ACCENT: '#FCFCFC', // Extremely Light Silver
 };
 
 export default {
@@ -20,7 +20,6 @@ export default {
   bpm: '95',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
-  background: ['#1a1a1a', '#2d2d2d'], // Dark gradient
   sounds: {
     // Melodies
     melody_1: require('./samples/melody_1.mp3'),
