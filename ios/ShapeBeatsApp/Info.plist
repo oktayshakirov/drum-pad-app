@@ -36,7 +36,7 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>NSUserTrackingUsageDescription</key>
-	<string>This identifier will be used to deliver personalized ads to you.</string>
+	<string>This identifier will be used to deliver personalized ads to you, helping keep Shape Beats free while showing you relevant content.</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>

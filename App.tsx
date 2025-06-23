@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   StatusBar,
@@ -11,6 +11,7 @@ import {BlurView} from '@react-native-community/blur';
 import DrumPadScreen from './src/screens/DrumPadScreen';
 import {AppProvider, useAppContext} from './src/contexts/AppContext';
 import {soundPacks} from './src/assets/sounds';
+import ConsentDialog from './src/components/ads/ConsentDialog';
 
 const AppContent: React.FC = () => {
   const {currentSoundPack, isLoading} = useAppContext();
@@ -49,9 +50,15 @@ const AppContent: React.FC = () => {
 };
 
 const App: React.FC = () => {
+  const [consentCompleted, setConsentCompleted] = useState(false);
+
   return (
     <AppProvider>
-      <AppContent />
+      {!consentCompleted ? (
+        <ConsentDialog onConsentCompleted={() => setConsentCompleted(true)} />
+      ) : (
+        <AppContent />
+      )}
     </AppProvider>
   );
 };

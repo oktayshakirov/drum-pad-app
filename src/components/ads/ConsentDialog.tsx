@@ -8,7 +8,11 @@ import {
   StyleSheet,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import TrackingTransparency from 'react-native-tracking-transparency';
+
+import {
+  requestTrackingPermission,
+  getTrackingStatus,
+} from 'react-native-tracking-transparency';
 
 type ConsentDialogProps = {
   onConsentCompleted: () => void;
@@ -18,11 +22,15 @@ const ConsentDialog = ({onConsentCompleted}: ConsentDialogProps) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const checkConsent = useCallback(async () => {
-    const storedConsent = await AsyncStorage.getItem('trackingConsent');
-    if (storedConsent === null) {
+    try {
+      const storedConsent = await AsyncStorage.getItem('trackingConsent');
+      if (storedConsent === null) {
+        setModalVisible(true);
+      } else {
+        onConsentCompleted();
+      }
+    } catch (error) {
       setModalVisible(true);
-    } else {
-      onConsentCompleted();
     }
   }, [onConsentCompleted]);
 
@@ -30,35 +38,34 @@ const ConsentDialog = ({onConsentCompleted}: ConsentDialogProps) => {
     checkConsent();
   }, [checkConsent]);
 
-  const requestTrackingPermission = async (): Promise<string> => {
-    if (Platform.OS === 'ios') {
-      try {
-        const status = await TrackingTransparency.requestTrackingPermission();
-        console.log('Tracking permission status:', status);
-        return status;
-      } catch (error) {
-        console.error('Error requesting tracking permission:', error);
-        return 'denied';
-      }
-    }
-    return 'granted';
-  };
-
   const handleAllow = async () => {
-    await AsyncStorage.setItem('trackingConsent', 'granted');
-    setModalVisible(false);
+    try {
+      await AsyncStorage.setItem('trackingConsent', 'granted');
+      setModalVisible(false);
 
-    // Request tracking permission on iOS
-    const trackingStatus = await requestTrackingPermission();
-    console.log('Tracking consent granted, permission status:', trackingStatus);
+      if (Platform.OS === 'ios') {
+        try {
+          const currentStatus = await getTrackingStatus();
+
+          if (currentStatus === 'not-determined') {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await requestTrackingPermission();
+          }
+        } catch (error) {}
+      }
+    } catch (error) {
+      setModalVisible(false);
+    }
 
     onConsentCompleted();
   };
 
   const handleDontAllow = async () => {
-    await AsyncStorage.setItem('trackingConsent', 'denied');
+    try {
+      await AsyncStorage.setItem('trackingConsent', 'denied');
+    } catch (error) {}
+
     setModalVisible(false);
-    console.log('Tracking consent denied');
     onConsentCompleted();
   };
 
@@ -72,10 +79,9 @@ const ConsentDialog = ({onConsentCompleted}: ConsentDialogProps) => {
         <View style={styles.modalContainer}>
           <Text style={styles.title}>Dear User</Text>
           <Text style={styles.message}>
-            To keep Shape Beats free and provide you with the best experience,
-            we rely on personalized ads. Our partners will collect data which
-            means you'll see ads that match your interests. Your privacy is our
-            priority and your data is handled securely.
+            {Platform.OS === 'ios'
+              ? "To keep Shape Beats free, we use personalized ads. You'll see a system dialog next to confirm your choice."
+              : "To keep Shape Beats free and provide you with the best experience, we rely on personalized ads. Our partners will collect data which means you'll see ads that match your interests. Your privacy is our priority and your data is handled securely."}
           </Text>
           <View style={styles.buttonContainer}>
             {Platform.OS === 'android' ? (

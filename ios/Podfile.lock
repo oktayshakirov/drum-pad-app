@@ -1685,7 +1685,7 @@ PODS:
     - React-logger (= 0.79.2)
     - React-perflogger (= 0.79.2)
     - React-utils (= 0.79.2)
-  - RNAudioAPI (0.6.0):
+  - RNAudioAPI (0.6.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1708,9 +1708,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNAudioAPI/audioapi (= 0.6.0)
+    - RNAudioAPI/audioapi (= 0.6.2)
     - Yoga
-  - RNAudioAPI/audioapi (0.6.0):
+  - RNAudioAPI/audioapi (0.6.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1733,9 +1733,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNAudioAPI/audioapi/ios (= 0.6.0)
+    - RNAudioAPI/audioapi/ios (= 0.6.2)
     - Yoga
-  - RNAudioAPI/audioapi/ios (0.6.0):
+  - RNAudioAPI/audioapi/ios (0.6.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2128,7 +2128,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: d5dcc564f129632276bd3184e60f053fcd574d6b
   ReactCodegen: fda99a79c866370190e162083a35602fdc314e5d
   ReactCommon: 4d0da92a5eb8da86c08e3ec34bd23ab439fb2461
-  RNAudioAPI: c0e3334bb4580de41b1466f20245c444c94da694
+  RNAudioAPI: 4e2a9adaaeea7892a74e1cc0ec661f1f2988d9c0
   RNCAsyncStorage: 2cf7d05f5b1bc38680b6c83971e535a6ae9c5bc7
   RNGoogleMobileAds: 8f6d63fec26c1dbd0fe0f7196c637a576c2a1956
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
