@@ -1,19 +1,21 @@
-const PAD_COLORS = {
-  // Drums group - Soft Pastel Blue shades
-  DRUMS_MAIN: '#A7C7E7', // Soft Pastel Blue
-  DRUMS_ACCENT: '#D0E6FA', // Lighter Pastel Blue
-  // Bass group - Soft Pastel Purple shades
-  BASS_MAIN: '#BFA2DB', // Soft Pastel Purple
-  BASS_ACCENT: '#D6C1E6', // Lighter Pastel Purple
-  // Melody group - Soft Pastel Gold shades
-  MELODY_MAIN: '#FFE5A2', // Soft Pastel Gold
-  MELODY_ACCENT: '#FFF2CC', // Lighter Pastel Gold
-  // SFX group - Soft Pastel Silver shades
-  SFX_MAIN: '#D3D3D3', // Soft Pastel Silver
-  SFX_ACCENT: '#E9E9E9', // Lighter Pastel Silver
+import {PadColors, SoundPack} from '../../../../types/soundPacks';
+
+const PAD_COLORS: PadColors = {
+  // Drums group - Soft Pastel Green shades
+  DRUMS_MAIN: '#98FB98', // Soft Pastel Green
+  DRUMS_ACCENT: '#C0F0C0', // Lighter Pastel Green
+  // Bass group - Soft Pastel Teal shades
+  BASS_MAIN: '#AFEEEE', // Soft Pastel Teal
+  BASS_ACCENT: '#D0F0F0', // Lighter Pastel Teal
+  // Melody group - Soft Pastel Mint shades
+  MELODY_MAIN: '#F0FFF0', // Soft Pastel Mint
+  MELODY_ACCENT: '#F8FFF8', // Lighter Pastel Mint
+  // SFX group - Soft Pastel Sea Green shades
+  SFX_MAIN: '#98D8C8', // Soft Pastel Sea Green
+  SFX_ACCENT: '#C0E8D8', // Lighter Pastel Sea Green
 };
 
-export default {
+const soundPack: SoundPack = {
   id: 'yamaha',
   name: 'Yamaha',
   genre: 'Hip Hop',
@@ -57,3 +59,5 @@ export default {
     {id: 12, sound: 'choir_3', color: PAD_COLORS.MELODY_ACCENT},
   ],
 };
+
+export default soundPack;

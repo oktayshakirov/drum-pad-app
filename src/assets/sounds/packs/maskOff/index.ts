@@ -1,19 +1,21 @@
-const PAD_COLORS = {
+import {PadColors, SoundPack} from '../../../../types/soundPacks';
+
+const PAD_COLORS: PadColors = {
   // Drums group - Soft Pastel Gray shades
-  DRUMS_MAIN: '#CFCFCF', // Soft Pastel Gray
-  DRUMS_ACCENT: '#E5E5E5', // Lighter Pastel Gray
-  // Bass group - Soft Pastel Purple shades
-  BASS_MAIN: '#BFA2DB', // Soft Pastel Purple
-  BASS_ACCENT: '#D6C1E6', // Lighter Pastel Purple
-  // Melody group - Soft Pastel Blue shades
-  MELODY_MAIN: '#A7C7E7', // Soft Pastel Blue
-  MELODY_ACCENT: '#D0E6FA', // Lighter Pastel Blue
-  // SFX group - Soft Pastel Green shades
-  SFX_MAIN: '#B7EFC5', // Soft Pastel Green
-  SFX_ACCENT: '#D6F5E3', // Lighter Pastel Green
+  DRUMS_MAIN: '#D3D3D3', // Soft Pastel Gray
+  DRUMS_ACCENT: '#E9E9E9', // Lighter Pastel Gray
+  // Bass group - Soft Pastel Dark Gray shades
+  BASS_MAIN: '#A9A9A9', // Soft Pastel Dark Gray
+  BASS_ACCENT: '#C0C0C0', // Lighter Pastel Dark Gray
+  // Melody group - Soft Pastel Silver shades
+  MELODY_MAIN: '#C0C0C0', // Soft Pastel Silver
+  MELODY_ACCENT: '#D3D3D3', // Lighter Pastel Silver
+  // SFX group - Soft Pastel Light Gray shades
+  SFX_MAIN: '#E9E9E9', // Soft Pastel Light Gray
+  SFX_ACCENT: '#F5F5F5', // Lighter Pastel Light Gray
 };
 
-export default {
+const soundPack: SoundPack = {
   id: 'maskOff',
   name: 'Mask Off',
   genre: 'Trap',
@@ -57,3 +59,5 @@ export default {
     {id: 12, sound: 'sfx_dubstep_filler', color: PAD_COLORS.SFX_MAIN},
   ],
 };
+
+export default soundPack;

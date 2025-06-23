@@ -1,19 +1,21 @@
-const PAD_COLORS = {
-  // Drums group - Very light Brown shades
-  DRUMS_MAIN: '#F8F4F0', // Very Light Brown
-  DRUMS_ACCENT: '#FCF8F4', // Extremely Light Brown
-  // Bass group - Very light Brown shades
-  BASS_MAIN: '#F4F0E8', // Very Light Brown
-  BASS_ACCENT: '#F8F4F0', // Extremely Light Brown
-  // Melody group - Very light Orange shades
-  MELODY_MAIN: '#FFF8F0', // Very Light Orange
-  MELODY_ACCENT: '#FFFCF8', // Extremely Light Orange
-  // SFX group - Very light Turquoise shades
-  SFX_MAIN: '#F0FFFF', // Very Light Turquoise
-  SFX_ACCENT: '#F8FFFF', // Extremely Light Turquoise
+import {PadColors, SoundPack} from '../../../../types/soundPacks';
+
+const PAD_COLORS: PadColors = {
+  // Drums group - Soft Pastel Brown shades
+  DRUMS_MAIN: '#DEB887', // Soft Pastel Brown
+  DRUMS_ACCENT: '#F5DEB3', // Lighter Pastel Brown
+  // Bass group - Soft Pastel Tan shades
+  BASS_MAIN: '#D2B48C', // Soft Pastel Tan
+  BASS_ACCENT: '#E6D3B3', // Lighter Pastel Tan
+  // Melody group - Soft Pastel Cream shades
+  MELODY_MAIN: '#F5F5DC', // Soft Pastel Cream
+  MELODY_ACCENT: '#FAFAF0', // Lighter Pastel Cream
+  // SFX group - Soft Pastel Beige shades
+  SFX_MAIN: '#F5F5DC', // Soft Pastel Beige
+  SFX_ACCENT: '#FAFAF0', // Lighter Pastel Beige
 };
 
-export default {
+const soundPack: SoundPack = {
   id: 'vintage',
   name: 'Vintage',
   genre: 'Pop',
@@ -56,3 +58,5 @@ export default {
     {id: 12, sound: 'vocals_3', color: PAD_COLORS.MELODY_ACCENT},
   ],
 };
+
+export default soundPack;

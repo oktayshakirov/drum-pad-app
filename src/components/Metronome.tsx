@@ -13,7 +13,12 @@ import playIcon from '../assets/images/play.png';
 import pauseIcon from '../assets/images/pause.png';
 import settingsIcon from '../assets/images/settings.png';
 
-const Metronome = ({isPlaying, setIsPlaying}) => {
+interface MetronomeProps {
+  isPlaying: boolean;
+  setIsPlaying: (playing: boolean) => void;
+}
+
+const Metronome: React.FC<MetronomeProps> = ({isPlaying, setIsPlaying}) => {
   const {
     bpm,
     setBpm,
@@ -22,12 +27,12 @@ const Metronome = ({isPlaying, setIsPlaying}) => {
     metronomeVolume,
     setMetronomeVolume,
   } = useContext(AppContext);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const beatAnim = useRef(new Animated.Value(1)).current;
   const playPauseScale = useRef(new Animated.Value(1)).current;
   const settingsScale = useRef(new Animated.Value(1)).current;
 
-  const triggerBeatAnimation = useCallback(() => {
+  const triggerBeatAnimation = useCallback((): void => {
     Animated.sequence([
       Animated.timing(beatAnim, {
         toValue: 1.05,
@@ -58,22 +63,22 @@ const Metronome = ({isPlaying, setIsPlaying}) => {
     };
   }, [bpm, isPlaying, triggerBeatAnimation, metronomeSound, metronomeVolume]);
 
-  const handleToggleMetronome = () => {
+  const handleToggleMetronome = (): void => {
     setIsPlaying(!isPlaying);
   };
 
-  const openSettingsModal = () => {
+  const openSettingsModal = (): void => {
     setIsModalVisible(true);
   };
 
-  const handlePressIn = scaleRef => {
+  const handlePressIn = (scaleRef: Animated.Value): void => {
     Animated.spring(scaleRef, {
       toValue: 0.7,
       useNativeDriver: true,
     }).start();
   };
 
-  const handlePressOut = scaleRef => {
+  const handlePressOut = (scaleRef: Animated.Value): void => {
     Animated.spring(scaleRef, {
       toValue: 1,
       useNativeDriver: true,

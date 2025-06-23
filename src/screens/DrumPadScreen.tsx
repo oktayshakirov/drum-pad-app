@@ -1,18 +1,18 @@
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import Pad from '../components/Pad';
 import CurrentPack from '../components/CurrentPack';
 import Metronome from '../components/Metronome';
 import ChannelSwitch from '../components/ChannelSwitch';
 import RecordingButton from '../components/RecordingButton';
-import {AppContext} from '../contexts/AppContext';
+import {useAppContext} from '../contexts/AppContext';
 import {getPadConfigs} from '../utils/soundUtils';
-import AdBanner from '../components/AdBanner';
+import AdBanner from '../components/ads/BannerAd';
 
-const DrumPadScreen = () => {
-  const {currentSoundPack} = useContext(AppContext);
-  const [activeChannel, setActiveChannel] = useState('A');
-  const [isMetronomePlaying, setIsMetronomePlaying] = useState(false);
+const DrumPadScreen: React.FC = () => {
+  const {currentSoundPack} = useAppContext();
+  const [activeChannel, setActiveChannel] = useState<'A' | 'B'>('A');
+  const [isMetronomePlaying, setIsMetronomePlaying] = useState<boolean>(false);
   const padConfigs = getPadConfigs(currentSoundPack);
   const hasTwoChannels = padConfigs.length > 12;
   const visiblePads = hasTwoChannels
@@ -22,7 +22,7 @@ const DrumPadScreen = () => {
       )
     : padConfigs;
 
-  const handleOpenPackLibrary = () => {
+  const handleOpenPackLibrary = (): void => {
     setIsMetronomePlaying(false);
   };
 
@@ -54,7 +54,6 @@ const DrumPadScreen = () => {
           <Pad
             key={pad.id}
             sound={pad.sound}
-            label={pad.label}
             soundPack={currentSoundPack}
             color={pad.color}
           />

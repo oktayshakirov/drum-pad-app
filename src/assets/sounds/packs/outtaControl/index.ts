@@ -1,22 +1,27 @@
-const PAD_COLORS = {
-  // Drums group - Very light Blue shades
-  DRUMS_MAIN: '#F0F8FF', // Very Light Blue
-  DRUMS_ACCENT: '#F8FCFF', // Extremely Light Blue
+import {PadColors, SoundPack} from '../../../../types/soundPacks';
+
+const PAD_COLORS: PadColors = {
+  // Drums group - Soft Pastel Cyan shades
+  DRUMS_MAIN: '#40E0D0', // Soft Pastel Cyan
+  DRUMS_ACCENT: '#7FFFD4', // Lighter Pastel Cyan
+  // Bass group - Soft Pastel Blue shades
+  BASS_MAIN: '#87CEEB', // Soft Pastel Blue
+  BASS_ACCENT: '#B0E0E6', // Lighter Pastel Blue
+  // Melody group - Soft Pastel Green shades
+  MELODY_MAIN: '#98FB98', // Soft Pastel Green
+  MELODY_ACCENT: '#C0F0C0', // Lighter Pastel Green
+  // SFX group - Soft Pastel Purple shades
+  SFX_MAIN: '#DDA0DD', // Soft Pastel Purple
+  SFX_ACCENT: '#E6E6FA', // Lighter Pastel Purple
   // Percussion group - Very light Green shades
   PERC_MAIN: '#F0FFF0', // Very Light Green
   PERC_ACCENT: '#F8FFF8', // Extremely Light Green
-  // Melody group - Very light Orange shades
-  MELODY_MAIN: '#FFF8F0', // Very Light Orange
-  MELODY_ACCENT: '#FFFCF8', // Extremely Light Orange
   // Brass group - Very light Gold shades
   BRASS_MAIN: '#FFFEF0', // Very Light Gold
   BRASS_ACCENT: '#FFFFF8', // Extremely Light Gold
-  // SFX/Chant group - Very light Red shades
-  SFX_MAIN: '#FFF0F0', // Very Light Red
-  SFX_ACCENT: '#FFF8F8', // Extremely Light Red
 };
 
-export default {
+const soundPack: SoundPack = {
   id: 'outtaControl',
   name: 'Outta Control',
   genre: 'Trap',
@@ -51,7 +56,7 @@ export default {
     {id: 1, sound: 'drums', color: PAD_COLORS.DRUMS_MAIN, group: 'drums'},
     {id: 2, sound: 'snare', color: PAD_COLORS.DRUMS_ACCENT},
     {id: 3, sound: 'kick', color: PAD_COLORS.DRUMS_ACCENT},
-    {id: 4, sound: 'hi_hat', color: PAD_COLORS.PERC_MAIN},
+    {id: 4, sound: 'hi_hat', color: PAD_COLORS.BASS_MAIN},
     {id: 5, sound: 'melody_1', color: PAD_COLORS.MELODY_MAIN, group: 'melody'},
     {id: 6, sound: 'melody_2', color: PAD_COLORS.MELODY_MAIN, group: 'melody'},
     {
@@ -67,3 +72,5 @@ export default {
     {id: 12, sound: 'chant_shyah', color: PAD_COLORS.SFX_MAIN},
   ],
 };
+
+export default soundPack;

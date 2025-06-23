@@ -1,4 +1,6 @@
-const PAD_COLORS = {
+import {PadColors, SoundPack} from '../../../../types/soundPacks';
+
+const PAD_COLORS: PadColors = {
   // Drums group - Soft Pastel Blue shades
   DRUMS_MAIN: '#A7C7E7', // Soft Pastel Blue
   DRUMS_ACCENT: '#D0E6FA', // Lighter Pastel Blue
@@ -13,7 +15,7 @@ const PAD_COLORS = {
   SFX_ACCENT: '#D0E6FA', // Lighter Pastel Blue
 };
 
-export default {
+const soundPack: SoundPack = {
   id: 'katana',
   name: 'Katana',
   genre: 'Trap',
@@ -57,3 +59,5 @@ export default {
     {id: 12, sound: 'sfx_reverse', color: PAD_COLORS.SFX_ACCENT},
   ],
 };
+
+export default soundPack;

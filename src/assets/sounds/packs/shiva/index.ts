@@ -1,19 +1,21 @@
-const PAD_COLORS = {
-  // Drums group - Very light Red shades
-  DRUMS_MAIN: '#FFE6E6', // Very Light Red
-  DRUMS_ACCENT: '#FFF0F0', // Extremely Light Red
-  // Bass group - Very light Orange shades
-  BASS_MAIN: '#FFF8F0', // Very Light Orange
-  BASS_ACCENT: '#FFFCF8', // Extremely Light Orange
-  // Melody group - Very light Gold shades
-  MELODY_MAIN: '#FFFEF0', // Very Light Gold
-  MELODY_ACCENT: '#FFFFF8', // Extremely Light Gold
-  // SFX group - Very light Silver shades
-  SFX_MAIN: '#F8F8F8', // Very Light Silver
-  SFX_ACCENT: '#FCFCFC', // Extremely Light Silver
+import {PadColors, SoundPack} from '../../../../types/soundPacks';
+
+const PAD_COLORS: PadColors = {
+  // Drums group - Soft Pastel Orange shades
+  DRUMS_MAIN: '#FFB347', // Soft Pastel Orange
+  DRUMS_ACCENT: '#FFD700', // Lighter Pastel Orange
+  // Bass group - Soft Pastel Yellow shades
+  BASS_MAIN: '#F0E68C', // Soft Pastel Yellow
+  BASS_ACCENT: '#F5F5DC', // Lighter Pastel Yellow
+  // Melody group - Soft Pastel Red shades
+  MELODY_MAIN: '#FFB6C1', // Soft Pastel Red
+  MELODY_ACCENT: '#FFC0CB', // Lighter Pastel Red
+  // SFX group - Soft Pastel Pink shades
+  SFX_MAIN: '#FFB6C1', // Soft Pastel Pink
+  SFX_ACCENT: '#FFC0CB', // Lighter Pastel Pink
 };
 
-export default {
+const soundPack: SoundPack = {
   id: 'shiva',
   name: 'Shiva',
   genre: 'Indian Trap',
@@ -58,3 +60,5 @@ export default {
     {id: 12, sound: 'chant_hey', color: PAD_COLORS.SFX_MAIN},
   ],
 };
+
+export default soundPack;

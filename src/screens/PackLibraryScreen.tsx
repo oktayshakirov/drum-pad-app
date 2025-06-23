@@ -13,28 +13,35 @@ import {
 import {SOUND_PACKS} from '../utils/soundUtils';
 import AudioService from '../services/AudioService';
 
-const PlayStopButton = memo(({isPlaying, onPress}) => (
-  <TouchableOpacity
-    style={styles.playButton}
-    onPress={onPress}
-    hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-    {isPlaying ? (
-      <View style={styles.stopIcon} />
-    ) : (
-      <View style={styles.playIcon} />
-    )}
-  </TouchableOpacity>
-));
+interface PlayStopButtonProps {
+  isPlaying: boolean;
+  onPress: () => void;
+}
 
-const Equalizer = memo(() => {
-  const [animations] = useState([
+const PlayStopButton: React.FC<PlayStopButtonProps> = memo(
+  ({isPlaying, onPress}) => (
+    <TouchableOpacity
+      style={styles.playButton}
+      onPress={onPress}
+      hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+      {isPlaying ? (
+        <View style={styles.stopIcon} />
+      ) : (
+        <View style={styles.playIcon} />
+      )}
+    </TouchableOpacity>
+  ),
+);
+
+const Equalizer: React.FC = memo(() => {
+  const [animations] = useState<Animated.Value[]>([
     new Animated.Value(1),
     new Animated.Value(1),
     new Animated.Value(1),
   ]);
 
   useEffect(() => {
-    const animate = () => {
+    const animate = (): void => {
       const sequences = animations.map(anim => {
         return Animated.sequence([
           Animated.timing(anim, {
@@ -73,29 +80,41 @@ const Equalizer = memo(() => {
   );
 });
 
-const PackItem = memo(({item, isPlaying, onSelect, onPlayStop}) => (
-  <TouchableOpacity style={styles.packItem} onPress={() => onSelect(item.id)}>
-    <View style={styles.imageContainer}>
-      <Image source={item.image} style={styles.packImage} />
-      {isPlaying && <Equalizer />}
-    </View>
-    <View style={styles.infoRow}>
-      <View style={styles.infoTextContainer}>
-        <Text style={styles.packName}>{item.name}</Text>
-        <Text style={styles.packGenre}>{item.genre}</Text>
-      </View>
-      <PlayStopButton
-        isPlaying={isPlaying}
-        onPress={e => {
-          e.stopPropagation?.();
-          onPlayStop(item.id);
-        }}
-      />
-    </View>
-  </TouchableOpacity>
-));
+interface PackItemProps {
+  item: any;
+  isPlaying: boolean;
+  onSelect: (id: string) => void;
+  onPlayStop: (id: string) => void;
+}
 
-const ModalHeader = memo(({onClose}) => (
+const PackItem: React.FC<PackItemProps> = memo(
+  ({item, isPlaying, onSelect, onPlayStop}) => (
+    <TouchableOpacity style={styles.packItem} onPress={() => onSelect(item.id)}>
+      <View style={styles.imageContainer}>
+        <Image source={item.image} style={styles.packImage} />
+        {isPlaying && <Equalizer />}
+      </View>
+      <View style={styles.infoRow}>
+        <View style={styles.infoTextContainer}>
+          <Text style={styles.packName}>{item.name}</Text>
+          <Text style={styles.packGenre}>{item.genre}</Text>
+        </View>
+        <PlayStopButton
+          isPlaying={isPlaying}
+          onPress={() => {
+            onPlayStop(item.id);
+          }}
+        />
+      </View>
+    </TouchableOpacity>
+  ),
+);
+
+interface ModalHeaderProps {
+  onClose: () => void;
+}
+
+const ModalHeader: React.FC<ModalHeaderProps> = memo(({onClose}) => (
   <View style={styles.header}>
     <Text style={styles.headerTitle}>All Packs</Text>
     <TouchableOpacity
@@ -107,24 +126,34 @@ const ModalHeader = memo(({onClose}) => (
   </View>
 ));
 
-const SoundPackModal = ({isVisible, onClose, onSelectPack}) => {
-  const [playingPackId, setPlayingPackId] = useState(null);
+interface PackLibraryScreenProps {
+  isVisible: boolean;
+  onClose: () => void;
+  onSelectPack: (packId: string) => void;
+}
+
+const PackLibraryScreen: React.FC<PackLibraryScreenProps> = ({
+  isVisible,
+  onClose,
+  onSelectPack,
+}) => {
+  const [playingPackId, setPlayingPackId] = useState<string | null>(null);
   const packs = Object.values(SOUND_PACKS);
 
-  const cleanupDemo = useCallback(async () => {
+  const cleanupDemo = useCallback(async (): Promise<void> => {
     if (playingPackId) {
       setPlayingPackId(null);
       await AudioService.stopDemo();
     }
   }, [playingPackId]);
 
-  const handleClose = useCallback(async () => {
+  const handleClose = useCallback(async (): Promise<void> => {
     await cleanupDemo();
     onClose();
   }, [cleanupDemo, onClose]);
 
   const handleSelect = useCallback(
-    async packId => {
+    async (packId: string): Promise<void> => {
       await cleanupDemo();
       onSelectPack(packId);
       onClose();
@@ -133,7 +162,7 @@ const SoundPackModal = ({isVisible, onClose, onSelectPack}) => {
   );
 
   const handlePlayStop = useCallback(
-    async packId => {
+    async (packId: string): Promise<void> => {
       if (playingPackId === packId) {
         // Stop current demo
         setPlayingPackId(null);
@@ -158,7 +187,7 @@ const SoundPackModal = ({isVisible, onClose, onSelectPack}) => {
   );
 
   const renderPackItem = useCallback(
-    ({item}) => (
+    ({item}: {item: any}) => (
       <PackItem
         item={item}
         isPlaying={playingPackId === item.id}
@@ -180,7 +209,7 @@ const SoundPackModal = ({isVisible, onClose, onSelectPack}) => {
         <FlatList
           data={packs}
           renderItem={renderPackItem}
-          keyExtractor={item => item.id}
+          keyExtractor={(item: any) => item.id}
           numColumns={2}
           contentContainerStyle={styles.listContainer}
           showsVerticalScrollIndicator={false}
@@ -305,4 +334,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(SoundPackModal);
+export default memo(PackLibraryScreen);

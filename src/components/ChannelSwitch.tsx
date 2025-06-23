@@ -1,22 +1,29 @@
-import React, {useRef, useState} from 'react';
-import {Pressable, Text, StyleSheet, Animated, View} from 'react-native';
+import React, {useRef} from 'react';
+import {Pressable, Text, StyleSheet, Animated} from 'react-native';
 
-const RecordingButton = () => {
-  const [isRecording, setIsRecording] = useState(false);
+interface ChannelSwitchProps {
+  activeChannel: 'A' | 'B';
+  onChannelChange: (channel: 'A' | 'B') => void;
+}
+
+const ChannelSwitch: React.FC<ChannelSwitchProps> = ({
+  activeChannel,
+  onChannelChange,
+}) => {
   const scale = useRef(new Animated.Value(1)).current;
 
-  const handlePress = () => {
-    setIsRecording(!isRecording);
+  const handlePress = (): void => {
+    onChannelChange(activeChannel === 'A' ? 'B' : 'A');
   };
 
-  const handlePressIn = () => {
+  const handlePressIn = (): void => {
     Animated.spring(scale, {
       toValue: 0.8,
       useNativeDriver: true,
     }).start();
   };
 
-  const handlePressOut = () => {
+  const handlePressOut = (): void => {
     Animated.spring(scale, {
       toValue: 1,
       useNativeDriver: true,
@@ -29,7 +36,7 @@ const RecordingButton = () => {
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}>
       <Animated.View style={[styles.button, {transform: [{scale}]}]}>
-        <View style={styles.recordingDot} />
+        <Text style={styles.text}>{activeChannel}</Text>
       </Animated.View>
     </Pressable>
   );
@@ -46,15 +53,9 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#000',
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: 'bold',
-  },
-  recordingDot: {
-    width: 15,
-    height: 15,
-    borderRadius: 4,
-    backgroundColor: 'red',
   },
 });
 
-export default RecordingButton;
+export default ChannelSwitch;

@@ -1,4 +1,6 @@
-const PAD_COLORS = {
+import {PadColors, SoundPack} from '../../../../types/soundPacks';
+
+const PAD_COLORS: PadColors = {
   // Drums group - Soft Pastel Gold shades
   DRUMS_MAIN: '#FFE5A2', // Soft Pastel Gold
   DRUMS_ACCENT: '#FFF2CC', // Lighter Pastel Gold
@@ -13,7 +15,7 @@ const PAD_COLORS = {
   SFX_ACCENT: '#E9E9E9', // Lighter Pastel Silver
 };
 
-export default {
+const soundPack: SoundPack = {
   id: 'brabus',
   name: 'Brabus',
   genre: 'Drill',
@@ -85,3 +87,5 @@ export default {
     {id: 24, sound: 'chant_countdown', color: PAD_COLORS.SFX_ACCENT},
   ],
 };
+
+export default soundPack;

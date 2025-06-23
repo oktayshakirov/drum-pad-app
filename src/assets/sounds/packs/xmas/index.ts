@@ -1,13 +1,21 @@
-const PAD_COLORS = {
-  // Drums group - Very light Red shades
-  DRUMS_MAIN: '#FFE6E6', // Very Light Red
-  DRUMS_ACCENT: '#FFF0F0', // Extremely Light Red
+import {PadColors, SoundPack} from '../../../../types/soundPacks';
+
+const PAD_COLORS: PadColors = {
+  // Drums group - Soft Pastel Red shades
+  DRUMS_MAIN: '#FFB6C1', // Soft Pastel Red
+  DRUMS_ACCENT: '#FFC0CB', // Lighter Pastel Red
+  // Bass group - Soft Pastel Green shades
+  BASS_MAIN: '#98FB98', // Soft Pastel Green
+  BASS_ACCENT: '#C0F0C0', // Lighter Pastel Green
+  // Melody group - Soft Pastel Gold shades
+  MELODY_MAIN: '#FFE5A2', // Soft Pastel Gold
+  MELODY_ACCENT: '#FFF2CC', // Lighter Pastel Gold
+  // SFX group - Soft Pastel Silver shades
+  SFX_MAIN: '#D3D3D3', // Soft Pastel Silver
+  SFX_ACCENT: '#E9E9E9', // Lighter Pastel Silver
   // Percussion group - Very light Green shades
   PERC_MAIN: '#F0FFF0', // Very Light Green
   PERC_ACCENT: '#F8FFF8', // Extremely Light Green
-  // Melody group - Very light Gold shades
-  MELODY_MAIN: '#FFFEF0', // Very Light Gold
-  MELODY_ACCENT: '#FFFFF8', // Extremely Light Gold
   // Bells group - Very light Blue shades
   BELLS_MAIN: '#F0F8FF', // Very Light Blue
   BELLS_ACCENT: '#F8FCFF', // Extremely Light Blue
@@ -16,7 +24,7 @@ const PAD_COLORS = {
   CHANT_ACCENT: '#FCF8FF', // Extremely Light Purple
 };
 
-export default {
+const soundPack: SoundPack = {
   id: 'xmas',
   name: 'Xmas',
   genre: 'Trap',
@@ -81,3 +89,5 @@ export default {
     },
   ],
 };
+
+export default soundPack;

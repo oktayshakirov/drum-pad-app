@@ -12,7 +12,7 @@ import DrumPadScreen from './src/screens/DrumPadScreen';
 import {AppProvider, useAppContext} from './src/contexts/AppContext';
 import {soundPacks} from './src/assets/sounds';
 
-const AppContent = () => {
+const AppContent: React.FC = () => {
   const {currentSoundPack, isLoading} = useAppContext();
   const currentPack = soundPacks[currentSoundPack];
 
@@ -48,7 +48,7 @@ const AppContent = () => {
   );
 };
 
-const App = () => {
+const App: React.FC = () => {
   return (
     <AppProvider>
       <AppContent />

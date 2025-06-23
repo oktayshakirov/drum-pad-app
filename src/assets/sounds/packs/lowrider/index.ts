@@ -1,19 +1,21 @@
-const PAD_COLORS = {
-  // Drums group - Very light Purple shades
-  DRUMS_MAIN: '#F8F0FF', // Very Light Purple
-  DRUMS_ACCENT: '#FCF8FF', // Extremely Light Purple
-  // Bass group - Very light Blue shades
-  BASS_MAIN: '#F0F8FF', // Very Light Blue
-  BASS_ACCENT: '#F8FCFF', // Extremely Light Blue
-  // Melody group - Very light Yellow shades
-  MELODY_MAIN: '#FFFEF0', // Very Light Yellow
-  MELODY_ACCENT: '#FFFFF8', // Extremely Light Yellow
-  // SFX group - Very light Silver shades
-  SFX_MAIN: '#F8F8F8', // Very Light Silver
-  SFX_ACCENT: '#FCFCFC', // Extremely Light Silver
+import {PadColors, SoundPack} from '../../../../types/soundPacks';
+
+const PAD_COLORS: PadColors = {
+  // Drums group - Soft Pastel Brown shades
+  DRUMS_MAIN: '#DEB887', // Soft Pastel Brown
+  DRUMS_ACCENT: '#F5DEB3', // Lighter Pastel Brown
+  // Bass group - Soft Pastel Tan shades
+  BASS_MAIN: '#D2B48C', // Soft Pastel Tan
+  BASS_ACCENT: '#E6D3B3', // Lighter Pastel Tan
+  // Melody group - Soft Pastel Gold shades
+  MELODY_MAIN: '#FFE5A2', // Soft Pastel Gold
+  MELODY_ACCENT: '#FFF2CC', // Lighter Pastel Gold
+  // SFX group - Soft Pastel Cream shades
+  SFX_MAIN: '#F5F5DC', // Soft Pastel Cream
+  SFX_ACCENT: '#FAFAF0', // Lighter Pastel Cream
 };
 
-export default {
+const soundPack: SoundPack = {
   id: 'lowrider',
   name: 'Lowrider',
   genre: 'Rap',
@@ -56,3 +58,5 @@ export default {
     {id: 12, sound: 'sfx_gun', color: PAD_COLORS.SFX_MAIN},
   ],
 };
+
+export default soundPack;

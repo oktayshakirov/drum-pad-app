@@ -1,4 +1,6 @@
-const PAD_COLORS = {
+import {PadColors, SoundPack} from '../../../../types/soundPacks';
+
+const PAD_COLORS: PadColors = {
   // Drums group - Very light Green shades
   DRUMS_MAIN: '#F0FFF0', // Very Light Green
   DRUMS_ACCENT: '#F8FFF8', // Extremely Light Green
@@ -16,7 +18,7 @@ const PAD_COLORS = {
   SFX_ACCENT: '#FFF8F8', // Extremely Light Red
 };
 
-export default {
+const soundPack: SoundPack = {
   id: 'energy',
   name: 'Energy',
   genre: 'Hip Hop',
@@ -67,3 +69,5 @@ export default {
     {id: 12, sound: 'chant_female', color: PAD_COLORS.SFX_ACCENT},
   ],
 };
+
+export default soundPack;

@@ -1,19 +1,24 @@
-const PAD_COLORS = {
-  // Drums group - Very light Lavender shades
-  DRUMS_MAIN: '#F8F0FF', // Very Light Lavender
-  DRUMS_ACCENT: '#FCF8FF', // Extremely Light Lavender
-  // Percussion group - Very light Coral shades
-  PERCUSSION_MAIN: '#FFF0F0', // Very Light Coral
-  PERCUSSION_ACCENT: '#FFF8F8', // Extremely Light Pink
-  // Melody group - Very light Indigo shades
-  MELODY_MAIN: '#F0F0FF', // Very Light Indigo
-  MELODY_ACCENT: '#F8F8FF', // Extremely Light Lavender
-  // SFX group - Very light Blue shades
-  SFX_MAIN: '#F0F8FF', // Very Light Blue
-  SFX_ACCENT: '#F8FCFF', // Extremely Light Blue
+import {PadColors, SoundPack} from '../../../../types/soundPacks';
+
+const PAD_COLORS: PadColors = {
+  // Drums group - Soft Pastel Purple shades
+  DRUMS_MAIN: '#D8BFD8', // Soft Pastel Purple
+  DRUMS_ACCENT: '#E6D3E6', // Lighter Pastel Purple
+  // Bass group - Soft Pastel Blue shades
+  BASS_MAIN: '#B0C4DE', // Soft Pastel Blue
+  BASS_ACCENT: '#D0E6FA', // Lighter Pastel Blue
+  // Melody group - Soft Pastel Pink shades
+  MELODY_MAIN: '#FFB6C1', // Soft Pastel Pink
+  MELODY_ACCENT: '#FFC0CB', // Lighter Pastel Pink
+  // SFX group - Soft Pastel Lavender shades
+  SFX_MAIN: '#E6E6FA', // Soft Pastel Lavender
+  SFX_ACCENT: '#F0F0FF', // Lighter Pastel Lavender
+  // Percussion group - Soft Pastel Coral shades
+  PERCUSSION_MAIN: '#FFB6C1', // Soft Pastel Coral
+  PERCUSSION_ACCENT: '#FFC0CB', // Lighter Pastel Coral
 };
 
-export default {
+const soundPack: SoundPack = {
   id: 'zenith',
   name: 'Zenith',
   genre: 'R&B',
@@ -57,3 +62,5 @@ export default {
     {id: 12, sound: 'vocal', color: PAD_COLORS.MELODY_ACCENT},
   ],
 };
+
+export default soundPack;

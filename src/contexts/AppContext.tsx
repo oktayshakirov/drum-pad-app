@@ -1,21 +1,44 @@
-import React, {createContext, useState, useEffect, useContext} from 'react';
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+  ReactNode,
+} from 'react';
 import AudioService from '../services/AudioService';
 import {SOUND_PACKS} from '../utils/soundUtils';
 import {soundPacks} from '../assets/sounds';
 
-export const AppContext = createContext();
+interface AppContextType {
+  currentSoundPack: string;
+  setCurrentSoundPack: (packId: string) => Promise<void>;
+  isLoading: boolean;
+  availableSoundPacks: any[];
+  bpm: number;
+  setBpm: (bpm: number) => void;
+  metronomeSound: string;
+  setMetronomeSound: (sound: string) => void;
+  metronomeVolume: number;
+  setMetronomeVolume: (volume: number) => void;
+}
 
-export const AppProvider = ({children}) => {
-  const [currentSoundPack, setCurrentSoundPackState] = useState(
+const AppContext = createContext<AppContextType | undefined>(undefined);
+
+interface AppProviderProps {
+  children: ReactNode;
+}
+
+export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
+  const [currentSoundPack, setCurrentSoundPackState] = useState<string>(
     Object.keys(SOUND_PACKS)[0],
   );
-  const [isLoading, setIsLoading] = useState(true);
-  const [bpm, setBpm] = useState(120);
-  const [metronomeSound, setMetronomeSound] = useState('tick');
-  const [metronomeVolume, setMetronomeVolume] = useState(1);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [bpm, setBpm] = useState<number>(120);
+  const [metronomeSound, setMetronomeSound] = useState<string>('tick');
+  const [metronomeVolume, setMetronomeVolume] = useState<number>(1);
 
   useEffect(() => {
-    const loadInitialSoundPack = async () => {
+    const loadInitialSoundPack = async (): Promise<void> => {
       setIsLoading(true);
       try {
         await AudioService.setSoundPack(currentSoundPack);
@@ -25,7 +48,7 @@ export const AppProvider = ({children}) => {
         }
       } catch (error) {
         console.error(
-          'AppContext.js: Error loading initial sound pack:',
+          'AppContext.tsx: Error loading initial sound pack:',
           error,
         );
       } finally {
@@ -35,7 +58,7 @@ export const AppProvider = ({children}) => {
     loadInitialSoundPack();
   }, [currentSoundPack]);
 
-  const handleSoundPackChange = async newPackId => {
+  const handleSoundPackChange = async (newPackId: string): Promise<void> => {
     if (newPackId === currentSoundPack || isLoading) {
       return;
     }
@@ -52,11 +75,11 @@ export const AppProvider = ({children}) => {
         }
       } else {
         console.warn(
-          'AppContext.js: Failed to set new sound pack in AudioService.',
+          'AppContext.tsx: Failed to set new sound pack in AudioService.',
         );
       }
     } catch (error) {
-      console.error('AppContext.js: Error changing sound pack:', error);
+      console.error('AppContext.tsx: Error changing sound pack:', error);
     } finally {
       setIsLoading(false);
     }
@@ -81,10 +104,12 @@ export const AppProvider = ({children}) => {
   );
 };
 
-export const useAppContext = () => {
+export const useAppContext = (): AppContextType => {
   const context = useContext(AppContext);
   if (context === undefined) {
     throw new Error('useAppContext must be used within an AppProvider');
   }
   return context;
 };
+
+export {AppContext};

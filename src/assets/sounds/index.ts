@@ -13,7 +13,30 @@ import xmas from './packs/xmas';
 import yamaha from './packs/yamaha';
 import zenith from './packs/zenith';
 
-export const soundPacks = {
+interface SoundPack {
+  id: string;
+  name: string;
+  genre: string;
+  bpm: string | number;
+  cover: any;
+  demo?: any;
+  sounds: Record<string, any>;
+  soundGroups?: Record<string, string[]>;
+  padConfig: Array<{
+    id: number;
+    sound: string | null;
+    color: string;
+    group?: string;
+  }>;
+}
+
+interface MetronomeSounds {
+  tick: any;
+  beep: any;
+  block: any;
+}
+
+export const soundPacks: Record<string, SoundPack> = {
   brabus,
   energy,
   katana,
@@ -30,7 +53,7 @@ export const soundPacks = {
   zenith,
 };
 
-export const metronome = {
+export const metronome: MetronomeSounds = {
   tick: require('./metronome/tick.mp3'),
   beep: require('./metronome/beep.mp3'),
   block: require('./metronome/block.mp3'),

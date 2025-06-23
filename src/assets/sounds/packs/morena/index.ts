@@ -1,16 +1,21 @@
-const PAD_COLORS = {
-  // Drums group - Very light Orange shades
-  DRUMS_MAIN: '#FFF8F0', // Very Light Orange
-  DRUMS_ACCENT: '#FFFCF8', // Extremely Light Orange
-  // Melody group - Very light Yellow shades
-  MELODY_MAIN: '#FFFEF0', // Very Light Yellow
-  MELODY_ACCENT: '#FFFFF8', // Extremely Light Yellow
-  // SFX group - Very light Red shades
-  SFX_MAIN: '#FFF0F0', // Very Light Red
-  SFX_ACCENT: '#FFF8F8', // Extremely Light Red
+import {PadColors, SoundPack} from '../../../../types/soundPacks';
+
+const PAD_COLORS: PadColors = {
+  // Drums group - Soft Pastel Pink shades
+  DRUMS_MAIN: '#FFB6C1', // Soft Pastel Pink
+  DRUMS_ACCENT: '#FFC0CB', // Lighter Pastel Pink
+  // Bass group - Soft Pastel Rose shades
+  BASS_MAIN: '#FFB6C1', // Soft Pastel Rose
+  BASS_ACCENT: '#FFC0CB', // Lighter Pastel Rose
+  // Melody group - Soft Pastel Coral shades
+  MELODY_MAIN: '#FF7F50', // Soft Pastel Coral
+  MELODY_ACCENT: '#FFA07A', // Lighter Pastel Coral
+  // SFX group - Soft Pastel Peach shades
+  SFX_MAIN: '#FFDAB9', // Soft Pastel Peach
+  SFX_ACCENT: '#FFE4B5', // Lighter Pastel Peach
 };
 
-export default {
+const soundPack: SoundPack = {
   id: 'morena',
   name: 'Morena',
   genre: 'Balkan Pop',
@@ -63,3 +68,5 @@ export default {
     {id: 12, sound: 'chant_azis', color: PAD_COLORS.SFX_MAIN},
   ],
 };
+
+export default soundPack;

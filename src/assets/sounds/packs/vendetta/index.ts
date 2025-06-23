@@ -1,19 +1,21 @@
-const PAD_COLORS = {
-  // Drums group - Very light Sky Blue shades
-  DRUMS_MAIN: '#F0F8FF', // Very Light Sky Blue
-  DRUMS_ACCENT: '#F8FCFF', // Extremely Light Sky Blue
-  // Bass group - Very light Salmon shades
-  BASS_MAIN: '#FFF8F0', // Very Light Salmon
-  BASS_ACCENT: '#FFFCF8', // Extremely Light Salmon
-  // Melody group - Very light Purple shades
-  MELODY_MAIN: '#F8F0FF', // Very Light Purple
-  MELODY_ACCENT: '#FCF8FF', // Extremely Light Purple
-  // SFX group - Very light Green shades
-  SFX_MAIN: '#F0FFF0', // Very Light Green
-  SFX_ACCENT: '#F8FFF8', // Extremely Light Green
+import {PadColors, SoundPack} from '../../../../types/soundPacks';
+
+const PAD_COLORS: PadColors = {
+  // Drums group - Soft Pastel Dark Red shades
+  DRUMS_MAIN: '#CD5C5C', // Soft Pastel Dark Red
+  DRUMS_ACCENT: '#E6B3B3', // Lighter Pastel Dark Red
+  // Bass group - Soft Pastel Dark Gray shades
+  BASS_MAIN: '#A9A9A9', // Soft Pastel Dark Gray
+  BASS_ACCENT: '#C0C0C0', // Lighter Pastel Dark Gray
+  // Melody group - Soft Pastel Dark Purple shades
+  MELODY_MAIN: '#9370DB', // Soft Pastel Dark Purple
+  MELODY_ACCENT: '#B8A9D9', // Lighter Pastel Dark Purple
+  // SFX group - Soft Pastel Dark Blue shades
+  SFX_MAIN: '#6495ED', // Soft Pastel Dark Blue
+  SFX_ACCENT: '#A7C7E7', // Lighter Pastel Dark Blue
 };
 
-export default {
+const soundPack: SoundPack = {
   id: 'vendetta',
   name: 'Vendetta',
   genre: 'Trap',
@@ -90,3 +92,5 @@ export default {
     {id: 24, sound: 'sfx_glass', color: PAD_COLORS.SFX_ACCENT},
   ],
 };
+
+export default soundPack;

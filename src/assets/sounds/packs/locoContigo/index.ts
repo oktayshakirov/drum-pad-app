@@ -1,19 +1,21 @@
-const PAD_COLORS = {
-  // Drums group - Soft Pastel Red shades
-  DRUMS_MAIN: '#F7A8A8', // Soft Pastel Red
-  DRUMS_ACCENT: '#FADCD9', // Lighter Pastel Red
-  // Bass group - Soft Pastel Brown shades
-  BASS_MAIN: '#E2CFC3', // Soft Pastel Brown
-  BASS_ACCENT: '#F6E2B3', // Lighter Pastel Brown
-  // Melody group - Soft Pastel Yellow shades
-  MELODY_MAIN: '#FFF2A2', // Soft Pastel Yellow
-  MELODY_ACCENT: '#FFF9CC', // Lighter Pastel Yellow
-  // SFX group - Soft Pastel Orange shades
-  SFX_MAIN: '#FFD8B1', // Soft Pastel Orange
-  SFX_ACCENT: '#FFE5B4', // Lighter Pastel Orange
+import {PadColors, SoundPack} from '../../../../types/soundPacks';
+
+const PAD_COLORS: PadColors = {
+  // Drums group - Soft Pastel Orange shades
+  DRUMS_MAIN: '#FFB347', // Soft Pastel Orange
+  DRUMS_ACCENT: '#FFD700', // Lighter Pastel Orange
+  // Bass group - Soft Pastel Yellow shades
+  BASS_MAIN: '#F0E68C', // Soft Pastel Yellow
+  BASS_ACCENT: '#F5F5DC', // Lighter Pastel Yellow
+  // Melody group - Soft Pastel Red shades
+  MELODY_MAIN: '#FFB6C1', // Soft Pastel Red
+  MELODY_ACCENT: '#FFC0CB', // Lighter Pastel Red
+  // SFX group - Soft Pastel Pink shades
+  SFX_MAIN: '#FFB6C1', // Soft Pastel Pink
+  SFX_ACCENT: '#FFC0CB', // Lighter Pastel Pink
 };
 
-export default {
+const soundPack: SoundPack = {
   id: 'locoContigo',
   name: 'Loco Contigo',
   genre: 'R&B',
@@ -57,3 +59,5 @@ export default {
     {id: 12, sound: 'melody_3_2', color: PAD_COLORS.MELODY_ACCENT},
   ],
 };
+
+export default soundPack;

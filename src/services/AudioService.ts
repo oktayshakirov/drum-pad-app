@@ -1,11 +1,36 @@
-import {AudioContext} from 'react-native-audio-api';
+import {
+  AudioContext,
+  AudioBuffer,
+  AudioBufferSourceNode,
+  GainNode,
+} from 'react-native-audio-api';
 import {Image} from 'react-native';
-import {getSoundModuleId, getAvailableSoundNames} from '../utils/soundUtils.js';
+import {getSoundModuleId, getAvailableSoundNames} from '../utils/soundUtils.ts';
 import {soundPacks} from '../assets/sounds';
 
 const LOG_PREFIX = 'AudioService:';
 
 class AudioService {
+  private audioContext: AudioContext | null;
+  private currentSoundPack: string | null;
+  private soundBuffers: Map<string, AudioBuffer>;
+  private metronomeSoundBuffers: Map<string, AudioBuffer>;
+  private metronomeGainNode: GainNode | null;
+  private currentMetronomeSound: string;
+  private activeMetronomeSourceNodes: Set<AudioBufferSourceNode>;
+  private _initializationPromise: Promise<void> | null;
+  private bpm: number;
+  private nextBeatTime: number;
+  private schedulerLookahead: number;
+  private scheduleAheadTime: number;
+  private metronomeTimerId: NodeJS.Timeout | null;
+  private onTickCallback: (() => void) | null;
+  private demoBuffers: Map<string, AudioBuffer> | null;
+  private _activeDemoSource: AudioBufferSourceNode | null;
+  private soundGroups: Record<string, string[]>;
+  private activeGroupSources: Map<string, AudioBufferSourceNode>;
+  private activeSingleSources: Map<string, AudioBufferSourceNode>;
+
   constructor() {
     this.audioContext = null;
     this.currentSoundPack = null;
@@ -28,7 +53,7 @@ class AudioService {
     this.activeSingleSources = new Map();
   }
 
-  async _initializeAudioContext() {
+  private async _initializeAudioContext(): Promise<void> {
     if (this.audioContext) {
       return Promise.resolve();
     }
@@ -43,7 +68,7 @@ class AudioService {
       } catch (error) {
         console.error(
           `${LOG_PREFIX} Error initializing AudioContext:`,
-          error.message,
+          (error as Error).message,
         );
         this.audioContext = null;
         this._initializationPromise = null;
@@ -53,7 +78,7 @@ class AudioService {
     return this._initializationPromise;
   }
 
-  async _ensureInitialized() {
+  private async _ensureInitialized(): Promise<void> {
     try {
       await this._initializationPromise;
     } catch (error) {
@@ -64,7 +89,10 @@ class AudioService {
     }
   }
 
-  async _loadAndDecodeSound(soundModuleId, soundIdentifier = 'UnknownSound') {
+  private async _loadAndDecodeSound(
+    soundModuleId: any,
+    soundIdentifier: string = 'UnknownSound',
+  ): Promise<AudioBuffer | null> {
     if (!soundModuleId) {
       return null;
     }
@@ -74,7 +102,7 @@ class AudioService {
     } catch (error) {
       console.error(
         `${LOG_PREFIX} Failed to resolve asset source for ${soundIdentifier}:`,
-        error.message,
+        (error as Error).message,
       );
       return null;
     }
@@ -96,13 +124,13 @@ class AudioService {
     } catch (error) {
       console.error(
         `${LOG_PREFIX} Error loading/decoding ${soundIdentifier}:`,
-        error.message,
+        (error as Error).message,
       );
       return null;
     }
   }
 
-  _findGroupForSound(soundName) {
+  private _findGroupForSound(soundName: string): string | null {
     for (const group in this.soundGroups) {
       if (this.soundGroups[group].includes(soundName)) {
         return group;
@@ -111,25 +139,28 @@ class AudioService {
     return null;
   }
 
-  _stopPreviousSound(soundName, groupName) {
+  private _stopPreviousSound(
+    soundName: string,
+    groupName: string | null,
+  ): void {
     if (groupName) {
       if (this.activeGroupSources.has(groupName)) {
         const oldSource = this.activeGroupSources.get(groupName);
         try {
-          oldSource.stop();
+          oldSource?.stop();
         } catch (e) {}
       }
     } else {
       if (this.activeSingleSources.has(soundName)) {
         const oldSource = this.activeSingleSources.get(soundName);
         try {
-          oldSource.stop();
+          oldSource?.stop();
         } catch (e) {}
       }
     }
   }
 
-  async setSoundPack(soundPack) {
+  async setSoundPack(soundPack: string): Promise<boolean> {
     await this._ensureInitialized();
     if (this.currentSoundPack === soundPack && this.soundBuffers.size > 0) {
       return true;
@@ -137,13 +168,13 @@ class AudioService {
     await this.stopAllSounds();
     this.soundBuffers.clear();
     this.currentSoundPack = soundPack;
-    this.soundGroups = soundPacks[soundPack]?.soundGroups || {};
+    this.soundGroups = (soundPacks as any)[soundPack]?.soundGroups || {};
     const soundNames = getAvailableSoundNames(soundPack);
     if (!soundNames?.length) {
       this.currentSoundPack = null;
       return false;
     }
-    const loadPromises = soundNames.map(async name => {
+    const loadPromises = soundNames.map(async (name: string) => {
       const moduleId = getSoundModuleId(soundPack, name);
       const buffer = await this._loadAndDecodeSound(
         moduleId,
@@ -159,13 +190,13 @@ class AudioService {
     } catch (error) {
       console.error(
         `${LOG_PREFIX} Error during batch sound loading:`,
-        error.message,
+        (error as Error).message,
       );
       return false;
     }
   }
 
-  async playSound(soundPack, soundName) {
+  async playSound(soundPack: string, soundName: string): Promise<boolean> {
     await this._ensureInitialized();
     if (this.currentSoundPack !== soundPack) {
       const switched = await this.setSoundPack(soundPack);
@@ -178,23 +209,24 @@ class AudioService {
     let audioBuffer = this.soundBuffers.get(soundName);
     if (!audioBuffer) {
       const moduleId = getSoundModuleId(soundPack, soundName);
-      audioBuffer = await this._loadAndDecodeSound(
+      const loadedBuffer = await this._loadAndDecodeSound(
         moduleId,
         `${soundPack}/${soundName}`,
       );
-      if (audioBuffer) {
-        this.soundBuffers.set(soundName, audioBuffer);
+      if (loadedBuffer) {
+        audioBuffer = loadedBuffer;
+        this.soundBuffers.set(soundName, loadedBuffer);
       } else {
         return false;
       }
     }
     try {
-      if (this.audioContext.state === 'suspended') {
-        await this.audioContext.resume();
+      if (this.audioContext!.state === 'suspended') {
+        await this.audioContext!.resume();
       }
-      const source = this.audioContext.createBufferSource();
+      const source = this.audioContext!.createBufferSource();
       source.buffer = audioBuffer;
-      source.connect(this.audioContext.destination);
+      source.connect(this.audioContext!.destination);
       if (groupName) {
         this.activeGroupSources.set(groupName, source);
         source.onended = () => {
@@ -213,14 +245,19 @@ class AudioService {
       source.start();
       return true;
     } catch (error) {
-      console.error(`${LOG_PREFIX} Error playing sound:`, error.message);
+      console.error(
+        `${LOG_PREFIX} Error playing sound:`,
+        (error as Error).message,
+      );
       return false;
     }
   }
 
-  async _loadMetronomeSound(soundName) {
+  private async _loadMetronomeSound(
+    soundName: string,
+  ): Promise<AudioBuffer | null> {
     if (this.metronomeSoundBuffers.has(soundName)) {
-      return this.metronomeSoundBuffers.get(soundName);
+      return this.metronomeSoundBuffers.get(soundName) || null;
     }
     await this._ensureInitialized();
     const tickModuleId = getSoundModuleId('metronome', soundName);
@@ -234,10 +271,10 @@ class AudioService {
     return buffer;
   }
 
-  _metronomeScheduler() {
+  private _metronomeScheduler(): void {
     while (
       this.nextBeatTime <
-      this.audioContext.currentTime + this.scheduleAheadTime
+      this.audioContext!.currentTime + this.scheduleAheadTime
     ) {
       this._scheduleMetronomeTick(this.nextBeatTime);
       this.nextBeatTime += 60.0 / this.bpm;
@@ -248,18 +285,18 @@ class AudioService {
     );
   }
 
-  _scheduleMetronomeTick(time) {
+  private _scheduleMetronomeTick(time: number): void {
     const buffer = this.metronomeSoundBuffers.get(this.currentMetronomeSound);
     if (!buffer || !this.metronomeGainNode) {
       return;
     }
     try {
-      const source = this.audioContext.createBufferSource();
+      const source = this.audioContext!.createBufferSource();
       source.buffer = buffer;
       source.connect(this.metronomeGainNode);
       source.start(time);
       if (this.onTickCallback) {
-        const delay = (time - this.audioContext.currentTime) * 1000;
+        const delay = (time - this.audioContext!.currentTime) * 1000;
         setTimeout(this.onTickCallback, Math.max(0, delay));
       }
       this.activeMetronomeSourceNodes.add(source);
@@ -267,12 +304,17 @@ class AudioService {
     } catch (error) {
       console.error(
         `${LOG_PREFIX} Error scheduling metronome tick:`,
-        error.message,
+        (error as Error).message,
       );
     }
   }
 
-  async startMetronome(bpm, onTick, soundName = 'tick', volume = 1) {
+  async startMetronome(
+    bpm: number,
+    onTick: () => void,
+    soundName: string = 'tick',
+    volume: number = 1,
+  ): Promise<void> {
     if (bpm <= 0) {
       return;
     }
@@ -291,18 +333,18 @@ class AudioService {
     if (this.metronomeGainNode) {
       this.metronomeGainNode.gain.setValueAtTime(
         volume,
-        this.audioContext.currentTime,
+        this.audioContext!.currentTime,
       );
     }
 
-    if (this.audioContext.state === 'suspended') {
-      await this.audioContext.resume();
+    if (this.audioContext!.state === 'suspended') {
+      await this.audioContext!.resume();
     }
-    this.nextBeatTime = this.audioContext.currentTime + 0.1;
+    this.nextBeatTime = this.audioContext!.currentTime + 0.1;
     this._metronomeScheduler();
   }
 
-  async stopMetronome() {
+  async stopMetronome(): Promise<void> {
     if (this.metronomeTimerId) {
       clearTimeout(this.metronomeTimerId);
       this.metronomeTimerId = null;
@@ -316,7 +358,7 @@ class AudioService {
     this.activeMetronomeSourceNodes.clear();
   }
 
-  async playDemo(packId) {
+  async playDemo(packId: string): Promise<boolean | Promise<boolean>> {
     if (!packId) {
       return false;
     }
@@ -325,7 +367,7 @@ class AudioService {
       if (this._activeDemoSource) {
         await this.stopDemo();
       }
-      const pack = soundPacks[packId];
+      const pack = (soundPacks as any)[packId];
       if (!pack?.demo) {
         return false;
       }
@@ -333,13 +375,13 @@ class AudioService {
       if (!buffer) {
         return false;
       }
-      if (this.audioContext.state === 'suspended') {
-        await this.audioContext.resume();
+      if (this.audioContext!.state === 'suspended') {
+        await this.audioContext!.resume();
       }
-      const source = this.audioContext.createBufferSource();
+      const source = this.audioContext!.createBufferSource();
       source.buffer = buffer;
-      source.connect(this.audioContext.destination);
-      const playPromise = new Promise(resolve => {
+      source.connect(this.audioContext!.destination);
+      const playPromise = new Promise<boolean>(resolve => {
         source.onended = () => {
           if (this._activeDemoSource === source) {
             this._activeDemoSource = null;
@@ -351,25 +393,34 @@ class AudioService {
       this._activeDemoSource = source;
       return playPromise;
     } catch (error) {
-      console.error(`${LOG_PREFIX} Error playing demo:`, error.message);
+      console.error(
+        `${LOG_PREFIX} Error playing demo:`,
+        (error as Error).message,
+      );
       this._activeDemoSource = null;
       return false;
     }
   }
 
-  async stopDemo() {
+  async stopDemo(): Promise<void> {
     if (this._activeDemoSource) {
       try {
         this._activeDemoSource.stop();
       } catch (error) {
-        console.warn(`${LOG_PREFIX} Error stopping demo:`, error.message);
+        console.warn(
+          `${LOG_PREFIX} Error stopping demo:`,
+          (error as Error).message,
+        );
       } finally {
         this._activeDemoSource = null;
       }
     }
   }
 
-  async _loadDemoBuffer(packId, demoModuleId) {
+  private async _loadDemoBuffer(
+    packId: string,
+    demoModuleId: any,
+  ): Promise<AudioBuffer | null> {
     if (!this.demoBuffers) {
       this.demoBuffers = new Map();
     }
@@ -387,16 +438,19 @@ class AudioService {
         throw new Error(`Failed to fetch demo: ${response.statusText}`);
       }
       const arrayBuffer = await response.arrayBuffer();
-      const buffer = await this.audioContext.decodeAudioData(arrayBuffer);
+      const buffer = await this.audioContext!.decodeAudioData(arrayBuffer);
       this.demoBuffers.set(packId, buffer);
       return buffer;
     } catch (error) {
-      console.error(`${LOG_PREFIX} Error loading demo buffer:`, error.message);
+      console.error(
+        `${LOG_PREFIX} Error loading demo buffer:`,
+        (error as Error).message,
+      );
       return null;
     }
   }
 
-  async stopAllSounds() {
+  async stopAllSounds(): Promise<void> {
     await this.stopMetronome();
     await this.stopDemo();
     this.activeGroupSources.forEach(source => {

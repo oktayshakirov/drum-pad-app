@@ -8,13 +8,26 @@ import {
   Animated,
 } from 'react-native';
 
-const SOUND_OPTIONS = ['tick', 'beep', 'block'];
+const SOUND_OPTIONS = ['tick', 'beep', 'block'] as const;
+type SoundOption = (typeof SOUND_OPTIONS)[number];
+
 const BPM_MIN = 40;
 const BPM_MAX = 220;
 const VOLUME_MIN = 0;
 const VOLUME_MAX = 1;
 
-const MetronomeSettings = ({
+interface MetronomeSettingsProps {
+  isVisible: boolean;
+  onClose: () => void;
+  bpm: number;
+  setBpm: (bpm: number) => void;
+  metronomeSound: SoundOption;
+  setMetronomeSound: (sound: SoundOption) => void;
+  metronomeVolume: number;
+  setMetronomeVolume: (volume: number) => void;
+}
+
+const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
   isVisible,
   onClose,
   bpm,
@@ -24,8 +37,8 @@ const MetronomeSettings = ({
   metronomeVolume,
   setMetronomeVolume,
 }) => {
-  const timeoutRef = useRef(null);
-  const intervalRef = useRef(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
@@ -71,11 +84,11 @@ const MetronomeSettings = ({
     }
   }, [isVisible, scaleAnim, opacityAnim]);
 
-  const changeBpm = amount => {
+  const changeBpm = (amount: number): void => {
     setBpm(prevBpm => Math.max(BPM_MIN, Math.min(BPM_MAX, prevBpm + amount)));
   };
 
-  const changeVolume = amount => {
+  const changeVolume = (amount: number): void => {
     setMetronomeVolume(prevVolume => {
       const newVolume = Math.max(
         VOLUME_MIN,
@@ -85,14 +98,14 @@ const MetronomeSettings = ({
     });
   };
 
-  const handlePressIn = action => {
+  const handlePressIn = (action: () => void): void => {
     action();
     timeoutRef.current = setTimeout(() => {
       intervalRef.current = setInterval(action, 100);
     }, 400);
   };
 
-  const handlePressOut = () => {
+  const handlePressOut = (): void => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }

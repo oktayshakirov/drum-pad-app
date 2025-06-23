@@ -2,12 +2,18 @@ import React, {useRef} from 'react';
 import {TouchableOpacity, StyleSheet, Animated, View} from 'react-native';
 import AudioService from '../services/AudioService';
 
-const Pad = ({sound, soundPack, color}) => {
+interface PadProps {
+  sound: string | null;
+  soundPack: string;
+  color: string;
+}
+
+const Pad: React.FC<PadProps> = ({sound, soundPack, color}) => {
   const scale = useRef(new Animated.Value(1)).current;
   const glowOpacity = useRef(new Animated.Value(0.4)).current;
   const brightnessOpacity = useRef(new Animated.Value(0)).current;
 
-  const handlePressIn = async () => {
+  const handlePressIn = async (): Promise<void> => {
     if (!sound) {
       return;
     }
@@ -37,7 +43,7 @@ const Pad = ({sound, soundPack, color}) => {
     }
   };
 
-  const handlePressOut = () => {
+  const handlePressOut = (): void => {
     Animated.parallel([
       Animated.spring(scale, {
         toValue: 1,

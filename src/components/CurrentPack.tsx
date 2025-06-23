@@ -1,12 +1,18 @@
-import React, {useState, useContext} from 'react';
+import React, {useState} from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
-import {AppContext} from '../contexts/AppContext';
+import {useAppContext} from '../contexts/AppContext';
 import {SOUND_PACKS} from '../utils/soundUtils';
-import SoundPackModal from './PackLibrary';
+import PackLibraryScreen from '../screens/PackLibraryScreen';
 
-const CurrentPackHeader = ({onOpenPackLibrary}) => {
-  const {currentSoundPack, setCurrentSoundPack} = useContext(AppContext);
-  const [isModalVisible, setModalVisible] = useState(false);
+interface CurrentPackHeaderProps {
+  onOpenPackLibrary?: () => void;
+}
+
+const CurrentPackHeader: React.FC<CurrentPackHeaderProps> = ({
+  onOpenPackLibrary,
+}) => {
+  const {currentSoundPack, setCurrentSoundPack} = useAppContext();
+  const [isModalVisible, setModalVisible] = useState<boolean>(false);
 
   const activePack = SOUND_PACKS[currentSoundPack];
 
@@ -14,7 +20,7 @@ const CurrentPackHeader = ({onOpenPackLibrary}) => {
     return null;
   }
 
-  const handleOpenModal = () => {
+  const handleOpenModal = (): void => {
     if (onOpenPackLibrary) {
       onOpenPackLibrary();
     }
@@ -37,7 +43,7 @@ const CurrentPackHeader = ({onOpenPackLibrary}) => {
           </TouchableOpacity>
         </View>
       </View>
-      <SoundPackModal
+      <PackLibraryScreen
         isVisible={isModalVisible}
         onClose={() => setModalVisible(false)}
         onSelectPack={setCurrentSoundPack}
