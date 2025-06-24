@@ -4,7 +4,6 @@ import Pad from '../components/Pad';
 import CurrentPack from '../components/CurrentPack';
 import Metronome from '../components/Metronome';
 import ChannelSwitch from '../components/ChannelSwitch';
-import RecordingButton from '../components/RecordingButton';
 import {useAppContext} from '../contexts/AppContext';
 import {getPadConfigs} from '../utils/soundUtils';
 import AdBanner from '../components/ads/BannerAd';
@@ -34,8 +33,9 @@ const DrumPadScreen: React.FC = () => {
         <View style={styles.leftSection}>
           {hasTwoChannels && (
             <ChannelSwitch
-              activeChannel={activeChannel}
-              onChannelChange={setActiveChannel}
+              channel="A"
+              onChannelSelect={setActiveChannel}
+              disabled={activeChannel === 'A'}
             />
           )}
         </View>
@@ -46,7 +46,13 @@ const DrumPadScreen: React.FC = () => {
           />
         </View>
         <View style={styles.rightSection}>
-          <RecordingButton />
+          {hasTwoChannels && (
+            <ChannelSwitch
+              channel="B"
+              onChannelSelect={setActiveChannel}
+              disabled={activeChannel === 'B'}
+            />
+          )}
         </View>
       </View>
       <View style={styles.grid}>

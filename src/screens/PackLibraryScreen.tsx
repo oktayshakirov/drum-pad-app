@@ -164,7 +164,6 @@ const PackLibraryScreen: React.FC<PackLibraryScreenProps> = ({
   const handlePlayStop = useCallback(
     async (packId: string): Promise<void> => {
       if (playingPackId === packId) {
-        // Stop current demo
         setPlayingPackId(null);
         await AudioService.stopDemo();
       } else {
@@ -201,9 +200,8 @@ const PackLibraryScreen: React.FC<PackLibraryScreenProps> = ({
   return (
     <Modal
       visible={isVisible}
-      animationType="slide"
-      onRequestClose={handleClose}
-      statusBarTranslucent>
+      animationType="fade"
+      onRequestClose={handleClose}>
       <SafeAreaView style={styles.modalContainer}>
         <ModalHeader onClose={handleClose} />
         <FlatList
@@ -212,7 +210,6 @@ const PackLibraryScreen: React.FC<PackLibraryScreenProps> = ({
           keyExtractor={(item: any) => item.id}
           numColumns={2}
           contentContainerStyle={styles.listContainer}
-          showsVerticalScrollIndicator={false}
         />
       </SafeAreaView>
     </Modal>

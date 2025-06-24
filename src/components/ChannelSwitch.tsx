@@ -2,18 +2,20 @@ import React, {useRef} from 'react';
 import {Pressable, Text, StyleSheet, Animated} from 'react-native';
 
 interface ChannelSwitchProps {
-  activeChannel: 'A' | 'B';
-  onChannelChange: (channel: 'A' | 'B') => void;
+  channel: 'A' | 'B';
+  onChannelSelect: (channel: 'A' | 'B') => void;
+  disabled?: boolean;
 }
 
 const ChannelSwitch: React.FC<ChannelSwitchProps> = ({
-  activeChannel,
-  onChannelChange,
+  channel,
+  onChannelSelect,
+  disabled,
 }) => {
   const scale = useRef(new Animated.Value(1)).current;
 
   const handlePress = (): void => {
-    onChannelChange(activeChannel === 'A' ? 'B' : 'A');
+    onChannelSelect(channel);
   };
 
   const handlePressIn = (): void => {
@@ -32,11 +34,19 @@ const ChannelSwitch: React.FC<ChannelSwitchProps> = ({
 
   return (
     <Pressable
+      disabled={disabled}
       onPress={handlePress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}>
-      <Animated.View style={[styles.button, {transform: [{scale}]}]}>
-        <Text style={styles.text}>{activeChannel}</Text>
+      <Animated.View
+        style={[
+          styles.button,
+          disabled && styles.disabledButton,
+          {transform: [{scale}]},
+        ]}>
+        <Text style={[styles.text, disabled && styles.disabledText]}>
+          {channel}
+        </Text>
       </Animated.View>
     </Pressable>
   );
@@ -51,10 +61,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  disabledButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+  },
   text: {
     color: '#000',
     fontSize: 25,
     fontWeight: 'bold',
+  },
+  disabledText: {
+    color: 'rgba(0, 0, 0, 0.2)',
   },
 });
 
