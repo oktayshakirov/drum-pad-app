@@ -34,9 +34,19 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
     Object.keys(SOUND_PACKS)[0],
   );
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [bpm, setBpm] = useState<number>(120);
+  const [bpm, setBpmState] = useState<number>(120);
   const [metronomeSound, setMetronomeSound] = useState<MetronomeSound>('tick');
-  const [metronomeVolume, setMetronomeVolume] = useState<number>(1);
+  const [metronomeVolume, setMetronomeVolumeState] = useState<number>(1);
+
+  const setBpm = (newBpm: number) => {
+    AudioService.updateBpm(newBpm);
+    setBpmState(newBpm);
+  };
+
+  const setMetronomeVolume = (newVolume: number) => {
+    AudioService.updateVolume(newVolume);
+    setMetronomeVolumeState(newVolume);
+  };
 
   useEffect(() => {
     const loadInitialSoundPack = async (): Promise<void> => {

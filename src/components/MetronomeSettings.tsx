@@ -98,8 +98,8 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
   const handlePressIn = (action: () => void): void => {
     action();
     timeoutRef.current = setTimeout(() => {
-      intervalRef.current = setInterval(action, 100);
-    }, 400);
+      intervalRef.current = setInterval(action, 80);
+    }, 300);
   };
 
   const handlePressOut = (): void => {

@@ -315,6 +315,11 @@ class AudioService {
     soundName: string = 'tick',
     volume: number = 1,
   ): Promise<void> {
+    if (this.metronomeTimerId) {
+      this.updateBpm(bpm);
+      this.updateVolume(volume);
+      return;
+    }
     if (bpm <= 0) {
       return;
     }
@@ -465,6 +470,19 @@ class AudioService {
       } catch (e) {}
     });
     this.activeSingleSources.clear();
+  }
+
+  public updateBpm(newBpm: number) {
+    this.bpm = newBpm;
+  }
+
+  public updateVolume(newVolume: number) {
+    if (this.metronomeGainNode && this.audioContext) {
+      this.metronomeGainNode.gain.setValueAtTime(
+        newVolume,
+        this.audioContext.currentTime,
+      );
+    }
   }
 }
 

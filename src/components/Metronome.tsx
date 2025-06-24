@@ -51,9 +51,6 @@ const Metronome: React.FC<MetronomeProps> = ({isPlaying, setIsPlaying}) => {
     } else {
       AudioService.stopMetronome();
     }
-    return () => {
-      AudioService.stopMetronome();
-    };
   }, [context, isPlaying, triggerBeatAnimation]);
 
   if (!context) {
