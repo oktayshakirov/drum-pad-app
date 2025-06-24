@@ -19,14 +19,7 @@ interface MetronomeProps {
 }
 
 const Metronome: React.FC<MetronomeProps> = ({isPlaying, setIsPlaying}) => {
-  const {
-    bpm,
-    setBpm,
-    metronomeSound,
-    setMetronomeSound,
-    metronomeVolume,
-    setMetronomeVolume,
-  } = useContext(AppContext);
+  const context = useContext(AppContext);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const beatAnim = useRef(new Animated.Value(1)).current;
   const playPauseScale = useRef(new Animated.Value(1)).current;
@@ -48,12 +41,12 @@ const Metronome: React.FC<MetronomeProps> = ({isPlaying, setIsPlaying}) => {
   }, [beatAnim]);
 
   useEffect(() => {
-    if (isPlaying) {
+    if (context && isPlaying) {
       AudioService.startMetronome(
-        bpm,
+        context.bpm,
         triggerBeatAnimation,
-        metronomeSound,
-        metronomeVolume,
+        context.metronomeSound,
+        context.metronomeVolume,
       );
     } else {
       AudioService.stopMetronome();
@@ -61,7 +54,20 @@ const Metronome: React.FC<MetronomeProps> = ({isPlaying, setIsPlaying}) => {
     return () => {
       AudioService.stopMetronome();
     };
-  }, [bpm, isPlaying, triggerBeatAnimation, metronomeSound, metronomeVolume]);
+  }, [context, isPlaying, triggerBeatAnimation]);
+
+  if (!context) {
+    return null;
+  }
+
+  const {
+    bpm,
+    setBpm,
+    metronomeSound,
+    setMetronomeSound,
+    metronomeVolume,
+    setMetronomeVolume,
+  } = context;
 
   const handleToggleMetronome = (): void => {
     setIsPlaying(!isPlaying);

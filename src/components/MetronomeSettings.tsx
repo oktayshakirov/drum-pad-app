@@ -7,9 +7,7 @@ import {
   TouchableOpacity,
   Animated,
 } from 'react-native';
-
-const SOUND_OPTIONS = ['tick', 'beep', 'block'] as const;
-type SoundOption = (typeof SOUND_OPTIONS)[number];
+import {METRONOME_SOUNDS, MetronomeSound} from '../assets/sounds/metronome';
 
 const BPM_MIN = 40;
 const BPM_MAX = 220;
@@ -21,8 +19,8 @@ interface MetronomeSettingsProps {
   onClose: () => void;
   bpm: number;
   setBpm: (bpm: number) => void;
-  metronomeSound: SoundOption;
-  setMetronomeSound: (sound: SoundOption) => void;
+  metronomeSound: MetronomeSound;
+  setMetronomeSound: (sound: MetronomeSound) => void;
   metronomeVolume: number;
   setMetronomeVolume: (volume: number) => void;
 }
@@ -85,17 +83,16 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
   }, [isVisible, scaleAnim, opacityAnim]);
 
   const changeBpm = (amount: number): void => {
-    setBpm(prevBpm => Math.max(BPM_MIN, Math.min(BPM_MAX, prevBpm + amount)));
+    const newBpm = Math.max(BPM_MIN, Math.min(BPM_MAX, bpm + amount));
+    setBpm(newBpm);
   };
 
   const changeVolume = (amount: number): void => {
-    setMetronomeVolume(prevVolume => {
-      const newVolume = Math.max(
-        VOLUME_MIN,
-        Math.min(VOLUME_MAX, parseFloat((prevVolume + amount).toFixed(1))),
-      );
-      return newVolume;
-    });
+    const newVolume = Math.max(
+      VOLUME_MIN,
+      Math.min(VOLUME_MAX, parseFloat((metronomeVolume + amount).toFixed(1))),
+    );
+    setMetronomeVolume(newVolume);
   };
 
   const handlePressIn = (action: () => void): void => {
@@ -157,7 +154,7 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
 
           <Text style={styles.sectionTitle}>Sound</Text>
           <View style={styles.soundOptionsContainer}>
-            {SOUND_OPTIONS.map(sound => (
+            {METRONOME_SOUNDS.map(sound => (
               <TouchableOpacity
                 key={sound}
                 style={[

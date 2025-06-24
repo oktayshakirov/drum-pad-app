@@ -8,6 +8,7 @@ import React, {
 import AudioService from '../services/AudioService';
 import {SOUND_PACKS} from '../utils/soundUtils';
 import {soundPacks} from '../assets/sounds';
+import {MetronomeSound} from '../assets/sounds/metronome';
 
 interface AppContextType {
   currentSoundPack: string;
@@ -16,8 +17,8 @@ interface AppContextType {
   availableSoundPacks: any[];
   bpm: number;
   setBpm: (bpm: number) => void;
-  metronomeSound: string;
-  setMetronomeSound: (sound: string) => void;
+  metronomeSound: MetronomeSound;
+  setMetronomeSound: (sound: MetronomeSound) => void;
   metronomeVolume: number;
   setMetronomeVolume: (volume: number) => void;
 }
@@ -34,7 +35,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
   );
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [bpm, setBpm] = useState<number>(120);
-  const [metronomeSound, setMetronomeSound] = useState<string>('tick');
+  const [metronomeSound, setMetronomeSound] = useState<MetronomeSound>('tick');
   const [metronomeVolume, setMetronomeVolume] = useState<number>(1);
 
   useEffect(() => {
@@ -44,7 +45,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
         await AudioService.setSoundPack(currentSoundPack);
         const initialPack = soundPacks[currentSoundPack];
         if (initialPack && initialPack.bpm) {
-          setBpm(parseInt(initialPack.bpm, 10));
+          setBpm(parseInt(String(initialPack.bpm), 10));
         }
       } catch (error) {
         console.error(
@@ -71,7 +72,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
         setCurrentSoundPackState(newPackId);
         const newPack = soundPacks[newPackId];
         if (newPack && newPack.bpm) {
-          setBpm(parseInt(newPack.bpm, 10));
+          setBpm(parseInt(String(newPack.bpm), 10));
         }
       } else {
         console.warn(
