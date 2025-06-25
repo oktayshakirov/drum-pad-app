@@ -3,120 +3,149 @@ import React, {
   useState,
   useEffect,
   useContext,
-  ReactNode,
+  useCallback,
 } from 'react';
+import {AudioContext} from 'react-native-audio-api';
 import AudioService from '../services/AudioService';
 import {SOUND_PACKS} from '../utils/soundUtils';
 import {soundPacks} from '../assets/sounds';
 import {MetronomeSound} from '../assets/sounds/metronome';
-
-interface AppContextType {
-  currentSoundPack: string;
-  setCurrentSoundPack: (packId: string) => Promise<void>;
-  isLoading: boolean;
-  availableSoundPacks: any[];
-  bpm: number;
-  setBpm: (bpm: number) => void;
-  metronomeSound: MetronomeSound;
-  setMetronomeSound: (sound: MetronomeSound) => void;
-  metronomeVolume: number;
-  setMetronomeVolume: (volume: number) => void;
-}
+import {AppContextType, AppState, AppProviderProps} from '../types/appContext';
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-interface AppProviderProps {
-  children: ReactNode;
-}
-
 export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
-  const [currentSoundPack, setCurrentSoundPackState] = useState<string>(
-    Object.keys(SOUND_PACKS)[0],
-  );
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [bpm, setBpmState] = useState<number>(120);
-  const [metronomeSound, setMetronomeSound] = useState<MetronomeSound>('tick');
-  const [metronomeVolume, setMetronomeVolumeState] = useState<number>(1);
+  const [state, setState] = useState<AppState>({
+    currentSoundPack: Object.keys(SOUND_PACKS)[0],
+    isLoading: true,
+    bpm: 120,
+    metronomeSound: 'tick',
+    metronomeVolume: 1,
+    audioContext: null,
+  });
 
-  const setBpm = (newBpm: number) => {
-    AudioService.updateBpm(newBpm);
-    setBpmState(newBpm);
-  };
+  const initializeAudioContext = useCallback(async (): Promise<void> => {
+    try {
+      const context = new AudioContext();
+      setState(prev => ({...prev, audioContext: context}));
+      AudioService.setAudioContext(context);
+    } catch (error) {
+      console.error('AppContext: Error initializing AudioContext:', error);
+      setState(prev => ({...prev, isLoading: false}));
+    }
+  }, []);
 
-  const setMetronomeVolume = (newVolume: number) => {
-    AudioService.updateVolume(newVolume);
-    setMetronomeVolumeState(newVolume);
-  };
+  const loadSoundPack = useCallback(
+    async (packId: string): Promise<void> => {
+      if (!state.audioContext) {
+        return;
+      }
 
-  const handleMetronomeSoundChange = async (newSound: MetronomeSound) => {
-    await AudioService.updateSound(newSound);
-    setMetronomeSound(newSound);
-  };
+      setState(prev => ({...prev, isLoading: true}));
 
-  useEffect(() => {
-    const loadInitialSoundPack = async (): Promise<void> => {
-      setIsLoading(true);
       try {
-        await AudioService.setSoundPack(currentSoundPack);
-        const initialPack = soundPacks[currentSoundPack];
-        if (initialPack && initialPack.bpm) {
-          setBpm(parseInt(String(initialPack.bpm), 10));
+        await AudioService.setSoundPack(packId);
+
+        const pack = soundPacks[packId];
+        if (pack?.bpm) {
+          const packBpm = parseInt(String(pack.bpm), 10);
+          setState(prev => ({...prev, bpm: packBpm}));
+          AudioService.updateBpm(packBpm);
         }
       } catch (error) {
-        console.error(
-          'AppContext.tsx: Error loading initial sound pack:',
-          error,
-        );
+        console.error('AppContext: Error loading sound pack:', error);
       } finally {
-        setIsLoading(false);
+        setState(prev => ({...prev, isLoading: false}));
       }
-    };
-    loadInitialSoundPack();
-  }, [currentSoundPack]);
+    },
+    [state.audioContext],
+  );
 
-  const handleSoundPackChange = async (newPackId: string): Promise<void> => {
-    if (newPackId === currentSoundPack || isLoading) {
-      return;
-    }
+  const handleSoundPackChange = useCallback(
+    async (newPackId: string): Promise<void> => {
+      if (
+        newPackId === state.currentSoundPack ||
+        state.isLoading ||
+        !state.audioContext
+      ) {
+        return;
+      }
 
-    setIsLoading(true);
-    try {
-      await AudioService.stopAllSounds();
-      const success = await AudioService.setSoundPack(newPackId);
-      if (success) {
-        setCurrentSoundPackState(newPackId);
-        const newPack = soundPacks[newPackId];
-        if (newPack && newPack.bpm) {
-          setBpm(parseInt(String(newPack.bpm), 10));
+      try {
+        await AudioService.stopAllSounds();
+        const success = await AudioService.setSoundPack(newPackId);
+
+        if (success) {
+          setState(prev => ({...prev, currentSoundPack: newPackId}));
+
+          const pack = soundPacks[newPackId];
+          if (pack?.bpm) {
+            const packBpm = parseInt(String(pack.bpm), 10);
+            setState(prev => ({...prev, bpm: packBpm}));
+            AudioService.updateBpm(packBpm);
+          }
+        } else {
+          console.warn(
+            'AppContext: Failed to set new sound pack in AudioService.',
+          );
         }
-      } else {
-        console.warn(
-          'AppContext.tsx: Failed to set new sound pack in AudioService.',
-        );
+      } catch (error) {
+        console.error('AppContext: Error changing sound pack:', error);
       }
-    } catch (error) {
-      console.error('AppContext.tsx: Error changing sound pack:', error);
-    } finally {
-      setIsLoading(false);
+    },
+    [state.currentSoundPack, state.isLoading, state.audioContext],
+  );
+
+  const setBpm = useCallback((newBpm: number): void => {
+    AudioService.updateBpm(newBpm);
+    setState(prev => ({...prev, bpm: newBpm}));
+  }, []);
+
+  const setMetronomeVolume = useCallback((newVolume: number): void => {
+    AudioService.updateVolume(newVolume);
+    setState(prev => ({...prev, metronomeVolume: newVolume}));
+  }, []);
+
+  const handleMetronomeSoundChange = useCallback(
+    async (newSound: MetronomeSound): Promise<void> => {
+      try {
+        await AudioService.updateSound(newSound);
+        setState(prev => ({...prev, metronomeSound: newSound}));
+      } catch (error) {
+        console.error('AppContext: Error updating metronome sound:', error);
+      }
+    },
+    [],
+  );
+
+  useEffect(() => {
+    initializeAudioContext();
+  }, [initializeAudioContext]);
+
+  useEffect(() => {
+    if (state.audioContext) {
+      loadSoundPack(state.currentSoundPack);
     }
+  }, [state.audioContext, state.currentSoundPack, loadSoundPack]);
+
+  const contextValue: AppContextType = {
+    currentSoundPack: state.currentSoundPack,
+    setCurrentSoundPack: handleSoundPackChange,
+    isLoading: state.isLoading,
+    availableSoundPacks: Object.values(SOUND_PACKS),
+
+    bpm: state.bpm,
+    setBpm,
+    metronomeSound: state.metronomeSound,
+    setMetronomeSound: handleMetronomeSoundChange,
+    metronomeVolume: state.metronomeVolume,
+    setMetronomeVolume,
+
+    audioContext: state.audioContext,
   };
 
   return (
-    <AppContext.Provider
-      value={{
-        currentSoundPack,
-        setCurrentSoundPack: handleSoundPackChange,
-        isLoading,
-        availableSoundPacks: Object.values(SOUND_PACKS),
-        bpm,
-        setBpm,
-        metronomeSound,
-        setMetronomeSound: handleMetronomeSoundChange,
-        metronomeVolume,
-        setMetronomeVolume,
-      }}>
-      {children}
-    </AppContext.Provider>
+    <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>
   );
 };
 

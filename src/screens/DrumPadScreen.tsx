@@ -7,6 +7,7 @@ import ChannelSwitch from '../components/ChannelSwitch';
 import {useAppContext} from '../contexts/AppContext';
 import {getPadConfigs} from '../utils/soundUtils';
 import AdBanner from '../components/ads/BannerAd';
+import AudioService from '../services/AudioService';
 
 const DrumPadScreen: React.FC = () => {
   const {currentSoundPack} = useAppContext();
@@ -21,8 +22,14 @@ const DrumPadScreen: React.FC = () => {
       )
     : padConfigs;
 
-  const handleOpenPackLibrary = (): void => {
+  const handleOpenPackLibrary = async (): Promise<void> => {
     setIsMetronomePlaying(false);
+
+    try {
+      await AudioService.stopAllSounds();
+    } catch (error) {
+      console.error('Error stopping all sounds:', error);
+    }
   };
 
   return (
