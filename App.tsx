@@ -1,19 +1,26 @@
 import React, {useState} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
 import {
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  View,
-  ImageBackground,
-  ActivityIndicator,
-} from 'react-native';
-import {BlurView} from '@react-native-community/blur';
+  createStackNavigator,
+  CardStyleInterpolators,
+} from '@react-navigation/stack';
 import DrumPadScreen from './src/screens/DrumPadScreen';
+import PackLibraryScreen from './src/screens/PackLibraryScreen';
+import SoundPackScreen from './src/screens/SoundPackScreen';
 import {AppProvider, useAppContext} from './src/contexts/AppContext';
 import {soundPacks} from './src/assets/sounds';
 import ConsentDialog from './src/components/ads/ConsentDialog';
+import {StyleSheet, View, ActivityIndicator} from 'react-native';
 
-const AppContent: React.FC = () => {
+export type RootStackParamList = {
+  DrumPad: undefined;
+  PackLibrary: undefined;
+  SoundPackDetail: {packId: string};
+};
+
+const Stack = createStackNavigator<RootStackParamList>();
+
+const AppNavigatorContent: React.FC = () => {
   const {currentSoundPack, isLoading} = useAppContext();
   const currentPack = soundPacks[currentSoundPack];
 
@@ -26,22 +33,26 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" />
-      <ImageBackground
-        source={currentPack.cover}
-        style={StyleSheet.absoluteFill}
-        resizeMode="cover"
-      />
-      <BlurView
-        style={StyleSheet.absoluteFill}
-        blurType="dark"
-        blurAmount={25}
-      />
-      <SafeAreaView style={styles.safeArea}>
-        <DrumPadScreen />
-      </SafeAreaView>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="DrumPad"
+        screenOptions={{
+          headerShown: false,
+          cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
+        }}>
+        <Stack.Screen name="DrumPad" component={DrumPadScreen} />
+        <Stack.Screen
+          name="PackLibrary"
+          component={PackLibraryScreen}
+          options={{presentation: 'modal'}}
+        />
+        <Stack.Screen
+          name="SoundPackDetail"
+          component={SoundPackScreen}
+          options={{presentation: 'modal'}}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
@@ -53,19 +64,13 @@ const App: React.FC = () => {
       {!consentCompleted ? (
         <ConsentDialog onConsentCompleted={() => setConsentCompleted(true)} />
       ) : (
-        <AppContent />
+        <AppNavigatorContent />
       )}
     </AppProvider>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',

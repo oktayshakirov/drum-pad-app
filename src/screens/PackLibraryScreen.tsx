@@ -1,6 +1,5 @@
 import React, {useState, useCallback, memo, useEffect} from 'react';
 import {
-  Modal,
   View,
   Text,
   StyleSheet,
@@ -12,6 +11,9 @@ import {
 } from 'react-native';
 import {SOUND_PACKS} from '../utils/soundUtils';
 import AudioService from '../services/AudioService';
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RootStackParamList} from '../../App';
 
 interface PlayStopButtonProps {
   isPlaying: boolean;
@@ -126,17 +128,8 @@ const ModalHeader: React.FC<ModalHeaderProps> = memo(({onClose}) => (
   </View>
 ));
 
-interface PackLibraryScreenProps {
-  isVisible: boolean;
-  onClose: () => void;
-  onSelectPack: (packId: string) => void;
-}
-
-const PackLibraryScreen: React.FC<PackLibraryScreenProps> = ({
-  isVisible,
-  onClose,
-  onSelectPack,
-}) => {
+const PackLibraryScreen: React.FC = () => {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [playingPackId, setPlayingPackId] = useState<string | null>(null);
   const packs = Object.values(SOUND_PACKS);
 
@@ -149,16 +142,15 @@ const PackLibraryScreen: React.FC<PackLibraryScreenProps> = ({
 
   const handleClose = useCallback(async (): Promise<void> => {
     await cleanupDemo();
-    onClose();
-  }, [cleanupDemo, onClose]);
+    navigation.goBack();
+  }, [cleanupDemo, navigation]);
 
   const handleSelect = useCallback(
     async (packId: string): Promise<void> => {
       await cleanupDemo();
-      onSelectPack(packId);
-      onClose();
+      navigation.navigate('SoundPackDetail', {packId});
     },
-    [cleanupDemo, onSelectPack, onClose],
+    [cleanupDemo, navigation],
   );
 
   const handlePlayStop = useCallback(
@@ -177,7 +169,6 @@ const PackLibraryScreen: React.FC<PackLibraryScreenProps> = ({
             setPlayingPackId(null);
           }
         } catch (error) {
-          console.error('Error playing demo:', error);
           setPlayingPackId(null);
         }
       }
@@ -198,11 +189,8 @@ const PackLibraryScreen: React.FC<PackLibraryScreenProps> = ({
   );
 
   return (
-    <Modal
-      visible={isVisible}
-      animationType="fade"
-      onRequestClose={handleClose}>
-      <SafeAreaView style={styles.modalContainer}>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.modalContainer}>
         <ModalHeader onClose={handleClose} />
         <FlatList
           data={packs}
@@ -211,15 +199,18 @@ const PackLibraryScreen: React.FC<PackLibraryScreenProps> = ({
           numColumns={2}
           contentContainerStyle={styles.listContainer}
         />
-      </SafeAreaView>
-    </Modal>
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  modalContainer: {
+  safeArea: {
     flex: 1,
     backgroundColor: '#1a1a1a',
+  },
+  modalContainer: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',

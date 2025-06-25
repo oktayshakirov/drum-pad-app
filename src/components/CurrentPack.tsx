@@ -1,8 +1,7 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import {useAppContext} from '../contexts/AppContext';
 import {SOUND_PACKS} from '../utils/soundUtils';
-import PackLibraryScreen from '../screens/PackLibraryScreen';
 
 interface CurrentPackHeaderProps {
   onOpenPackLibrary?: () => void;
@@ -11,9 +10,7 @@ interface CurrentPackHeaderProps {
 const CurrentPackHeader: React.FC<CurrentPackHeaderProps> = ({
   onOpenPackLibrary,
 }) => {
-  const {currentSoundPack, setCurrentSoundPack} = useAppContext();
-  const [isModalVisible, setModalVisible] = useState<boolean>(false);
-
+  const {currentSoundPack} = useAppContext();
   const activePack = SOUND_PACKS[currentSoundPack];
 
   if (!activePack) {
@@ -24,31 +21,23 @@ const CurrentPackHeader: React.FC<CurrentPackHeaderProps> = ({
     if (onOpenPackLibrary) {
       onOpenPackLibrary();
     }
-    setModalVisible(true);
   };
 
   return (
-    <>
-      <View style={styles.container}>
-        <Image source={activePack.image} style={styles.packImage} />
-        <View style={styles.packInfo}>
-          <Text style={styles.packName}>{activePack.name}</Text>
-          <Text style={styles.packGenre}>{activePack.genre}</Text>
-        </View>
-        <View style={styles.buttonsContainer}>
-          <TouchableOpacity
-            style={styles.allPacksButton}
-            onPress={handleOpenModal}>
-            <Text style={styles.allPacksText}>ALL PACKS</Text>
-          </TouchableOpacity>
-        </View>
+    <View style={styles.container}>
+      <Image source={activePack.image} style={styles.packImage} />
+      <View style={styles.packInfo}>
+        <Text style={styles.packName}>{activePack.name}</Text>
+        <Text style={styles.packGenre}>{activePack.genre}</Text>
       </View>
-      <PackLibraryScreen
-        isVisible={isModalVisible}
-        onClose={() => setModalVisible(false)}
-        onSelectPack={setCurrentSoundPack}
-      />
-    </>
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity
+          style={styles.allPacksButton}
+          onPress={handleOpenModal}>
+          <Text style={styles.allPacksText}>ALL PACKS</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
