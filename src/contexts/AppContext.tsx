@@ -48,6 +48,11 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
     setMetronomeVolumeState(newVolume);
   };
 
+  const handleMetronomeSoundChange = async (newSound: MetronomeSound) => {
+    await AudioService.updateSound(newSound);
+    setMetronomeSound(newSound);
+  };
+
   useEffect(() => {
     const loadInitialSoundPack = async (): Promise<void> => {
       setIsLoading(true);
@@ -106,7 +111,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
         bpm,
         setBpm,
         metronomeSound,
-        setMetronomeSound,
+        setMetronomeSound: handleMetronomeSoundChange,
         metronomeVolume,
         setMetronomeVolume,
       }}>

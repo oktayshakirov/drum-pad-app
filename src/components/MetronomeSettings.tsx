@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Animated,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {METRONOME_SOUNDS, MetronomeSound} from '../assets/sounds/metronome';
 
@@ -39,6 +40,17 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
+
+  const currentBpmRef = useRef(bpm);
+  const currentVolumeRef = useRef(metronomeVolume);
+
+  useEffect(() => {
+    currentBpmRef.current = bpm;
+  }, [bpm]);
+
+  useEffect(() => {
+    currentVolumeRef.current = metronomeVolume;
+  }, [metronomeVolume]);
 
   useEffect(() => {
     return () => {
@@ -83,31 +95,45 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
   }, [isVisible, scaleAnim, opacityAnim]);
 
   const changeBpm = (amount: number): void => {
-    const newBpm = Math.max(BPM_MIN, Math.min(BPM_MAX, bpm + amount));
+    const currentBpm = currentBpmRef.current;
+    const newBpm = Math.max(BPM_MIN, Math.min(BPM_MAX, currentBpm + amount));
     setBpm(newBpm);
   };
 
   const changeVolume = (amount: number): void => {
+    const currentVolume = currentVolumeRef.current;
     const newVolume = Math.max(
       VOLUME_MIN,
-      Math.min(VOLUME_MAX, parseFloat((metronomeVolume + amount).toFixed(1))),
+      Math.min(VOLUME_MAX, parseFloat((currentVolume + amount).toFixed(1))),
     );
     setMetronomeVolume(newVolume);
   };
 
   const handlePressIn = (action: () => void): void => {
     action();
-    timeoutRef.current = setTimeout(() => {
-      intervalRef.current = setInterval(action, 80);
-    }, 300);
-  };
 
-  const handlePressOut = (): void => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      intervalRef.current = setInterval(() => {
+        action();
+      }, 100);
+    }, 200);
+  };
+
+  const handlePressOut = (): void => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
   };
 
@@ -135,21 +161,29 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
 
           <Text style={styles.sectionTitle}>BPM</Text>
           <View style={styles.buttonControlContainer}>
-            <TouchableOpacity
+            <TouchableWithoutFeedback
               onPressIn={() => handlePressIn(() => changeBpm(-1))}
-              onPressOut={handlePressOut}
-              style={[styles.controlButton, isBpmMin && styles.disabledButton]}
-              disabled={isBpmMin}>
-              <Text style={styles.controlButtonText}>-</Text>
-            </TouchableOpacity>
+              onPressOut={handlePressOut}>
+              <View
+                style={[
+                  styles.controlButton,
+                  isBpmMin && styles.disabledButton,
+                ]}>
+                <Text style={styles.controlButtonText}>-</Text>
+              </View>
+            </TouchableWithoutFeedback>
             <Text style={styles.bpmDisplay}>{bpm}</Text>
-            <TouchableOpacity
+            <TouchableWithoutFeedback
               onPressIn={() => handlePressIn(() => changeBpm(1))}
-              onPressOut={handlePressOut}
-              style={[styles.controlButton, isBpmMax && styles.disabledButton]}
-              disabled={isBpmMax}>
-              <Text style={styles.controlButtonText}>+</Text>
-            </TouchableOpacity>
+              onPressOut={handlePressOut}>
+              <View
+                style={[
+                  styles.controlButton,
+                  isBpmMax && styles.disabledButton,
+                ]}>
+                <Text style={styles.controlButtonText}>+</Text>
+              </View>
+            </TouchableWithoutFeedback>
           </View>
 
           <Text style={styles.sectionTitle}>Sound</Text>
@@ -175,29 +209,31 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
 
           <Text style={styles.sectionTitle}>Volume</Text>
           <View style={styles.buttonControlContainer}>
-            <TouchableOpacity
+            <TouchableWithoutFeedback
               onPressIn={() => handlePressIn(() => changeVolume(-0.1))}
-              onPressOut={handlePressOut}
-              style={[
-                styles.controlButton,
-                isVolumeMin && styles.disabledButton,
-              ]}
-              disabled={isVolumeMin}>
-              <Text style={styles.controlButtonText}>-</Text>
-            </TouchableOpacity>
+              onPressOut={handlePressOut}>
+              <View
+                style={[
+                  styles.controlButton,
+                  isVolumeMin && styles.disabledButton,
+                ]}>
+                <Text style={styles.controlButtonText}>-</Text>
+              </View>
+            </TouchableWithoutFeedback>
             <Text style={styles.valueText}>
               {(metronomeVolume * 100).toFixed(0)}%
             </Text>
-            <TouchableOpacity
+            <TouchableWithoutFeedback
               onPressIn={() => handlePressIn(() => changeVolume(0.1))}
-              onPressOut={handlePressOut}
-              style={[
-                styles.controlButton,
-                isVolumeMax && styles.disabledButton,
-              ]}
-              disabled={isVolumeMax}>
-              <Text style={styles.controlButtonText}>+</Text>
-            </TouchableOpacity>
+              onPressOut={handlePressOut}>
+              <View
+                style={[
+                  styles.controlButton,
+                  isVolumeMax && styles.disabledButton,
+                ]}>
+                <Text style={styles.controlButtonText}>+</Text>
+              </View>
+            </TouchableWithoutFeedback>
           </View>
 
           <TouchableOpacity style={styles.doneButton} onPress={onClose}>
@@ -266,6 +302,10 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     opacity: 0.3,
+  },
+  pressedButton: {
+    backgroundColor: '#666',
+    transform: [{scale: 0.95}],
   },
   controlButtonText: {
     color: '#fff',

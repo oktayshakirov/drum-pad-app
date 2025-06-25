@@ -484,6 +484,13 @@ class AudioService {
       );
     }
   }
+
+  public async updateSound(newSound: string) {
+    if (this.currentMetronomeSound !== newSound) {
+      await this._loadMetronomeSound(newSound);
+      this.currentMetronomeSound = newSound;
+    }
+  }
 }
 
 export default new AudioService();
