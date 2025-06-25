@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  SafeAreaView,
   Animated,
   Dimensions,
 } from 'react-native';
@@ -150,9 +149,9 @@ const SoundPackDetailScreen: React.FC = () => {
   }
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: '#1a1a1a'}}>
+    <View style={{flex: 1, backgroundColor: '#1a1a1a'}}>
       <View style={styles.modalBackdrop}>
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
           <ModalHeader onClose={handleClose} packName={pack.name} />
           <View style={styles.content}>
             <View style={styles.coverContainer}>
@@ -207,9 +206,9 @@ const SoundPackDetailScreen: React.FC = () => {
               </View>
             </View>
           </View>
-        </SafeAreaView>
+        </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

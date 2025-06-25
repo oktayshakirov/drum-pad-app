@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, StyleSheet, ImageBackground, SafeAreaView} from 'react-native';
+import {View, StyleSheet, ImageBackground} from 'react-native';
 import Pad from '../components/Pad';
 import CurrentPack from '../components/CurrentPack';
 import Metronome from '../components/Metronome';
@@ -40,7 +40,7 @@ const DrumPadScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.absoluteFill}>
+    <View style={styles.absoluteFill}>
       <ImageBackground
         source={currentPack.cover}
         style={StyleSheet.absoluteFill}
@@ -91,7 +91,7 @@ const DrumPadScreen: React.FC = () => {
           ))}
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

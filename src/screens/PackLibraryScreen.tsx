@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  SafeAreaView,
   FlatList,
   Animated,
 } from 'react-native';
@@ -189,7 +188,7 @@ const PackLibraryScreen: React.FC = () => {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <View style={styles.modalContainer}>
         <ModalHeader onClose={handleClose} />
         <FlatList
@@ -200,7 +199,7 @@ const PackLibraryScreen: React.FC = () => {
           contentContainerStyle={styles.listContainer}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
