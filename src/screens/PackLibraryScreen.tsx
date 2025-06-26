@@ -8,6 +8,7 @@ import {
   FlatList,
   Animated,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {SOUND_PACKS} from '../utils/soundUtils';
 import AudioService from '../services/AudioService';
 import {useNavigation} from '@react-navigation/native';
@@ -188,7 +189,7 @@ const PackLibraryScreen: React.FC = () => {
   );
 
   return (
-    <View style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea}>
       <View style={styles.modalContainer}>
         <ModalHeader onClose={handleClose} />
         <FlatList
@@ -199,7 +200,7 @@ const PackLibraryScreen: React.FC = () => {
           contentContainerStyle={styles.listContainer}
         />
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

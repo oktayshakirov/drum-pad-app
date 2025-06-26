@@ -8,6 +8,7 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {soundPacks} from '../assets/sounds';
 import AudioService from '../services/AudioService';
 import {useRoute, useNavigation} from '@react-navigation/native';
@@ -149,7 +150,7 @@ const SoundPackDetailScreen: React.FC = () => {
   }
 
   return (
-    <View style={{flex: 1, backgroundColor: '#1a1a1a'}}>
+    <SafeAreaView style={styles.safeArea}>
       <View style={styles.modalBackdrop}>
         <View style={styles.container}>
           <ModalHeader onClose={handleClose} packName={pack.name} />
@@ -191,28 +192,27 @@ const SoundPackDetailScreen: React.FC = () => {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[
-                    styles.unlockButton,
-                    {backgroundColor: '#FFD700', marginTop: 10},
-                  ]}
+                  style={styles.unlockButtonGold}
                   onPress={async () => {
                     await setCurrentSoundPack(packId);
                     navigation.navigate('DrumPad');
                   }}>
-                  <Text style={[styles.unlockButtonText, {color: '#000'}]}>
-                    USE THIS PACK
-                  </Text>
+                  <Text style={styles.unlockButtonTextGold}>USE THIS PACK</Text>
                 </TouchableOpacity>
               </View>
             </View>
           </View>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#1a1a1a',
+  },
   modalBackdrop: {
     flex: 1,
     backgroundColor: '#1a1a1a',
@@ -358,8 +358,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 16,
   },
+  unlockButtonGold: {
+    backgroundColor: '#FFD700',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    minWidth: 200,
+    alignItems: 'center',
+    marginTop: 26,
+  },
   unlockButtonText: {
     color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  unlockButtonTextGold: {
+    color: '#000',
     fontSize: 16,
     fontWeight: 'bold',
   },

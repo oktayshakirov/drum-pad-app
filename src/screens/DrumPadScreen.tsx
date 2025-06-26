@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {View, StyleSheet, ImageBackground} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import Pad from '../components/Pad';
 import CurrentPack from '../components/CurrentPack';
 import Metronome from '../components/Metronome';
@@ -51,52 +52,57 @@ const DrumPadScreen: React.FC = () => {
         blurType="dark"
         blurAmount={25}
       />
-      <View style={styles.container}>
-        <AdBanner />
-        <CurrentPack onOpenPackLibrary={handleOpenPackLibrary} />
-        <View style={styles.controlsRow}>
-          <View style={styles.leftSection}>
-            {hasTwoChannels && (
-              <ChannelSwitch
-                channel="A"
-                onChannelSelect={setActiveChannel}
-                disabled={activeChannel === 'A'}
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+        <View style={styles.container}>
+          <AdBanner />
+          <CurrentPack onOpenPackLibrary={handleOpenPackLibrary} />
+          <View style={styles.controlsRow}>
+            <View style={styles.leftSection}>
+              {hasTwoChannels && (
+                <ChannelSwitch
+                  channel="A"
+                  onChannelSelect={setActiveChannel}
+                  disabled={activeChannel === 'A'}
+                />
+              )}
+            </View>
+            <View style={styles.centerSection}>
+              <Metronome
+                isPlaying={isMetronomePlaying}
+                setIsPlaying={setIsMetronomePlaying}
               />
-            )}
+            </View>
+            <View style={styles.rightSection}>
+              {hasTwoChannels && (
+                <ChannelSwitch
+                  channel="B"
+                  onChannelSelect={setActiveChannel}
+                  disabled={activeChannel === 'B'}
+                />
+              )}
+            </View>
           </View>
-          <View style={styles.centerSection}>
-            <Metronome
-              isPlaying={isMetronomePlaying}
-              setIsPlaying={setIsMetronomePlaying}
-            />
-          </View>
-          <View style={styles.rightSection}>
-            {hasTwoChannels && (
-              <ChannelSwitch
-                channel="B"
-                onChannelSelect={setActiveChannel}
-                disabled={activeChannel === 'B'}
+          <View style={styles.grid}>
+            {visiblePads.map(pad => (
+              <Pad
+                key={pad.id}
+                sound={pad.sound}
+                soundPack={currentSoundPack}
+                color={pad.color}
               />
-            )}
+            ))}
           </View>
         </View>
-        <View style={styles.grid}>
-          {visiblePads.map(pad => (
-            <Pad
-              key={pad.id}
-              sound={pad.sound}
-              soundPack={currentSoundPack}
-              color={pad.color}
-            />
-          ))}
-        </View>
-      </View>
+      </SafeAreaView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   absoluteFill: {
+    flex: 1,
+  },
+  safeArea: {
     flex: 1,
   },
   container: {

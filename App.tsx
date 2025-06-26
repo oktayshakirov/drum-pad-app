@@ -11,7 +11,7 @@ import {AppProvider, useAppContext} from './src/contexts/AppContext';
 import {soundPacks} from './src/assets/sounds';
 import ConsentDialog from './src/components/ads/ConsentDialog';
 import {StyleSheet, View, ActivityIndicator} from 'react-native';
-import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 export type RootStackParamList = {
   DrumPad: undefined;
@@ -40,6 +40,7 @@ const AppNavigatorContent: React.FC = () => {
         screenOptions={{
           headerShown: false,
           cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
+          cardStyle: {backgroundColor: 'transparent'},
         }}>
         <Stack.Screen name="DrumPad" component={DrumPadScreen} />
         <Stack.Screen
@@ -66,11 +67,7 @@ const App: React.FC = () => {
         {!consentCompleted ? (
           <ConsentDialog onConsentCompleted={() => setConsentCompleted(true)} />
         ) : (
-          <SafeAreaView
-            style={styles.safeArea}
-            edges={['top', 'bottom', 'left', 'right']}>
-            <AppNavigatorContent />
-          </SafeAreaView>
+          <AppNavigatorContent />
         )}
       </SafeAreaProvider>
     </AppProvider>
@@ -82,10 +79,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000',
-  },
-  safeArea: {
-    flex: 1,
     backgroundColor: '#000',
   },
 });
