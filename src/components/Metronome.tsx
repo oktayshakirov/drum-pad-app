@@ -5,13 +5,14 @@ import React, {
   useRef,
   useCallback,
 } from 'react';
-import {View, Text, StyleSheet, Pressable, Animated, Image} from 'react-native';
+import {View, Text, StyleSheet, Animated} from 'react-native';
 import {AppContext} from '../contexts/AppContext';
 import AudioService from '../services/AudioService';
 import MetronomeSettings from './MetronomeSettings';
 import playIcon from '../assets/images/play.png';
 import pauseIcon from '../assets/images/pause.png';
 import settingsIcon from '../assets/images/settings.png';
+import ControlsButton from './ControlsButton';
 
 interface MetronomeProps {
   isPlaying: boolean;
@@ -22,8 +23,6 @@ const Metronome: React.FC<MetronomeProps> = ({isPlaying, setIsPlaying}) => {
   const context = useContext(AppContext);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const beatAnim = useRef(new Animated.Value(1)).current;
-  const playPauseScale = useRef(new Animated.Value(1)).current;
-  const settingsScale = useRef(new Animated.Value(1)).current;
 
   const triggerBeatAnimation = useCallback((): void => {
     Animated.sequence([
@@ -74,36 +73,21 @@ const Metronome: React.FC<MetronomeProps> = ({isPlaying, setIsPlaying}) => {
     setIsModalVisible(true);
   };
 
-  const handlePressIn = (scaleRef: Animated.Value): void => {
-    Animated.spring(scaleRef, {
-      toValue: 0.7,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const handlePressOut = (scaleRef: Animated.Value): void => {
-    Animated.spring(scaleRef, {
-      toValue: 1,
-      useNativeDriver: true,
-    }).start();
+  const handleSettingsPress = (): void => {
+    openSettingsModal();
   };
 
   return (
     <>
       <View style={styles.wrapper}>
-        <Pressable
-          style={styles.controlButton}
+        <ControlsButton
+          variant="play"
+          isPlaying={isPlaying}
           onPress={handleToggleMetronome}
-          onPressIn={() => handlePressIn(playPauseScale)}
-          onPressOut={() => handlePressOut(playPauseScale)}>
-          <Animated.View style={{transform: [{scale: playPauseScale}]}}>
-            <Image
-              source={isPlaying ? pauseIcon : playIcon}
-              style={styles.iconImage}
-              resizeMode="contain"
-            />
-          </Animated.View>
-        </Pressable>
+          size={40}
+          playIconSrc={playIcon}
+          pauseIconSrc={pauseIcon}
+        />
 
         <View style={styles.bpmDisplay}>
           <Animated.View
@@ -115,19 +99,12 @@ const Metronome: React.FC<MetronomeProps> = ({isPlaying, setIsPlaying}) => {
           </View>
         </View>
 
-        <Pressable
-          style={styles.controlButton}
-          onPress={openSettingsModal}
-          onPressIn={() => handlePressIn(settingsScale)}
-          onPressOut={() => handlePressOut(settingsScale)}>
-          <Animated.View style={{transform: [{scale: settingsScale}]}}>
-            <Image
-              source={settingsIcon}
-              style={styles.iconImage}
-              resizeMode="contain"
-            />
-          </Animated.View>
-        </Pressable>
+        <ControlsButton
+          variant="default"
+          iconSrc={settingsIcon}
+          onPress={handleSettingsPress}
+          size={40}
+        />
       </View>
 
       <MetronomeSettings

@@ -1,12 +1,12 @@
-import React, {useState, useCallback, memo, useEffect} from 'react';
+import React, {useState, useCallback, memo} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Image,
-  Animated,
   Dimensions,
+  ImageBackground,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {soundPacks} from '../assets/sounds';
@@ -16,75 +16,11 @@ import {RouteProp} from '@react-navigation/native';
 import {RootStackParamList} from '../../App';
 import {useAppContext} from '../contexts/AppContext';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {BlurView} from '@react-native-community/blur';
+import Equalizer from '../components/Equalizer';
+import ControlsButton from '../components/ControlsButton';
 
 const {width: screenWidth} = Dimensions.get('window');
-
-interface PlayStopButtonProps {
-  isPlaying: boolean;
-  onPress: () => void;
-}
-
-const PlayStopButton: React.FC<PlayStopButtonProps> = memo(
-  ({isPlaying, onPress}) => (
-    <TouchableOpacity
-      style={styles.playButton}
-      onPress={onPress}
-      hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-      {isPlaying ? (
-        <View style={styles.stopIcon} />
-      ) : (
-        <View style={styles.playIcon} />
-      )}
-    </TouchableOpacity>
-  ),
-);
-
-const Equalizer: React.FC = memo(() => {
-  const [animations] = useState<Animated.Value[]>([
-    new Animated.Value(1),
-    new Animated.Value(1),
-    new Animated.Value(1),
-  ]);
-
-  useEffect(() => {
-    const animate = (): void => {
-      const sequences = animations.map(anim => {
-        return Animated.sequence([
-          Animated.timing(anim, {
-            toValue: 0.3,
-            duration: 300 + Math.random() * 200,
-            useNativeDriver: true,
-          }),
-          Animated.timing(anim, {
-            toValue: 1,
-            duration: 300 + Math.random() * 200,
-            useNativeDriver: true,
-          }),
-        ]);
-      });
-
-      Animated.parallel(sequences).start(() => animate());
-    };
-
-    animate();
-  }, [animations]);
-
-  return (
-    <View style={styles.equalizerContainer}>
-      {animations.map((anim, index) => (
-        <Animated.View
-          key={index}
-          style={[
-            styles.equalizerBar,
-            {
-              transform: [{scaleY: anim}],
-            },
-          ]}
-        />
-      ))}
-    </View>
-  );
-});
 
 interface ModalHeaderProps {
   onClose: () => void;
@@ -150,72 +86,79 @@ const SoundPackDetailScreen: React.FC = () => {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.modalBackdrop}>
-        <View style={styles.container}>
-          <ModalHeader onClose={handleClose} packName={pack.name} />
-          <View style={styles.content}>
-            <View style={styles.coverContainer}>
-              <Image source={pack.cover} style={styles.coverImage} />
-              {isPlaying && <Equalizer />}
-            </View>
-            <View style={styles.infoContainer}>
-              <Text style={styles.packName}>{pack.name}</Text>
-              <Text style={styles.packGenre}>{pack.genre}</Text>
-              <Text style={styles.packBpm}>BPM: {pack.bpm}</Text>
-              <View style={styles.statsContainer}>
-                <View style={styles.statItem}>
-                  <Text style={styles.statLabel}>Sounds</Text>
-                  <Text style={styles.statValue}>
-                    {pack.sounds ? Object.keys(pack.sounds).length : 0}
-                  </Text>
-                </View>
-                <View style={styles.statItem}>
-                  <Text style={styles.statLabel}>Groups</Text>
-                  <Text style={styles.statValue}>
-                    {pack.soundGroups
-                      ? Object.keys(pack.soundGroups).length
-                      : 0}
-                  </Text>
-                </View>
+    <View style={styles.absoluteFill}>
+      <ImageBackground
+        source={pack.cover}
+        style={StyleSheet.absoluteFill}
+        resizeMode="cover"
+      />
+      <BlurView
+        style={StyleSheet.absoluteFill}
+        blurType="dark"
+        blurAmount={50}
+      />
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.modalBackdrop}>
+          <View style={styles.container}>
+            <ModalHeader onClose={handleClose} packName={pack.name} />
+            <View style={styles.content}>
+              <View style={styles.coverContainer}>
+                <Image source={pack.cover} style={styles.coverImage} />
+                {isPlaying && <Equalizer />}
               </View>
-              <View style={styles.actionsContainer}>
-                <PlayStopButton
-                  isPlaying={isPlaying}
-                  onPress={handlePlayStop}
-                />
-                <TouchableOpacity
-                  style={styles.unlockButton}
-                  onPress={() => console.log('Watch video to unlock pressed')}>
-                  <Text style={styles.unlockButtonText}>
-                    WATCH VIDEO TO UNLOCK
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.unlockButtonGold}
-                  onPress={async () => {
-                    await setCurrentSoundPack(packId);
-                    navigation.navigate('DrumPad');
-                  }}>
-                  <Text style={styles.unlockButtonTextGold}>USE THIS PACK</Text>
-                </TouchableOpacity>
+              <View style={styles.infoContainer}>
+                <Text style={styles.packName}>{pack.name}</Text>
+                <Text style={styles.packGenre}>{pack.genre}</Text>
+                <Text style={styles.packBpm}>BPM: {pack.bpm}</Text>
+                <View style={styles.statsContainer}>
+                  <View style={styles.statItem}>
+                    <Text style={styles.statLabel}>Sounds</Text>
+                    <Text style={styles.statValue}>
+                      {pack.sounds ? Object.keys(pack.sounds).length : 0}
+                    </Text>
+                  </View>
+                  <View style={styles.statItem}>
+                    <Text style={styles.statLabel}>Groups</Text>
+                    <Text style={styles.statValue}>
+                      {pack.soundGroups
+                        ? Object.keys(pack.soundGroups).length
+                        : 0}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.actionsContainer}>
+                  <ControlsButton
+                    variant="play"
+                    isPlaying={isPlaying}
+                    onPress={handlePlayStop}
+                    size={60}
+                  />
+                  <TouchableOpacity
+                    style={styles.selectButton}
+                    onPress={async () => {
+                      await setCurrentSoundPack(packId);
+                      navigation.navigate('DrumPad');
+                    }}>
+                    <Text style={styles.selectButtonText}>
+                      SELECT THIS PACK
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#1a1a1a',
   },
   modalBackdrop: {
     flex: 1,
-    backgroundColor: '#1a1a1a',
   },
   container: {
     flex: 1,
@@ -261,24 +204,7 @@ const styles = StyleSheet.create({
     height: (screenWidth * 0.8 * 9) / 16,
     borderRadius: 20,
   },
-  equalizerContainer: {
-    position: 'absolute',
-    bottom: 10,
-    right: 30,
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 20,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    borderRadius: 10,
-    paddingHorizontal: 8,
-  },
-  equalizerBar: {
-    width: 3,
-    height: 12,
-    backgroundColor: '#FFD700',
-    marginHorizontal: 2,
-    borderRadius: 1.5,
-  },
+
   infoContainer: {
     flex: 1,
   },
@@ -323,42 +249,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 20,
   },
-  playButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#FFD700',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playIcon: {
-    width: 0,
-    height: 0,
-    borderLeftWidth: 15,
-    borderRightWidth: 0,
-    borderTopWidth: 10,
-    borderBottomWidth: 10,
-    borderLeftColor: '#000',
-    borderRightColor: 'transparent',
-    borderTopColor: 'transparent',
-    borderBottomColor: 'transparent',
-    marginLeft: 3,
-  },
-  stopIcon: {
-    width: 20,
-    height: 20,
-    backgroundColor: '#000',
-  },
-  unlockButton: {
-    backgroundColor: '#FF6B6B',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 25,
-    minWidth: 200,
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  unlockButtonGold: {
+  selectButton: {
     backgroundColor: '#FFD700',
     paddingVertical: 15,
     paddingHorizontal: 30,
@@ -367,15 +258,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 26,
   },
-  unlockButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  unlockButtonTextGold: {
+  selectButtonText: {
     color: '#000',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  absoluteFill: {
+    flex: 1,
   },
 });
 

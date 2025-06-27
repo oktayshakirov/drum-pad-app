@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {View, StyleSheet, ImageBackground} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Pad from '../components/Pad';
 import CurrentPack from '../components/CurrentPack';
 import Metronome from '../components/Metronome';
-import ChannelSwitch from '../components/ChannelSwitch';
+import ChannelSwitch, {ChannelSwitchRef} from '../components/ChannelSwitch';
 import {useAppContext} from '../contexts/AppContext';
 import {getPadConfigs} from '../utils/soundUtils';
 import AdBanner from '../components/ads/BannerAd';
@@ -19,6 +19,8 @@ const DrumPadScreen: React.FC = () => {
   const {currentSoundPack} = useAppContext();
   const [activeChannel, setActiveChannel] = useState<'A' | 'B'>('A');
   const [isMetronomePlaying, setIsMetronomePlaying] = useState<boolean>(false);
+  const channelARef = useRef<ChannelSwitchRef>(null);
+  const channelBRef = useRef<ChannelSwitchRef>(null);
   const padConfigs = getPadConfigs(currentSoundPack);
   const hasTwoChannels = padConfigs.length > 12;
   const visiblePads = hasTwoChannels
@@ -40,6 +42,14 @@ const DrumPadScreen: React.FC = () => {
     navigation.navigate('PackLibrary');
   };
 
+  const handleChannelPress = (pressedChannel: 'A' | 'B'): void => {
+    if (pressedChannel === 'A') {
+      channelBRef.current?.triggerFlash();
+    } else {
+      channelARef.current?.triggerFlash();
+    }
+  };
+
   return (
     <View style={styles.absoluteFill}>
       <ImageBackground
@@ -50,7 +60,7 @@ const DrumPadScreen: React.FC = () => {
       <BlurView
         style={StyleSheet.absoluteFill}
         blurType="dark"
-        blurAmount={25}
+        blurAmount={40}
       />
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
         <View style={styles.container}>
@@ -60,9 +70,11 @@ const DrumPadScreen: React.FC = () => {
             <View style={styles.leftSection}>
               {hasTwoChannels && (
                 <ChannelSwitch
+                  ref={channelARef}
                   channel="A"
                   onChannelSelect={setActiveChannel}
                   disabled={activeChannel === 'A'}
+                  onButtonPress={handleChannelPress}
                 />
               )}
             </View>
@@ -75,9 +87,11 @@ const DrumPadScreen: React.FC = () => {
             <View style={styles.rightSection}>
               {hasTwoChannels && (
                 <ChannelSwitch
+                  ref={channelBRef}
                   channel="B"
                   onChannelSelect={setActiveChannel}
                   disabled={activeChannel === 'B'}
+                  onButtonPress={handleChannelPress}
                 />
               )}
             </View>
