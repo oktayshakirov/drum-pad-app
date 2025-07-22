@@ -32,3 +32,10 @@ export interface SoundPackState {
   activeGroupSources: Map<string, AudioBufferSourceNode>;
   activeSingleSources: Map<string, AudioBufferSourceNode>;
 }
+
+export type SoundEvent = {
+  type: 'start' | 'end';
+  soundName: string;
+  soundPack: string;
+  duration?: number;
+};

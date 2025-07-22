@@ -1,49 +1,22 @@
-import {
-  AudioContext,
-  AudioBuffer,
-  AudioBufferSourceNode,
-  GainNode,
-} from 'react-native-audio-api';
+import {AudioContext, AudioBuffer} from 'react-native-audio-api';
 import {Image} from 'react-native';
 import {getSoundModuleId, getAvailableSoundNames} from '../utils/soundUtils.ts';
 import {soundPacks} from '../assets/sounds';
+import type {
+  MetronomeState,
+  DemoState,
+  SoundPackState,
+  SoundEvent,
+} from '../types/audioService';
 
 const LOG_PREFIX = 'AudioService:';
-
-interface MetronomeState {
-  isPlaying: boolean;
-  bpm: number;
-  currentSound: string;
-  volume: number;
-  nextBeatTime: number;
-  schedulerLookahead: number;
-  scheduleAheadTime: number;
-  timerId: NodeJS.Timeout | null;
-  onTickCallback: (() => void) | null;
-  soundBuffers: Map<string, AudioBuffer>;
-  gainNode: GainNode | null;
-  activeSourceNodes: Set<AudioBufferSourceNode>;
-}
-
-interface DemoState {
-  isPlaying: boolean;
-  activeSource: AudioBufferSourceNode | null;
-  buffers: Map<string, AudioBuffer>;
-}
-
-interface SoundPackState {
-  currentPack: string | null;
-  soundBuffers: Map<string, AudioBuffer>;
-  soundGroups: Record<string, string[]>;
-  activeGroupSources: Map<string, AudioBufferSourceNode>;
-  activeSingleSources: Map<string, AudioBufferSourceNode>;
-}
 
 class AudioService {
   private audioContext: AudioContext | null;
   private metronomeState: MetronomeState;
   private demoState: DemoState;
   private soundPackState: SoundPackState;
+  private soundListeners: Set<(event: SoundEvent) => void> = new Set();
 
   constructor() {
     this.audioContext = null;
@@ -128,6 +101,18 @@ class AudioService {
     }
   }
 
+  onSoundEvent(listener: (event: SoundEvent) => void) {
+    this.soundListeners.add(listener);
+  }
+
+  offSoundEvent(listener: (event: SoundEvent) => void) {
+    this.soundListeners.delete(listener);
+  }
+
+  private _emitSoundEvent(event: SoundEvent) {
+    this.soundListeners.forEach(listener => listener(event));
+  }
+
   async playSound(soundPack: string, soundName: string): Promise<boolean> {
     await this._ensureInitialized();
 
@@ -165,6 +150,13 @@ class AudioService {
       source.buffer = audioBuffer;
       source.connect(this.audioContext!.destination);
 
+      this._emitSoundEvent({
+        type: 'start',
+        soundName,
+        soundPack,
+        duration: audioBuffer.duration,
+      });
+
       if (groupName) {
         this.soundPackState.activeGroupSources.set(groupName, source);
         source.onended = () => {
@@ -173,6 +165,11 @@ class AudioService {
           ) {
             this.soundPackState.activeGroupSources.delete(groupName);
           }
+          this._emitSoundEvent({
+            type: 'end',
+            soundName,
+            soundPack,
+          });
         };
       } else {
         this.soundPackState.activeSingleSources.set(soundName, source);
@@ -182,6 +179,11 @@ class AudioService {
           ) {
             this.soundPackState.activeSingleSources.delete(soundName);
           }
+          this._emitSoundEvent({
+            type: 'end',
+            soundName,
+            soundPack,
+          });
         };
       }
 

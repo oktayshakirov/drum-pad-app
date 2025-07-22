@@ -1,6 +1,9 @@
 import React, {useRef} from 'react';
 import {TouchableOpacity, StyleSheet, Animated, View} from 'react-native';
 import AudioService from '../services/AudioService';
+import {Svg, Rect} from 'react-native-svg';
+import {useEffect, useState} from 'react';
+import type {SoundEvent} from '../types/audioService';
 
 interface PadProps {
   sound: string | null;
@@ -12,6 +15,57 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color}) => {
   const scale = useRef(new Animated.Value(1)).current;
   const glowOpacity = useRef(new Animated.Value(0.4)).current;
   const brightnessOpacity = useRef(new Animated.Value(0)).current;
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const progressAnim = useRef(new Animated.Value(0)).current;
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (!sound) {
+      return;
+    }
+    const listener = (event: SoundEvent) => {
+      if (event.soundName === sound && event.soundPack === soundPack) {
+        if (event.type === 'start' && event.duration) {
+          setIsPlaying(true);
+          setProgress(0);
+          progressAnim.setValue(0);
+          Animated.timing(progressAnim, {
+            toValue: 1,
+            duration: event.duration * 1000,
+            useNativeDriver: false,
+          }).start();
+          if (timerRef.current) {
+            clearTimeout(timerRef.current);
+          }
+          timerRef.current = setTimeout(() => {
+            setIsPlaying(false);
+            setProgress(1);
+          }, event.duration * 1000 + 100);
+        } else if (event.type === 'end') {
+          setIsPlaying(false);
+          setProgress(1);
+          if (timerRef.current) {
+            clearTimeout(timerRef.current);
+          }
+        }
+      }
+    };
+    AudioService.onSoundEvent(listener);
+    return () => {
+      AudioService.offSoundEvent(listener);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [sound, soundPack, progressAnim]);
+
+  useEffect(() => {
+    const sub = progressAnim.addListener(({value}) => {
+      setProgress(value);
+    });
+    return () => progressAnim.removeListener(sub);
+  }, [progressAnim]);
 
   const handlePressIn = async (): Promise<void> => {
     if (!sound) {
@@ -64,30 +118,51 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color}) => {
   };
 
   const padColor = sound ? color : '#333';
-
   return (
     <Animated.View style={[styles.container, {transform: [{scale}]}]}>
-      <TouchableOpacity
-        style={styles.touchable}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        activeOpacity={1}
-        disabled={!sound}>
-        <View style={[styles.pad, {backgroundColor: padColor}]}>
-          {sound && (
-            <>
-              <Animated.Image
-                source={require('../assets/images/glow.png')}
-                style={[styles.glow, {opacity: glowOpacity}]}
-                resizeMode="contain"
-              />
-              <Animated.View
-                style={[styles.brightnessOverlay, {opacity: brightnessOpacity}]}
-              />
-            </>
-          )}
-        </View>
-      </TouchableOpacity>
+      <View style={styles.padWrapper}>
+        <TouchableOpacity
+          style={styles.touchable}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          activeOpacity={1}
+          disabled={!sound}>
+          <View style={[styles.pad, {backgroundColor: padColor}]}>
+            {sound && (
+              <>
+                <Animated.Image
+                  source={require('../assets/images/glow.png')}
+                  style={[styles.glow, {opacity: glowOpacity}]}
+                  resizeMode="contain"
+                />
+                <Animated.View
+                  style={[
+                    styles.brightnessOverlay,
+                    {opacity: brightnessOpacity},
+                  ]}
+                />
+              </>
+            )}
+            {isPlaying && (
+              <Svg style={svgIndicatorStyle.indicator} viewBox="0 0 100 100">
+                <Rect
+                  x="3"
+                  y="3"
+                  width="94"
+                  height="94"
+                  rx="6"
+                  ry="6"
+                  stroke="green"
+                  strokeWidth="6"
+                  fill="none"
+                  strokeDasharray={376}
+                  strokeDashoffset={(1 - progress) * 376}
+                />
+              </Svg>
+            )}
+          </View>
+        </TouchableOpacity>
+      </View>
     </Animated.View>
   );
 };
@@ -97,6 +172,14 @@ const styles = StyleSheet.create({
     width: '30%',
     aspectRatio: 1,
     margin: '1.5%',
+  },
+  padWrapper: {
+    flex: 1,
+  },
+  progressContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   touchable: {
     flex: 1,
@@ -127,6 +210,14 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: 'white',
     borderRadius: 15,
+  },
+});
+
+const svgIndicatorStyle = StyleSheet.create({
+  indicator: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 10,
+    pointerEvents: 'none',
   },
 });
 
