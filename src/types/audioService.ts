@@ -38,4 +38,5 @@ export type SoundEvent = {
   soundName: string;
   soundPack: string;
   duration?: number;
+  playInstanceId?: number;
 };

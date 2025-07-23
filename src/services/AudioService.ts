@@ -17,6 +17,7 @@ class AudioService {
   private demoState: DemoState;
   private soundPackState: SoundPackState;
   private soundListeners: Set<(event: SoundEvent) => void> = new Set();
+  private playInstanceCounter: number = 0; // Add this line
 
   constructor() {
     this.audioContext = null;
@@ -150,11 +151,14 @@ class AudioService {
       source.buffer = audioBuffer;
       source.connect(this.audioContext!.destination);
 
+      const playInstanceId = ++this.playInstanceCounter;
+
       this._emitSoundEvent({
         type: 'start',
         soundName,
         soundPack,
         duration: audioBuffer.duration,
+        playInstanceId,
       });
 
       if (groupName) {
@@ -169,6 +173,7 @@ class AudioService {
             type: 'end',
             soundName,
             soundPack,
+            playInstanceId,
           });
         };
       } else {
@@ -183,6 +188,7 @@ class AudioService {
             type: 'end',
             soundName,
             soundPack,
+            playInstanceId,
           });
         };
       }

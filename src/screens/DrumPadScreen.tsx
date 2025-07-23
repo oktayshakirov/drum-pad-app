@@ -62,9 +62,11 @@ const DrumPadScreen: React.FC = () => {
         blurType="dark"
         blurAmount={40}
       />
-      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <SafeAreaView
+        style={styles.safeArea}
+        edges={['top', 'left', 'right', 'bottom']}>
+        <AdBanner />
         <View style={styles.container}>
-          <AdBanner />
           <CurrentPack onOpenPackLibrary={handleOpenPackLibrary} />
           <View style={styles.controlsRow}>
             <View style={styles.leftSection}>
@@ -121,7 +123,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     alignItems: 'center',
     gap: 10,
   },

@@ -4,6 +4,7 @@ import AudioService from '../services/AudioService';
 import {Svg, Rect} from 'react-native-svg';
 import {useEffect, useState} from 'react';
 import type {SoundEvent} from '../types/audioService';
+import * as Animatable from 'react-native-animatable';
 
 interface PadProps {
   sound: string | null;
@@ -19,6 +20,11 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color}) => {
   const [progress, setProgress] = useState(0);
   const progressAnim = useRef(new Animated.Value(0)).current;
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [showIndicator, setShowIndicator] = useState(false);
+  const [indicatorAnim, setIndicatorAnim] = useState<
+    'fadeIn' | 'flash' | undefined
+  >(undefined);
+  const latestPlayInstanceId = useRef<number | null>(null); // Add this
 
   useEffect(() => {
     if (!sound) {
@@ -27,6 +33,7 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color}) => {
     const listener = (event: SoundEvent) => {
       if (event.soundName === sound && event.soundPack === soundPack) {
         if (event.type === 'start' && event.duration) {
+          latestPlayInstanceId.current = event.playInstanceId ?? null; // Track the playInstanceId
           setIsPlaying(true);
           setProgress(0);
           progressAnim.setValue(0);
@@ -43,10 +50,15 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color}) => {
             setProgress(1);
           }, event.duration * 1000 + 100);
         } else if (event.type === 'end') {
-          setIsPlaying(false);
-          setProgress(1);
-          if (timerRef.current) {
-            clearTimeout(timerRef.current);
+          if (
+            event.playInstanceId == null ||
+            event.playInstanceId === latestPlayInstanceId.current
+          ) {
+            setIsPlaying(false);
+            setProgress(1);
+            if (timerRef.current) {
+              clearTimeout(timerRef.current);
+            }
           }
         }
       }
@@ -66,6 +78,17 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color}) => {
     });
     return () => progressAnim.removeListener(sub);
   }, [progressAnim]);
+
+  useEffect(() => {
+    if (isPlaying) {
+      setShowIndicator(true);
+      setIndicatorAnim('fadeIn');
+    } else if (showIndicator) {
+      setIndicatorAnim('flash');
+      const timeout = setTimeout(() => setShowIndicator(false), 300);
+      return () => clearTimeout(timeout);
+    }
+  }, [isPlaying, showIndicator]);
 
   const handlePressIn = async (): Promise<void> => {
     if (!sound) {
@@ -143,22 +166,28 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color}) => {
                 />
               </>
             )}
-            {isPlaying && (
-              <Svg style={svgIndicatorStyle.indicator} viewBox="0 0 100 100">
-                <Rect
-                  x="3"
-                  y="3"
-                  width="94"
-                  height="94"
-                  rx="6"
-                  ry="6"
-                  stroke="green"
-                  strokeWidth="6"
-                  fill="none"
-                  strokeDasharray={376}
-                  strokeDashoffset={(1 - progress) * 376}
-                />
-              </Svg>
+            {showIndicator && (
+              <Animatable.View
+                animation={indicatorAnim}
+                duration={300}
+                style={activePadIndicatorStyle.indicator}
+                useNativeDriver>
+                <Svg style={StyleSheet.absoluteFill} viewBox="0 0 100 100">
+                  <Rect
+                    x="3"
+                    y="3"
+                    width="94"
+                    height="94"
+                    rx="10"
+                    ry="10"
+                    stroke="white"
+                    strokeWidth="7"
+                    fill="none"
+                    strokeDasharray={376}
+                    strokeDashoffset={(1 - progress) * 376}
+                  />
+                </Svg>
+              </Animatable.View>
             )}
           </View>
         </TouchableOpacity>
@@ -213,7 +242,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const svgIndicatorStyle = StyleSheet.create({
+const activePadIndicatorStyle = StyleSheet.create({
   indicator: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 10,
