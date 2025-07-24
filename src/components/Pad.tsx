@@ -5,14 +5,16 @@ import {Svg, Rect} from 'react-native-svg';
 import {useEffect, useState} from 'react';
 import type {SoundEvent} from '../types/audioService';
 import * as Animatable from 'react-native-animatable';
+import {iconMap} from '../assets/sounds/icons';
 
 interface PadProps {
   sound: string | null;
   soundPack: string;
   color: string;
+  icon?: string;
 }
 
-const Pad: React.FC<PadProps> = ({sound, soundPack, color}) => {
+const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon}) => {
   const scale = useRef(new Animated.Value(1)).current;
   const glowOpacity = useRef(new Animated.Value(0.4)).current;
   const brightnessOpacity = useRef(new Animated.Value(0)).current;
@@ -141,6 +143,7 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color}) => {
   };
 
   const padColor = sound ? color : '#333';
+  const IconComponent = icon && iconMap[icon] ? iconMap[icon] : null;
   return (
     <Animated.View style={[styles.container, {transform: [{scale}]}]}>
       <View style={styles.padWrapper}>
@@ -164,6 +167,15 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color}) => {
                     {opacity: brightnessOpacity},
                   ]}
                 />
+                {IconComponent && (
+                  <IconComponent
+                    width={40}
+                    height={40}
+                    fill="red"
+                    opacity={1}
+                    style={iconStyle.icon}
+                  />
+                )}
               </>
             )}
             {showIndicator && (
@@ -247,6 +259,13 @@ const activePadIndicatorStyle = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     zIndex: 10,
     pointerEvents: 'none',
+  },
+});
+
+const iconStyle = StyleSheet.create({
+  icon: {
+    position: 'absolute',
+    zIndex: 2,
   },
 });
 

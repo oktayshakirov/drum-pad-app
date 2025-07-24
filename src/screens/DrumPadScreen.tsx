@@ -105,6 +105,7 @@ const DrumPadScreen: React.FC = () => {
                 sound={pad.sound}
                 soundPack={currentSoundPack}
                 color={pad.color}
+                icon={pad.icon}
               />
             ))}
           </View>
