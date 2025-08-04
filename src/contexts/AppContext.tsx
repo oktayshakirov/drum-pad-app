@@ -11,6 +11,10 @@ import {SOUND_PACKS} from '../utils/soundUtils';
 import {soundPacks} from '../assets/sounds';
 import {MetronomeSound} from '../assets/sounds/metronome';
 import {AppContextType, AppState, AppProviderProps} from '../types/appContext';
+import {loadAppOpenAd} from '../components/ads/AppOpenAd';
+import {initializeRewardedAd} from '../components/ads/RewardedAd';
+import {initializeInterstitial} from '../components/ads/InterstitialAd';
+import {UnlockService} from '../services/UnlockService';
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -29,6 +33,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
       const context = new AudioContext();
       setState(prev => ({...prev, audioContext: context}));
       AudioService.setAudioContext(context);
+
+      await UnlockService.initialize();
     } catch (error) {
       console.error('AppContext: Error initializing AudioContext:', error);
       setState(prev => ({...prev, isLoading: false}));
@@ -127,6 +133,24 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
       loadSoundPack(state.currentSoundPack);
     }
   }, [state.audioContext, state.currentSoundPack, loadSoundPack]);
+
+  useEffect(() => {
+    if (state.audioContext && !state.isLoading) {
+      const initializeAds = async () => {
+        try {
+          await Promise.allSettled([
+            loadAppOpenAd(),
+            initializeRewardedAd(),
+            initializeInterstitial(),
+          ]);
+        } catch (error) {
+          console.error('Error initializing ads:', error);
+        }
+      };
+
+      initializeAds();
+    }
+  }, [state.audioContext, state.isLoading]);
 
   const contextValue: AppContextType = {
     currentSoundPack: state.currentSoundPack,

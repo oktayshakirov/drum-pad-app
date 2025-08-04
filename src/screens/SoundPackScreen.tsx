@@ -1,4 +1,4 @@
-import React, {useState, useCallback, memo} from 'react';
+import React, {useState, useCallback, memo, useEffect} from 'react';
 import {
   View,
   Text,
@@ -19,6 +19,9 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {BlurView} from '@react-native-community/blur';
 import Equalizer from '../components/Equalizer';
 import ControlsButton from '../components/ControlsButton';
+import {UnlockService} from '../services/UnlockService';
+import {showRewardedAd, isRewardedAdReady} from '../components/ads/RewardedAd';
+import {showInterstitial} from '../components/ads/InterstitialAd';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -44,9 +47,18 @@ const SoundPackDetailScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const {packId} = route.params;
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isUnlocked, setIsUnlocked] = useState<boolean>(false);
+  const [isLoadingAd, setIsLoadingAd] = useState<boolean>(false);
   const {setCurrentSoundPack} = useAppContext();
 
   const pack = packId ? soundPacks[packId] : undefined;
+
+  useEffect(() => {
+    if (packId) {
+      setIsUnlocked(UnlockService.isPackUnlocked(packId));
+      setIsLoadingAd(false);
+    }
+  }, [packId]);
 
   const cleanupDemo = useCallback(async (): Promise<void> => {
     if (isPlaying) {
@@ -81,6 +93,40 @@ const SoundPackDetailScreen: React.FC = () => {
     }
   }, [isPlaying, packId]);
 
+  const handleUnlockPack = useCallback(async (): Promise<void> => {
+    if (!packId || isLoadingAd) {
+      return;
+    }
+
+    setIsLoadingAd(true);
+    try {
+      await showRewardedAd();
+      await UnlockService.unlockPack(packId);
+      setIsUnlocked(true);
+      await setCurrentSoundPack(packId);
+      navigation.navigate('DrumPad');
+    } catch (error) {
+      console.error('Error unlocking pack:', error);
+    } finally {
+      setIsLoadingAd(false);
+    }
+  }, [packId, isLoadingAd, setCurrentSoundPack, navigation]);
+
+  const handleSelectPack = useCallback(async (): Promise<void> => {
+    if (!packId) {
+      return;
+    }
+
+    try {
+      await showInterstitial();
+    } catch (error) {
+      console.error('Error showing interstitial ad:', error);
+    }
+
+    await setCurrentSoundPack(packId);
+    navigation.navigate('DrumPad');
+  }, [packId, setCurrentSoundPack, navigation]);
+
   if (!pack || !pack.sounds || !pack.padConfig || !pack.soundGroups) {
     return null;
   }
@@ -107,7 +153,9 @@ const SoundPackDetailScreen: React.FC = () => {
                 {isPlaying && <Equalizer />}
               </View>
               <View style={styles.infoContainer}>
-                <Text style={styles.packName}>{pack.name}</Text>
+                <View style={styles.packHeader}>
+                  <Text style={styles.packName}>{pack.name}</Text>
+                </View>
                 <Text style={styles.packGenre}>{pack.genre}</Text>
                 <Text style={styles.packBpm}>BPM: {pack.bpm}</Text>
                 <View style={styles.statsContainer}>
@@ -125,6 +173,14 @@ const SoundPackDetailScreen: React.FC = () => {
                         : 0}
                     </Text>
                   </View>
+                  <View style={styles.statItem}>
+                    <Text style={styles.statLabel}>
+                      {isUnlocked ? 'UNLOCKED' : 'LOCKED'}
+                    </Text>
+                    <Text style={styles.lockBadgeIcon}>
+                      {isUnlocked ? '🔓' : '🔒'}
+                    </Text>
+                  </View>
                 </View>
                 <View style={styles.actionsContainer}>
                   <ControlsButton
@@ -133,16 +189,31 @@ const SoundPackDetailScreen: React.FC = () => {
                     onPress={handlePlayStop}
                     size={60}
                   />
-                  <TouchableOpacity
-                    style={styles.selectButton}
-                    onPress={async () => {
-                      await setCurrentSoundPack(packId);
-                      navigation.navigate('DrumPad');
-                    }}>
-                    <Text style={styles.selectButtonText}>
-                      SELECT THIS PACK
-                    </Text>
-                  </TouchableOpacity>
+                  {isUnlocked ? (
+                    <TouchableOpacity
+                      style={styles.selectButton}
+                      onPress={handleSelectPack}>
+                      <Text style={styles.selectButtonText}>
+                        SELECT THIS PACK
+                      </Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <View style={styles.unlockContainer}>
+                      <TouchableOpacity
+                        style={[styles.selectButton, styles.unlockButton]}
+                        onPress={handleUnlockPack}
+                        disabled={isLoadingAd || !isRewardedAdReady()}>
+                        <Text style={styles.selectButtonText}>
+                          {isLoadingAd ? 'LOADING...' : 'WATCH VIDEO TO UNLOCK'}
+                        </Text>
+                      </TouchableOpacity>
+                      {!isRewardedAdReady() && !isLoadingAd && (
+                        <Text style={styles.preparingText}>
+                          Preparing video...
+                        </Text>
+                      )}
+                    </View>
+                  )}
                 </View>
               </View>
             </View>
@@ -208,12 +279,29 @@ const styles = StyleSheet.create({
   infoContainer: {
     flex: 1,
   },
+  packHeader: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   packName: {
     color: '#fff',
     fontSize: 28,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 8,
+  },
+  lockIcon: {
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  unlockedIcon: {
+    opacity: 0.7,
+  },
+  lockIconText: {
+    fontSize: 20,
   },
   packGenre: {
     color: '#aaa',
@@ -245,6 +333,19 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
+  lockBadge: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  lockBadgeText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginBottom: 2,
+  },
+  lockBadgeIcon: {
+    fontSize: 16,
+  },
   actionsContainer: {
     alignItems: 'center',
     gap: 20,
@@ -257,6 +358,18 @@ const styles = StyleSheet.create({
     minWidth: 200,
     alignItems: 'center',
     marginTop: 26,
+  },
+  unlockButton: {
+    backgroundColor: '#FF6B6B',
+  },
+  unlockContainer: {
+    alignItems: 'center',
+  },
+  preparingText: {
+    color: '#aaa',
+    fontSize: 12,
+    marginTop: 8,
+    fontStyle: 'italic',
   },
   selectButtonText: {
     color: '#000',

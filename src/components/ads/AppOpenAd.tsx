@@ -45,4 +45,8 @@ export async function showAppOpenAd() {
   }
 }
 
+export function isAppOpenAdReady(): boolean {
+  return isAppOpenAdLoaded && !isShowingAd;
+}
+
 export default null;

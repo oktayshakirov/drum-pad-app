@@ -13,6 +13,7 @@ import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../../App';
 import {BlurView} from '@react-native-community/blur';
+import {useGlobalAds} from '../components/ads/adsManager';
 
 const DrumPadScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -21,6 +22,8 @@ const DrumPadScreen: React.FC = () => {
   const [isMetronomePlaying, setIsMetronomePlaying] = useState<boolean>(false);
   const channelARef = useRef<ChannelSwitchRef>(null);
   const channelBRef = useRef<ChannelSwitchRef>(null);
+
+  useGlobalAds();
   const padConfigs = getPadConfigs(currentSoundPack);
   const hasTwoChannels = padConfigs.length > 12;
   const visiblePads = hasTwoChannels

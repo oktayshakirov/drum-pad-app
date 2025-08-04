@@ -10,7 +10,7 @@ import SoundPackScreen from './src/screens/SoundPackScreen';
 import {AppProvider, useAppContext} from './src/contexts/AppContext';
 import {soundPacks} from './src/assets/sounds';
 import ConsentDialog from './src/components/ads/ConsentDialog';
-import {StyleSheet, View, ActivityIndicator} from 'react-native';
+import {StyleSheet, View, ActivityIndicator, StatusBar} from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 export type RootStackParamList = {
@@ -64,6 +64,11 @@ const App: React.FC = () => {
   return (
     <AppProvider>
       <SafeAreaProvider>
+        <StatusBar
+          barStyle="light-content"
+          backgroundColor="transparent"
+          translucent={true}
+        />
         {!consentCompleted ? (
           <ConsentDialog onConsentCompleted={() => setConsentCompleted(true)} />
         ) : (

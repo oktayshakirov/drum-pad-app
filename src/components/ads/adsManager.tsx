@@ -2,7 +2,7 @@ import {useEffect, useRef} from 'react';
 import {AppState} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {showInterstitial} from './InterstitialAd';
-import * as AppOpenAdModule from './AppOpenAd';
+import {showAppOpenAd} from './AppOpenAd';
 
 const AD_INTERVAL_MS = 60000; // 1 minute
 
@@ -29,7 +29,7 @@ export function useGlobalAds() {
 
           if (now - lastAdShownTime > AD_INTERVAL_MS) {
             try {
-              await AppOpenAdModule.showAppOpenAd();
+              await showAppOpenAd();
               await AsyncStorage.setItem('lastAdShownTime', now.toString());
             } catch (e) {
               console.log('AppOpenAd error', e);
