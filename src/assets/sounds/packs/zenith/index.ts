@@ -74,7 +74,7 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.MELODY_ACCENT,
       icon: 'melody',
     },
-    {id: 12, sound: 'vocal', color: PAD_COLORS.MELODY_ACCENT, icon: 'vocals'},
+    {id: 12, sound: 'vocal', color: PAD_COLORS.MELODY_ACCENT, icon: 'vocal'},
   ],
 };
 

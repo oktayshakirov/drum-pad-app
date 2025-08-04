@@ -25,6 +25,7 @@ import FluteIcon from './flute.svg';
 import SnapIcon from './snap.svg';
 import BellsIcon from './bells.svg';
 import ChoirMaleIcon from './choir_male.svg';
+import VocalIcon from './vocal.svg';
 
 export const iconMap: Record<string, React.FC<any>> = {
   drums: DrumsIcon,
@@ -54,4 +55,5 @@ export const iconMap: Record<string, React.FC<any>> = {
   snap: SnapIcon,
   bells: BellsIcon,
   choir_male: ChoirMaleIcon,
+  vocal: VocalIcon,
 };

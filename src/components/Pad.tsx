@@ -171,7 +171,7 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon}) => {
                   <IconComponent
                     width={40}
                     height={40}
-                    fill="red"
+                    fill="black"
                     opacity={1}
                     style={iconStyle.icon}
                   />
