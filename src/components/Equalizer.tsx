@@ -1,4 +1,4 @@
-import React, {useState, useEffect, memo} from 'react';
+import React, {useState, useEffect, memo, useRef} from 'react';
 import {View, Animated, StyleSheet} from 'react-native';
 
 const Equalizer: React.FC = memo(() => {
@@ -7,6 +7,7 @@ const Equalizer: React.FC = memo(() => {
     new Animated.Value(1),
     new Animated.Value(1),
   ]);
+  const animationRef = useRef<Animated.CompositeAnimation | null>(null);
 
   useEffect(() => {
     const animate = (): void => {
@@ -25,10 +26,19 @@ const Equalizer: React.FC = memo(() => {
         ]);
       });
 
-      Animated.parallel(sequences).start(() => animate());
+      animationRef.current = Animated.parallel(sequences);
+      animationRef.current.start(() => animate());
     };
 
     animate();
+
+    return () => {
+      if (animationRef.current) {
+        animationRef.current.stop();
+        animationRef.current = null;
+      }
+      animations.forEach(anim => anim.stopAnimation());
+    };
   }, [animations]);
 
   return (

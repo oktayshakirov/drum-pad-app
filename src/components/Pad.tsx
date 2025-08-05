@@ -92,10 +92,23 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon}) => {
     }
   }, [isPlaying, showIndicator]);
 
+  useEffect(() => {
+    return () => {
+      scale.stopAnimation();
+      glowOpacity.stopAnimation();
+      brightnessOpacity.stopAnimation();
+      progressAnim.stopAnimation();
+    };
+  }, [scale, glowOpacity, brightnessOpacity, progressAnim]);
+
   const handlePressIn = async (): Promise<void> => {
     if (!sound) {
       return;
     }
+
+    scale.stopAnimation();
+    glowOpacity.stopAnimation();
+    brightnessOpacity.stopAnimation();
 
     Animated.parallel([
       Animated.spring(scale, {
@@ -123,6 +136,10 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon}) => {
   };
 
   const handlePressOut = (): void => {
+    scale.stopAnimation();
+    glowOpacity.stopAnimation();
+    brightnessOpacity.stopAnimation();
+
     Animated.parallel([
       Animated.spring(scale, {
         toValue: 1,

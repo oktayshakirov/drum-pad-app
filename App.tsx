@@ -12,6 +12,7 @@ import {soundPacks} from './src/assets/sounds';
 import ConsentDialog from './src/components/ads/ConsentDialog';
 import {StyleSheet, View, ActivityIndicator, StatusBar} from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 export type RootStackParamList = {
   DrumPad: undefined;
@@ -62,24 +63,31 @@ const App: React.FC = () => {
   const [consentCompleted, setConsentCompleted] = useState(false);
 
   return (
-    <AppProvider>
-      <SafeAreaProvider>
-        <StatusBar
-          barStyle="light-content"
-          backgroundColor="transparent"
-          translucent={true}
-        />
-        {!consentCompleted ? (
-          <ConsentDialog onConsentCompleted={() => setConsentCompleted(true)} />
-        ) : (
-          <AppNavigatorContent />
-        )}
-      </SafeAreaProvider>
-    </AppProvider>
+    <GestureHandlerRootView style={styles.container}>
+      <AppProvider>
+        <SafeAreaProvider>
+          <StatusBar
+            barStyle="light-content"
+            backgroundColor="transparent"
+            translucent={true}
+          />
+          {!consentCompleted ? (
+            <ConsentDialog
+              onConsentCompleted={() => setConsentCompleted(true)}
+            />
+          ) : (
+            <AppNavigatorContent />
+          )}
+        </SafeAreaProvider>
+      </AppProvider>
+    </GestureHandlerRootView>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
