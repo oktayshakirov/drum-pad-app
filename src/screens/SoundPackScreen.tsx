@@ -185,9 +185,15 @@ const SoundPackDetailScreen: React.FC = () => {
                     <TouchableOpacity
                       style={styles.selectButton}
                       onPress={handleSelectPack}>
-                      <Text style={styles.selectButtonText}>
-                        🎵 SELECT THIS PACK
-                      </Text>
+                      <View style={styles.buttonContent}>
+                        <Image
+                          source={require('../assets/images/pack.png')}
+                          style={styles.buttonIcon}
+                        />
+                        <Text style={styles.selectButtonText}>
+                          SELECT THIS PACK
+                        </Text>
+                      </View>
                     </TouchableOpacity>
                   ) : (
                     <View style={styles.unlockContainer}>
@@ -195,11 +201,21 @@ const SoundPackDetailScreen: React.FC = () => {
                         style={[styles.selectButton, styles.unlockButton]}
                         onPress={handleUnlockPack}
                         disabled={isLoadingAd || !isRewardedAdReady()}>
-                        <Text style={styles.selectButtonText}>
-                          {isLoadingAd
-                            ? '⏳ LOADING...'
-                            : '📺 WATCH VIDEO TO UNLOCK'}
-                        </Text>
+                        <View style={styles.buttonContent}>
+                          <Image
+                            source={
+                              isLoadingAd
+                                ? require('../assets/images/loading.png')
+                                : require('../assets/images/video.png')
+                            }
+                            style={styles.buttonIcon}
+                          />
+                          <Text style={styles.selectButtonText}>
+                            {isLoadingAd
+                              ? 'LOADING...'
+                              : 'WATCH VIDEO TO UNLOCK'}
+                          </Text>
+                        </View>
                       </TouchableOpacity>
                       {!isRewardedAdReady() && !isLoadingAd && (
                         <Text style={styles.preparingText}>
@@ -298,13 +314,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   packGenre: {
-    color: '#aaa',
+    color: '#fff',
     fontSize: 18,
     textAlign: 'center',
     marginBottom: 8,
   },
   packBpm: {
-    color: '#FFD700',
+    color: '#fff',
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 30,
@@ -368,7 +384,16 @@ const styles = StyleSheet.create({
   selectButtonText: {
     color: '#000',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  buttonIcon: {
+    width: 20,
+    height: 20,
   },
   absoluteFill: {
     flex: 1,
