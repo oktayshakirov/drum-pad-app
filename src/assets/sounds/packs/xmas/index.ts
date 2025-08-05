@@ -55,17 +55,48 @@ const soundPack: SoundPack = {
     chant: ['chant_merry_christmas', 'chant_christmas_morning'],
   },
   padConfig: [
-    {id: 1, sound: 'kick', color: PAD_COLORS.DRUMS_MAIN, icon: 'kick'},
-    {id: 2, sound: 'snare', color: PAD_COLORS.DRUMS_ACCENT, icon: 'snare'},
-    {id: 3, sound: 'clap', color: PAD_COLORS.DRUMS_ACCENT, icon: 'clap'},
-    {id: 4, sound: 'hi_hat', color: PAD_COLORS.PERC_MAIN, icon: 'hi_hat'},
-    {id: 5, sound: 'open_hat', color: PAD_COLORS.PERC_ACCENT, icon: 'open_hat'},
+    {
+      id: 1,
+      sound: 'kick',
+      color: PAD_COLORS.DRUMS_MAIN,
+      icon: 'kick',
+      title: 'Kick',
+    },
+    {
+      id: 2,
+      sound: 'snare',
+      color: PAD_COLORS.DRUMS_ACCENT,
+      icon: 'snare',
+      title: 'Snare',
+    },
+    {
+      id: 3,
+      sound: 'clap',
+      color: PAD_COLORS.DRUMS_ACCENT,
+      icon: 'clap',
+      title: 'Clap',
+    },
+    {
+      id: 4,
+      sound: 'hi_hat',
+      color: PAD_COLORS.PERC_MAIN,
+      icon: 'hi_hat',
+      title: 'Hi Hat',
+    },
+    {
+      id: 5,
+      sound: 'open_hat',
+      color: PAD_COLORS.PERC_ACCENT,
+      icon: 'open_hat',
+      title: 'Open Hat',
+    },
     {
       id: 6,
       sound: 'melody_1',
       color: PAD_COLORS.MELODY_MAIN,
       group: 'melody',
       icon: 'melody',
+      title: 'Melody I',
     },
     {
       id: 7,
@@ -73,6 +104,7 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.MELODY_ACCENT,
       group: 'melody',
       icon: 'melody',
+      title: 'Melody II',
     },
     {
       id: 8,
@@ -80,6 +112,7 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.MELODY_ACCENT,
       group: 'melody',
       icon: 'melody',
+      title: 'Melody III',
     },
     {
       id: 9,
@@ -87,6 +120,7 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.BELLS_MAIN,
       group: 'bells',
       icon: 'bells',
+      title: 'Bells I',
     },
     {
       id: 10,
@@ -94,6 +128,7 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.BELLS_ACCENT,
       group: 'bells',
       icon: 'bells',
+      title: 'Bells II',
     },
     {
       id: 11,
@@ -101,6 +136,7 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.CHANT_MAIN,
       group: 'chant',
       icon: 'chant',
+      title: 'Merry Christmas',
     },
     {
       id: 12,
@@ -108,6 +144,7 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.CHANT_ACCENT,
       group: 'chant',
       icon: 'chant',
+      title: 'Christmas Morning',
     },
   ],
 };

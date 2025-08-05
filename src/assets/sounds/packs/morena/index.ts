@@ -50,6 +50,7 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.DRUMS_MAIN,
       group: 'drums',
       icon: 'drums',
+      title: 'Drums I',
     },
     {
       id: 2,
@@ -57,25 +58,35 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.DRUMS_MAIN,
       group: 'drums',
       icon: 'drums',
+      title: 'Drums II',
     },
-    {id: 3, sound: 'clap', color: PAD_COLORS.DRUMS_MAIN, icon: 'clap'},
+    {
+      id: 3,
+      sound: 'clap',
+      color: PAD_COLORS.DRUMS_MAIN,
+      icon: 'clap',
+      title: 'Clap',
+    },
     {
       id: 4,
       sound: 'open_hat',
       color: PAD_COLORS.DRUMS_ACCENT,
       icon: 'open_hat',
+      title: 'Open Hat',
     },
     {
       id: 5,
       sound: 'triangle',
       color: PAD_COLORS.DRUMS_ACCENT,
       icon: 'triangle',
+      title: 'Triangle',
     },
     {
       id: 6,
       sound: 'percussion',
       color: PAD_COLORS.DRUMS_ACCENT,
       icon: 'percussion',
+      title: 'Percussion',
     },
     {
       id: 7,
@@ -83,6 +94,7 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.MELODY_MAIN,
       group: 'melody',
       icon: 'melody',
+      title: 'Melody I',
     },
     {
       id: 8,
@@ -90,6 +102,7 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.MELODY_MAIN,
       group: 'melody',
       icon: 'melody',
+      title: 'Melody II',
     },
     {
       id: 9,
@@ -97,6 +110,7 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.MELODY_MAIN,
       group: 'melody',
       icon: 'melody',
+      title: 'Melody III',
     },
     {
       id: 10,
@@ -104,6 +118,7 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.MELODY_ACCENT,
       group: 'melody',
       icon: 'melody',
+      title: 'Melody IV',
     },
     {
       id: 11,
@@ -111,8 +126,15 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.MELODY_ACCENT,
       group: 'melody',
       icon: 'melody',
+      title: 'Melody V',
     },
-    {id: 12, sound: 'chant_azis', color: PAD_COLORS.SFX_MAIN, icon: 'chant'},
+    {
+      id: 12,
+      sound: 'chant_azis',
+      color: PAD_COLORS.SFX_MAIN,
+      icon: 'chant',
+      title: 'Azis Chant',
+    },
   ],
 };
 

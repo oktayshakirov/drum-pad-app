@@ -166,14 +166,6 @@ const SoundPackDetailScreen: React.FC = () => {
                     </Text>
                   </View>
                   <View style={styles.statItem}>
-                    <Text style={styles.statLabel}>Groups</Text>
-                    <Text style={styles.statValue}>
-                      {pack.soundGroups
-                        ? Object.keys(pack.soundGroups).length
-                        : 0}
-                    </Text>
-                  </View>
-                  <View style={styles.statItem}>
                     <Text style={styles.statLabel}>
                       {isUnlocked ? 'UNLOCKED' : 'LOCKED'}
                     </Text>
@@ -194,7 +186,7 @@ const SoundPackDetailScreen: React.FC = () => {
                       style={styles.selectButton}
                       onPress={handleSelectPack}>
                       <Text style={styles.selectButtonText}>
-                        SELECT THIS PACK
+                        🎵 SELECT THIS PACK
                       </Text>
                     </TouchableOpacity>
                   ) : (
@@ -204,7 +196,9 @@ const SoundPackDetailScreen: React.FC = () => {
                         onPress={handleUnlockPack}
                         disabled={isLoadingAd || !isRewardedAdReady()}>
                         <Text style={styles.selectButtonText}>
-                          {isLoadingAd ? 'LOADING...' : 'WATCH VIDEO TO UNLOCK'}
+                          {isLoadingAd
+                            ? '⏳ LOADING...'
+                            : '📺 WATCH VIDEO TO UNLOCK'}
                         </Text>
                       </TouchableOpacity>
                       {!isRewardedAdReady() && !isLoadingAd && (

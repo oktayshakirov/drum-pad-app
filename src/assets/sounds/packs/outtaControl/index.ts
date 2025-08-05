@@ -59,16 +59,36 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.DRUMS_MAIN,
       group: 'drums',
       icon: 'drums',
+      title: 'Drums',
     },
-    {id: 2, sound: 'snare', color: PAD_COLORS.DRUMS_ACCENT, icon: 'snare'},
-    {id: 3, sound: 'kick', color: PAD_COLORS.DRUMS_ACCENT, icon: 'kick'},
-    {id: 4, sound: 'hi_hat', color: PAD_COLORS.BASS_MAIN, icon: 'hi_hat'},
+    {
+      id: 2,
+      sound: 'snare',
+      color: PAD_COLORS.DRUMS_ACCENT,
+      icon: 'snare',
+      title: 'Snare',
+    },
+    {
+      id: 3,
+      sound: 'kick',
+      color: PAD_COLORS.DRUMS_ACCENT,
+      icon: 'kick',
+      title: 'Kick',
+    },
+    {
+      id: 4,
+      sound: 'hi_hat',
+      color: PAD_COLORS.BASS_MAIN,
+      icon: 'hi_hat',
+      title: 'Hi Hat',
+    },
     {
       id: 5,
       sound: 'melody_1',
       color: PAD_COLORS.MELODY_MAIN,
       group: 'melody',
       icon: 'melody',
+      title: 'Melody I',
     },
     {
       id: 6,
@@ -76,6 +96,7 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.MELODY_MAIN,
       group: 'melody',
       icon: 'melody',
+      title: 'Melody II',
     },
     {
       id: 7,
@@ -83,6 +104,7 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.MELODY_ACCENT,
       group: 'melody',
       icon: 'melody',
+      title: 'Melody III',
     },
     {
       id: 8,
@@ -90,6 +112,7 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.PERC_ACCENT,
       group: 'synth',
       icon: 'synth',
+      title: 'Synth I',
     },
     {
       id: 9,
@@ -97,6 +120,7 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.PERC_ACCENT,
       group: 'synth',
       icon: 'synth',
+      title: 'Synth II',
     },
     {
       id: 10,
@@ -104,6 +128,7 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.BRASS_MAIN,
       group: 'brass',
       icon: 'trumpet',
+      title: 'Brass I',
     },
     {
       id: 11,
@@ -111,8 +136,15 @@ const soundPack: SoundPack = {
       color: PAD_COLORS.BRASS_ACCENT,
       group: 'brass',
       icon: 'trumpet',
+      title: 'Brass II',
     },
-    {id: 12, sound: 'chant_shyah', color: PAD_COLORS.SFX_MAIN, icon: 'chant'},
+    {
+      id: 12,
+      sound: 'chant_shyah',
+      color: PAD_COLORS.SFX_MAIN,
+      icon: 'chant',
+      title: 'Shyah Chant',
+    },
   ],
 };
 
