@@ -60,17 +60,17 @@ const soundPack: SoundPack = {
     },
     {
       id: 3,
-      sound: 'open_hat',
-      color: PAD_COLORS.DRUMS_MAIN,
-      icon: 'open_hat',
-      title: 'Open Hat',
-    },
-    {
-      id: 4,
       sound: 'clap',
       color: PAD_COLORS.DRUMS_ACCENT,
       icon: 'clap',
       title: 'Clap',
+    },
+    {
+      id: 4,
+      sound: 'open_hat',
+      color: PAD_COLORS.DRUMS_MAIN,
+      icon: 'open_hat',
+      title: 'Open Hat',
     },
     {
       id: 5,

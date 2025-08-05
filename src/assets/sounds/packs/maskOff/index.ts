@@ -68,24 +68,24 @@ const soundPack: SoundPack = {
     },
     {
       id: 4,
+      sound: 'snare',
+      color: PAD_COLORS.DRUMS_ACCENT,
+      icon: 'snare',
+      title: 'Snare',
+    },
+    {
+      id: 5,
       sound: 'hit_1',
       color: PAD_COLORS.DRUMS_ACCENT,
       icon: 'hit',
       title: 'Hit I',
     },
     {
-      id: 5,
+      id: 6,
       sound: 'hit_2',
       color: PAD_COLORS.DRUMS_ACCENT,
       icon: 'hit',
       title: 'Hit II',
-    },
-    {
-      id: 6,
-      sound: 'snare',
-      color: PAD_COLORS.DRUMS_ACCENT,
-      icon: 'snare',
-      title: 'Snare',
     },
     {
       id: 7,

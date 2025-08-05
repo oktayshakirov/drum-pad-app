@@ -44,9 +44,7 @@ const soundPack: SoundPack = {
     chant_female: require('./samples/chant_female.mp3'),
   },
   soundGroups: {
-    // Only one melody can play at a time
     melody: ['melody_1', 'melody_2'],
-    // Only one synth can play at a time
     synth: ['synth_1', 'synth_2'],
   },
   padConfig: [
@@ -80,17 +78,17 @@ const soundPack: SoundPack = {
     },
     {
       id: 5,
-      sound: 'hi_hat_roll',
-      color: PAD_COLORS.PERC_MAIN,
-      icon: 'hi_hat',
-      title: 'Hi Hat Roll',
-    },
-    {
-      id: 6,
       sound: 'hit',
       color: PAD_COLORS.PERC_ACCENT,
       icon: 'hit',
       title: 'Hit',
+    },
+    {
+      id: 6,
+      sound: 'hi_hat_roll',
+      color: PAD_COLORS.PERC_MAIN,
+      icon: 'hi_hat',
+      title: 'Hi Hat Roll',
     },
     {
       id: 7,
@@ -102,19 +100,19 @@ const soundPack: SoundPack = {
     },
     {
       id: 8,
-      sound: 'melody_2',
-      color: PAD_COLORS.MELODY_ACCENT,
-      group: 'melody',
-      icon: 'melody',
-      title: 'Melody II',
-    },
-    {
-      id: 9,
       sound: 'synth_1',
       color: PAD_COLORS.SYNTH_MAIN,
       group: 'synth',
       icon: 'synth',
       title: 'Synth I',
+    },
+    {
+      id: 9,
+      sound: 'melody_2',
+      color: PAD_COLORS.MELODY_ACCENT,
+      group: 'melody',
+      icon: 'melody',
+      title: 'Melody II',
     },
     {
       id: 10,
@@ -126,17 +124,17 @@ const soundPack: SoundPack = {
     },
     {
       id: 11,
-      sound: 'sfx_walkie_talkie',
-      color: PAD_COLORS.SFX_MAIN,
-      icon: 'walkieTalkie',
-      title: 'Walkie Talkie',
-    },
-    {
-      id: 12,
       sound: 'chant_female',
       color: PAD_COLORS.SFX_ACCENT,
       icon: 'chant',
       title: 'Female Chant',
+    },
+    {
+      id: 12,
+      sound: 'sfx_walkie_talkie',
+      color: PAD_COLORS.SFX_MAIN,
+      icon: 'walkieTalkie',
+      title: 'Walkie Talkie',
     },
   ],
 };
