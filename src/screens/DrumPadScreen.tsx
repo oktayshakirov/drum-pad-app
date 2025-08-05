@@ -1,12 +1,15 @@
-import React, {useState, useRef} from 'react';
-import {View, StyleSheet, ImageBackground} from 'react-native';
+import React, {useState, useRef, useEffect, useCallback} from 'react';
+import {View, StyleSheet, ImageBackground, Text} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Pad from '../components/Pad';
 import CurrentPack from '../components/CurrentPack';
 import Metronome from '../components/Metronome';
 import ChannelSwitch, {ChannelSwitchRef} from '../components/ChannelSwitch';
+import CustomizeButton, {
+  CustomizeButtonRef,
+} from '../components/CustomizeButton';
 import {useAppContext} from '../contexts/AppContext';
-import {getPadConfigs} from '../utils/soundUtils';
+import {getPadConfigs, getPadConfigsSync} from '../utils/soundUtils';
 import AdBanner from '../components/ads/BannerAd';
 import AudioService from '../services/AudioService';
 import {useNavigation} from '@react-navigation/native';
@@ -20,11 +23,31 @@ const DrumPadScreen: React.FC = () => {
   const {currentSoundPack} = useAppContext();
   const [activeChannel, setActiveChannel] = useState<'A' | 'B'>('A');
   const [isMetronomePlaying, setIsMetronomePlaying] = useState<boolean>(false);
-  const channelARef = useRef<ChannelSwitchRef>(null);
-  const channelBRef = useRef<ChannelSwitchRef>(null);
+  const [padConfigs, setPadConfigs] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const channelRef = useRef<ChannelSwitchRef>(null);
+  const customizeRef = useRef<CustomizeButtonRef>(null);
 
   useGlobalAds();
-  const padConfigs = getPadConfigs(currentSoundPack);
+
+  const loadPadConfigs = useCallback(async (): Promise<void> => {
+    setIsLoading(true);
+    try {
+      const configs = await getPadConfigs(currentSoundPack);
+      setPadConfigs(configs);
+    } catch (error) {
+      console.error('Error loading pad configs:', error);
+      const fallbackConfigs = getPadConfigsSync(currentSoundPack);
+      setPadConfigs(fallbackConfigs);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentSoundPack]);
+
+  useEffect(() => {
+    loadPadConfigs();
+  }, [loadPadConfigs]);
+
   const hasTwoChannels = padConfigs.length > 12;
   const visiblePads = hasTwoChannels
     ? padConfigs.slice(
@@ -45,13 +68,21 @@ const DrumPadScreen: React.FC = () => {
     navigation.navigate('PackLibrary');
   };
 
-  const handleChannelPress = (pressedChannel: 'A' | 'B'): void => {
-    if (pressedChannel === 'A') {
-      channelBRef.current?.triggerFlash();
-    } else {
-      channelARef.current?.triggerFlash();
-    }
+  const handleOpenCustomize = (): void => {
+    navigation.navigate('Customize', {packId: currentSoundPack});
   };
+
+  const handleChannelPress = (_pressedChannel: 'A' | 'B'): void => {
+    channelRef.current?.triggerFlash();
+  };
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.absoluteFill}>
@@ -73,15 +104,12 @@ const DrumPadScreen: React.FC = () => {
           <CurrentPack onOpenPackLibrary={handleOpenPackLibrary} />
           <View style={styles.controlsRow}>
             <View style={styles.leftSection}>
-              {hasTwoChannels && (
-                <ChannelSwitch
-                  ref={channelARef}
-                  channel="A"
-                  onChannelSelect={setActiveChannel}
-                  disabled={activeChannel === 'A'}
-                  onButtonPress={handleChannelPress}
-                />
-              )}
+              <ChannelSwitch
+                ref={channelRef}
+                onChannelSelect={setActiveChannel}
+                disabled={!hasTwoChannels}
+                onButtonPress={handleChannelPress}
+              />
             </View>
             <View style={styles.centerSection}>
               <Metronome
@@ -90,15 +118,11 @@ const DrumPadScreen: React.FC = () => {
               />
             </View>
             <View style={styles.rightSection}>
-              {hasTwoChannels && (
-                <ChannelSwitch
-                  ref={channelBRef}
-                  channel="B"
-                  onChannelSelect={setActiveChannel}
-                  disabled={activeChannel === 'B'}
-                  onButtonPress={handleChannelPress}
-                />
-              )}
+              <CustomizeButton
+                ref={customizeRef}
+                onPress={handleOpenCustomize}
+                disabled={false}
+              />
             </View>
           </View>
           <View style={styles.grid}>
@@ -163,6 +187,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     maxWidth: 400,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000',
+  },
+  loadingText: {
+    color: '#fff',
+    fontSize: 18,
   },
 });
 

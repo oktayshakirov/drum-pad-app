@@ -1,4 +1,5 @@
 import {soundPacks, metronome} from '../assets/sounds';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface SoundPack {
   id: string;
@@ -29,7 +30,19 @@ export const SOUND_PACKS: Record<string, SoundPack> = Object.keys(
   return acc;
 }, {} as Record<string, SoundPack>);
 
-export const getPadConfigs = (packName: string): PadConfig[] => {
+export const getPadConfigs = async (packName: string): Promise<PadConfig[]> => {
+  try {
+    const savedOrder = await AsyncStorage.getItem(`custom_order_${packName}`);
+    if (savedOrder) {
+      return JSON.parse(savedOrder);
+    }
+  } catch (error) {
+    console.error('Error loading custom order:', error);
+  }
+  return (soundPacks as any)[packName]?.padConfig || [];
+};
+
+export const getPadConfigsSync = (packName: string): PadConfig[] => {
   return (soundPacks as any)[packName]?.padConfig || [];
 };
 

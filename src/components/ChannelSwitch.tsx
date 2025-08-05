@@ -1,8 +1,7 @@
-import React, {useRef, forwardRef, useImperativeHandle} from 'react';
+import React, {useRef, forwardRef, useImperativeHandle, useState} from 'react';
 import ControlsButton, {ControlsButtonRef} from './ControlsButton';
 
 interface ChannelSwitchProps {
-  channel: 'A' | 'B';
   onChannelSelect: (channel: 'A' | 'B') => void;
   disabled?: boolean;
   onButtonPress?: (channel: 'A' | 'B') => void;
@@ -13,8 +12,9 @@ export interface ChannelSwitchRef {
 }
 
 const ChannelSwitch = forwardRef<ChannelSwitchRef, ChannelSwitchProps>(
-  ({channel, onChannelSelect, disabled, onButtonPress}, ref) => {
+  ({onChannelSelect, disabled, onButtonPress}, ref) => {
     const buttonRef = useRef<ControlsButtonRef>(null);
+    const [currentChannel, setCurrentChannel] = useState<'A' | 'B'>('A');
 
     useImperativeHandle(ref, () => ({
       triggerFlash: () => {
@@ -23,17 +23,20 @@ const ChannelSwitch = forwardRef<ChannelSwitchRef, ChannelSwitchProps>(
     }));
 
     const handlePress = (): void => {
+      const newChannel = currentChannel === 'A' ? 'B' : 'A';
+      setCurrentChannel(newChannel);
+
       if (onButtonPress) {
-        onButtonPress(channel);
+        onButtonPress(newChannel);
       }
-      onChannelSelect(channel);
+      onChannelSelect(newChannel);
     };
 
     return (
       <ControlsButton
         ref={buttonRef}
         variant="control"
-        label={channel}
+        label={currentChannel}
         size={40}
         onPress={handlePress}
         disabled={disabled}
