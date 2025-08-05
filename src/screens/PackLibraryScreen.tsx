@@ -15,20 +15,27 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../../App';
 import Equalizer from '../components/Equalizer';
 import ControlsButton from '../components/ControlsButton';
+import {UnlockService} from '../services/UnlockService';
 
 interface PackItemProps {
   item: any;
   isPlaying: boolean;
   onSelect: (id: string) => void;
   onPlayStop: (id: string) => void;
+  isLocked: boolean;
 }
 
 const PackItem: React.FC<PackItemProps> = memo(
-  ({item, isPlaying, onSelect, onPlayStop}) => (
+  ({item, isPlaying, onSelect, onPlayStop, isLocked}) => (
     <TouchableOpacity style={styles.packItem} onPress={() => onSelect(item.id)}>
       <View style={styles.imageContainer}>
         <Image source={item.image} style={styles.packImage} />
         {isPlaying && <Equalizer />}
+        {isLocked && (
+          <View style={styles.lockIconContainer}>
+            <Text style={styles.lockIcon}>🔒</Text>
+          </View>
+        )}
       </View>
       <View style={styles.infoRow}>
         <View style={styles.infoTextContainer}>
@@ -119,6 +126,7 @@ const PackLibraryScreen: React.FC = () => {
         isPlaying={playingPackId === item.id}
         onSelect={handleSelect}
         onPlayStop={handlePlayStop}
+        isLocked={!UnlockService.isPackUnlocked(item.id)}
       />
     ),
     [playingPackId, handleSelect, handlePlayStop],
@@ -205,6 +213,17 @@ const styles = StyleSheet.create({
   },
   infoTextContainer: {
     flex: 1,
+  },
+  lockIconContainer: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 10,
+    padding: 4,
+  },
+  lockIcon: {
+    fontSize: 18,
   },
 });
 

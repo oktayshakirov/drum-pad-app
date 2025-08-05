@@ -1,20 +1,22 @@
 import React, {useRef} from 'react';
-import {TouchableOpacity, StyleSheet, Animated, View} from 'react-native';
+import {TouchableOpacity, StyleSheet, Animated, View, Text} from 'react-native';
 import AudioService from '../services/AudioService';
 import {Svg, Rect} from 'react-native-svg';
 import {useEffect, useState} from 'react';
 import type {SoundEvent} from '../types/audioService';
 import * as Animatable from 'react-native-animatable';
 import {iconMap} from '../assets/sounds/icons';
+import {brightenColor} from '../utils/colorUtils';
 
 interface PadProps {
   sound: string | null;
   soundPack: string;
   color: string;
   icon?: string;
+  title?: string;
 }
 
-const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon}) => {
+const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
   const scale = useRef(new Animated.Value(1)).current;
   const glowOpacity = useRef(new Animated.Value(0.4)).current;
   const brightnessOpacity = useRef(new Animated.Value(0)).current;
@@ -26,7 +28,8 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon}) => {
   const [indicatorAnim, setIndicatorAnim] = useState<
     'fadeIn' | 'flash' | undefined
   >(undefined);
-  const latestPlayInstanceId = useRef<number | null>(null); // Add this
+  const latestPlayInstanceId = useRef<number | null>(null);
+  const brighterColor = brightenColor(color, 0.9);
 
   useEffect(() => {
     if (!sound) {
@@ -35,7 +38,7 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon}) => {
     const listener = (event: SoundEvent) => {
       if (event.soundName === sound && event.soundPack === soundPack) {
         if (event.type === 'start' && event.duration) {
-          latestPlayInstanceId.current = event.playInstanceId ?? null; // Track the playInstanceId
+          latestPlayInstanceId.current = event.playInstanceId ?? null;
           setIsPlaying(true);
           setProgress(0);
           progressAnim.setValue(0);
@@ -161,6 +164,8 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon}) => {
 
   const padColor = sound ? color : '#333';
   const IconComponent = icon && iconMap[icon] ? iconMap[icon] : null;
+  const soundTitle = title || 'Unknown';
+
   return (
     <Animated.View style={[styles.container, {transform: [{scale}]}]}>
       <View style={styles.padWrapper}>
@@ -184,22 +189,30 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon}) => {
                     {opacity: brightnessOpacity},
                   ]}
                 />
-                {IconComponent && (
-                  <IconComponent
-                    width={40}
-                    height={40}
-                    fill="black"
-                    opacity={1}
-                    style={iconStyle.icon}
-                  />
-                )}
+                <View style={styles.iconContainer}>
+                  {IconComponent && (
+                    <IconComponent
+                      width={40}
+                      height={40}
+                      fill={brighterColor}
+                      opacity={1}
+                      style={iconStyle.icon}
+                    />
+                  )}
+                </View>
+                <Text style={[styles.soundTitle, {color: brighterColor}]}>
+                  {soundTitle}
+                </Text>
               </>
             )}
             {showIndicator && (
               <Animatable.View
                 animation={indicatorAnim}
                 duration={300}
-                style={activePadIndicatorStyle.indicator}
+                style={[
+                  activePadIndicatorStyle.indicator,
+                  {borderColor: brighterColor},
+                ]}
                 useNativeDriver>
                 <Svg style={StyleSheet.absoluteFill} viewBox="0 0 100 100">
                   <Rect
@@ -209,7 +222,7 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon}) => {
                     height="94"
                     rx="10"
                     ry="10"
-                    stroke="white"
+                    stroke={brighterColor}
                     strokeWidth="7"
                     fill="none"
                     strokeDasharray={376}
@@ -268,6 +281,18 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: 'white',
     borderRadius: 15,
+  },
+  iconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  soundTitle: {
+    position: 'absolute',
+    bottom: '20%',
+    fontSize: 9,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    width: '100%',
   },
 });
 

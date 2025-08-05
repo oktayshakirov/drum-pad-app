@@ -1,18 +1,18 @@
 import {PadColors, SoundPack} from '../../../../types/soundPacks';
 
 const PAD_COLORS: PadColors = {
-  // Drums group - Soft Pastel Blue shades
-  DRUMS_MAIN: '#A7C7E7', // Soft Pastel Blue
-  DRUMS_ACCENT: '#D0E6FA', // Lighter Pastel Blue
-  // Bass group - Soft Pastel Silver shades
-  BASS_MAIN: '#D3D3D3', // Soft Pastel Silver
-  BASS_ACCENT: '#E9E9E9', // Lighter Pastel Silver
-  // Melody group - Soft Pastel Silver shades
-  MELODY_MAIN: '#E9E9E9', // Soft Pastel Silver
-  MELODY_ACCENT: '#F5F5F5', // Lighter Pastel Silver
-  // SFX group - Soft Pastel Blue shades
-  SFX_MAIN: '#A7C7E7', // Soft Pastel Blue
-  SFX_ACCENT: '#D0E6FA', // Lighter Pastel Blue
+  // Drums group - Dark Red/Brown with bright red icons
+  DRUMS_MAIN: '#2d1b1b', // Dark Red-Brown
+  DRUMS_ACCENT: '#3d2b2b', // Darker Red-Brown
+  // Bass group - Dark Green with bright green icons
+  BASS_MAIN: '#1b2d1b', // Dark Green
+  BASS_ACCENT: '#2b3d2b', // Darker Green
+  // Melody group - Dark Blue with bright blue icons
+  MELODY_MAIN: '#1b1b2d', // Dark Blue
+  MELODY_ACCENT: '#2b2b3d', // Darker Blue
+  // SFX group - Dark Purple with bright purple icons
+  SFX_MAIN: '#2d1b2d', // Dark Purple
+  SFX_ACCENT: '#3d2b3d', // Darker Purple
 };
 
 const soundPack: SoundPack = {

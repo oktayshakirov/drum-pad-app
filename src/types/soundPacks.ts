@@ -23,5 +23,6 @@ export interface SoundPack {
     color: string;
     group?: string;
     icon?: string;
+    title?: string;
   }>;
 }

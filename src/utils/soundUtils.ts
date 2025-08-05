@@ -13,6 +13,7 @@ interface PadConfig {
   label?: string;
   color: string;
   icon?: string;
+  title?: string;
 }
 
 export const SOUND_PACKS: Record<string, SoundPack> = Object.keys(
