@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   ImageBackground,
   Alert,
-  ScrollView,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useRoute, useNavigation} from '@react-navigation/native';
@@ -18,13 +17,13 @@ import {soundPacks} from '../assets/sounds';
 import {getPadConfigs, getPadConfigsSync} from '../utils/soundUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {iconMap} from '../assets/sounds/icons';
+import DraggableList from '../components/DraggableList';
 
 const CustomizeScreen: React.FC = () => {
   const route = useRoute<RouteProp<RootStackParamList, 'Customize'>>();
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const {packId} = route.params;
   const [customPads, setCustomPads] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [hasChanges, setHasChanges] = useState(false);
 
   const pack = soundPacks[packId];
@@ -40,10 +39,7 @@ const CustomizeScreen: React.FC = () => {
         setCustomPads(configs);
       }
     } catch (error) {
-      console.error('Error loading custom order:', error);
       setCustomPads(originalPads);
-    } finally {
-      setIsLoading(false);
     }
   }, [packId, originalPads]);
 
@@ -60,7 +56,7 @@ const CustomizeScreen: React.FC = () => {
         );
         setHasChanges(false);
       } catch (error) {
-        console.error('Error saving custom order:', error);
+        // Silent error handling
       }
     },
     [packId],
@@ -70,6 +66,17 @@ const CustomizeScreen: React.FC = () => {
     saveCustomOrder(customPads);
     Alert.alert('Success', 'Changes saved successfully!');
   };
+
+  const handleReorder = useCallback(
+    (fromIndex: number, toIndex: number) => {
+      const newOrder = [...customPads];
+      const [movedItem] = newOrder.splice(fromIndex, 1);
+      newOrder.splice(toIndex, 0, movedItem);
+      setCustomPads(newOrder);
+      setHasChanges(true);
+    },
+    [customPads],
+  );
 
   const handleResetOrder = (): void => {
     Alert.alert(
@@ -81,7 +88,7 @@ const CustomizeScreen: React.FC = () => {
           text: 'Reset',
           style: 'destructive',
           onPress: async () => {
-            const configs = await getPadConfigs(packId);
+            const configs = getPadConfigsSync(packId);
             setCustomPads(configs);
             await AsyncStorage.removeItem(`custom_order_${packId}`);
             setHasChanges(false);
@@ -90,14 +97,6 @@ const CustomizeScreen: React.FC = () => {
       ],
     );
   };
-
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>Loading...</Text>
-      </View>
-    );
-  }
 
   return (
     <View style={styles.absoluteFill}>
@@ -124,19 +123,17 @@ const CustomizeScreen: React.FC = () => {
 
           <View style={styles.instructions}>
             <Text style={styles.instructionsText}>
-              Sound order customization coming soon!
+              Drag and drop to reorder sounds
             </Text>
           </View>
 
-          <ScrollView
-            style={styles.content}
-            showsVerticalScrollIndicator={false}>
-            {customPads.map((item, index) => {
+          <DraggableList
+            data={customPads}
+            renderItem={(item, index) => {
               const IconComponent = iconMap[item.icon];
 
               return (
                 <View
-                  key={item.id}
                   style={[
                     styles.padItem,
                     {
@@ -164,8 +161,11 @@ const CustomizeScreen: React.FC = () => {
                   </View>
                 </View>
               );
-            })}
-          </ScrollView>
+            }}
+            onReorder={handleReorder}
+            keyExtractor={item => item.id}
+            style={styles.content}
+          />
 
           <View style={styles.footer}>
             <TouchableOpacity
@@ -317,16 +317,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#000',
-  },
-  loadingText: {
-    color: '#fff',
-    fontSize: 18,
   },
 });
 

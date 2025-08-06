@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect, useCallback} from 'react';
-import {View, StyleSheet, ImageBackground, Text} from 'react-native';
+import {View, StyleSheet, ImageBackground} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Pad from '../components/Pad';
 import CurrentPack from '../components/CurrentPack';
@@ -12,7 +12,7 @@ import {useAppContext} from '../contexts/AppContext';
 import {getPadConfigs, getPadConfigsSync} from '../utils/soundUtils';
 import AdBanner from '../components/ads/BannerAd';
 import AudioService from '../services/AudioService';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../../App';
 import {BlurView} from '@react-native-community/blur';
@@ -24,14 +24,13 @@ const DrumPadScreen: React.FC = () => {
   const [activeChannel, setActiveChannel] = useState<'A' | 'B'>('A');
   const [isMetronomePlaying, setIsMetronomePlaying] = useState<boolean>(false);
   const [padConfigs, setPadConfigs] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+
   const channelRef = useRef<ChannelSwitchRef>(null);
   const customizeRef = useRef<CustomizeButtonRef>(null);
 
   useGlobalAds();
 
   const loadPadConfigs = useCallback(async (): Promise<void> => {
-    setIsLoading(true);
     try {
       const configs = await getPadConfigs(currentSoundPack);
       setPadConfigs(configs);
@@ -39,14 +38,18 @@ const DrumPadScreen: React.FC = () => {
       console.error('Error loading pad configs:', error);
       const fallbackConfigs = getPadConfigsSync(currentSoundPack);
       setPadConfigs(fallbackConfigs);
-    } finally {
-      setIsLoading(false);
     }
   }, [currentSoundPack]);
 
   useEffect(() => {
     loadPadConfigs();
   }, [loadPadConfigs]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadPadConfigs();
+    }, [loadPadConfigs]),
+  );
 
   const hasTwoChannels = padConfigs.length > 12;
   const visiblePads = hasTwoChannels
@@ -75,14 +78,6 @@ const DrumPadScreen: React.FC = () => {
   const handleChannelPress = (_pressedChannel: 'A' | 'B'): void => {
     channelRef.current?.triggerFlash();
   };
-
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>Loading...</Text>
-      </View>
-    );
-  }
 
   return (
     <View style={styles.absoluteFill}>
@@ -187,16 +182,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     maxWidth: 400,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#000',
-  },
-  loadingText: {
-    color: '#fff',
-    fontSize: 18,
   },
 });
 
