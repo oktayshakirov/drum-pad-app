@@ -121,7 +121,13 @@ const CustomizeScreen: React.FC = () => {
             </TouchableOpacity>
           </View>
 
-          <View style={styles.instructions}>
+          <View
+            style={[
+              styles.instructions,
+              customPads.length === 24
+                ? styles.instructionsLarge
+                : styles.instructionsSmall,
+            ]}>
             <Text style={styles.instructionsText}>
               Drag and drop to reorder sounds
             </Text>
@@ -131,6 +137,8 @@ const CustomizeScreen: React.FC = () => {
             data={customPads}
             renderItem={(item, index) => {
               const IconComponent = iconMap[item.icon];
+              const isLargePack = customPads.length === 24;
+              const channel = isLargePack ? (index < 12 ? 'A' : 'B') : null;
 
               return (
                 <View
@@ -141,22 +149,36 @@ const CustomizeScreen: React.FC = () => {
                     },
                   ]}>
                   <View style={styles.padContent}>
-                    {IconComponent && (
-                      <IconComponent
-                        width={24}
-                        height={24}
-                        fill="#000"
-                        style={styles.icon}
-                      />
-                    )}
-                    <Text style={styles.padTitle}>{item.title}</Text>
-                    <View style={styles.positionIndicator}>
-                      <Text style={styles.positionText}>{index + 1}</Text>
+                    <View style={styles.padHeader}>
+                      <View style={styles.badgeContainer}>
+                        <View style={styles.positionIndicator}>
+                          <Text style={styles.positionText}>{index + 1}</Text>
+                        </View>
+                        {channel && (
+                          <View style={styles.channelIndicator}>
+                            <Text style={styles.channelText}>{channel}</Text>
+                          </View>
+                        )}
+                      </View>
+                      <View style={styles.dragHandle}>
+                        <View style={styles.dragDot} />
+                        <View style={styles.dragDot} />
+                        <View style={styles.dragDot} />
+                      </View>
                     </View>
-                    <View style={styles.dragHandle}>
-                      <View style={styles.dragDot} />
-                      <View style={styles.dragDot} />
-                      <View style={styles.dragDot} />
+
+                    <View style={styles.padCenter}>
+                      {IconComponent && (
+                        <IconComponent
+                          width={32}
+                          height={32}
+                          fill="#000"
+                          style={styles.icon}
+                        />
+                      )}
+                      <Text style={styles.padTitle} numberOfLines={2}>
+                        {item.title}
+                      </Text>
                     </View>
                   </View>
                 </View>
@@ -223,7 +245,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   instructions: {
-    marginBottom: 20,
+    // Dynamic marginBottom applied inline
   },
   instructionsText: {
     color: '#aaa',
@@ -234,54 +256,59 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   padItem: {
-    marginVertical: 5,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
-    height: 80,
+    flex: 1,
   },
   padContent: {
     flex: 1,
+    flexDirection: 'column',
+    padding: 8,
+  },
+  padHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 15,
-    gap: 12,
+    alignItems: 'center',
+  },
+  padCenter: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   icon: {
-    marginRight: 8,
+    marginBottom: 4,
   },
   padTitle: {
     color: '#000',
-    fontSize: 16,
+    fontSize: 11,
     fontWeight: 'bold',
-    flex: 1,
+    textAlign: 'center',
   },
   positionIndicator: {
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderRadius: 15,
-    width: 30,
-    height: 30,
+    borderRadius: 10,
+    width: 20,
+    height: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
   positionText: {
     color: '#fff',
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 'bold',
   },
   dragHandle: {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: 8,
   },
   dragDot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
+    width: 3,
+    height: 3,
+    borderRadius: 1.5,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    marginVertical: 1,
+    marginVertical: 0.5,
   },
   footer: {
     marginTop: 15,
@@ -317,6 +344,30 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  badgeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  channelIndicator: {
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 5,
+  },
+  channelText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  instructionsLarge: {
+    marginBottom: 30,
+  },
+  instructionsSmall: {
+    marginBottom: 50,
   },
 });
 

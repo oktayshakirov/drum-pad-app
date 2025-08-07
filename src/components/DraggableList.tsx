@@ -1,92 +1,97 @@
-import React, {useState, useCallback, useRef, useEffect, useMemo} from 'react';
-import {StyleSheet, Animated, ScrollView, View} from 'react-native';
+import React, {useState, useCallback} from 'react';
+import {StyleSheet, View, TouchableOpacity, Dimensions} from 'react-native';
 import {
   GestureHandlerRootView,
-  PanGestureHandler,
-  State,
+  Gesture,
+  GestureDetector,
 } from 'react-native-gesture-handler';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  runOnJS,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 
-const ITEM_HEIGHT = 80;
-const ITEM_MARGIN = 1;
-const TOTAL_ITEM_HEIGHT = ITEM_HEIGHT + ITEM_MARGIN * 2;
+const {width: screenWidth} = Dimensions.get('window');
+const ITEM_MARGIN = 8;
 
 interface DraggableItemProps {
   item: any;
   index: number;
   isDragging: boolean;
-  isHovered: boolean;
-  translateY: Animated.Value;
-  zIndex: Animated.Value;
   onDragStart: (index: number) => void;
-  onDragEnd: (index: number, translationY: number) => void;
+  onDragEnd: (index: number) => void;
+  onHover: (index: number, translationY: number, translationX: number) => void;
   renderItem: (item: any, index: number) => React.ReactElement;
+  itemSize: number;
 }
 
 const DraggableItem: React.FC<DraggableItemProps> = ({
   item,
   index,
   isDragging,
-  isHovered,
-  translateY,
-  zIndex,
   onDragStart,
   onDragEnd,
+  onHover,
   renderItem,
+  itemSize,
 }) => {
-  const scale = translateY.interpolate({
-    inputRange: [-50, 0, 50],
-    outputRange: [0.95, 1, 1.05],
-    extrapolate: 'clamp',
+  const translateY = useSharedValue(0);
+  const translateX = useSharedValue(0);
+  const scale = useSharedValue(1);
+  const zIndex = useSharedValue(0);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {translateX: translateX.value},
+        {translateY: translateY.value},
+        {scale: scale.value},
+      ],
+      zIndex: zIndex.value,
+    };
   });
 
-  const shadowOpacity = translateY.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 0.3],
-  });
-
-  const shadowRadius = translateY.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 10],
-  });
-
-  const onGestureEvent = Animated.event(
-    [{nativeEvent: {translationY: translateY}}],
-    {useNativeDriver: true},
-  );
-
-  const onHandlerStateChange = useCallback(
-    (event: any) => {
-      if (event.nativeEvent.state === State.BEGAN) {
-        onDragStart(index);
-      } else if (event.nativeEvent.state === State.END) {
-        onDragEnd(index, event.nativeEvent.translationY);
-      }
-    },
-    [index, onDragStart, onDragEnd],
-  );
+  const panGesture = Gesture.Pan()
+    .onUpdate(event => {
+      translateX.value = event.translationX;
+      translateY.value = event.translationY;
+      runOnJS(onHover)(index, event.translationY, event.translationX);
+    })
+    .onStart(() => {
+      runOnJS(onDragStart)(index);
+      zIndex.value = withTiming(1000);
+      scale.value = withSpring(1.1);
+    })
+    .onEnd(() => {
+      runOnJS(onDragEnd)(index);
+      translateX.value = withTiming(0);
+      translateY.value = withTiming(0);
+      scale.value = withSpring(1);
+      zIndex.value = withTiming(0);
+    });
 
   return (
     <Animated.View
       style={[
         styles.draggableItem,
+        {width: itemSize, height: itemSize},
         isDragging && styles.draggingItem,
-        isHovered && styles.hoveredItem,
-        {
-          transform: [{translateY}, {scale}],
-          shadowOpacity,
-          shadowRadius,
-          zIndex: zIndex,
-        },
+        animatedStyle,
       ]}>
-      <PanGestureHandler
-        onGestureEvent={onGestureEvent}
-        onHandlerStateChange={onHandlerStateChange}
-        minDist={10}
-        shouldCancelWhenOutside={false}>
+      <GestureDetector gesture={panGesture}>
         <Animated.View style={styles.gestureContainer}>
-          {renderItem(item, index)}
+          <TouchableOpacity
+            style={styles.touchableContainer}
+            activeOpacity={0.8}
+            onLongPress={() => {
+              onDragStart(index);
+            }}>
+            {renderItem(item, index)}
+          </TouchableOpacity>
         </Animated.View>
-      </PanGestureHandler>
+      </GestureDetector>
     </Animated.View>
   );
 };
@@ -108,198 +113,114 @@ const DraggableList: React.FC<DraggableListProps> = ({
 }) => {
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const scrollViewRef = useRef<ScrollView>(null);
-  const translateYValues = useRef<{[key: string]: Animated.Value}>({});
-  const zIndexValues = useRef<{[key: string]: Animated.Value}>({});
-  const lastHoverTime = useRef<number>(0);
+  const numItems = data.length;
+  const columns = numItems === 24 ? 4 : 3;
+  const availableWidth = screenWidth - 42;
+  const totalMarginWidth = (columns - 1) * ITEM_MARGIN;
+  const itemSize = (availableWidth - totalMarginWidth) / columns;
 
-  const itemPositions = useMemo(() => {
-    return data.map((_, index) => index * TOTAL_ITEM_HEIGHT);
-  }, [data]);
-
-  const getTranslateYValue = useCallback((key: string) => {
-    if (!translateYValues.current[key]) {
-      translateYValues.current[key] = new Animated.Value(0);
-    }
-    return translateYValues.current[key];
+  const handleDragStart = useCallback((index: number) => {
+    setDraggingIndex(index);
+    setHoveredIndex(null);
   }, []);
-
-  const getZIndexValue = useCallback((key: string) => {
-    if (!zIndexValues.current[key]) {
-      zIndexValues.current[key] = new Animated.Value(0);
-    }
-    return zIndexValues.current[key];
-  }, []);
-
-  const handleDragStart = useCallback(
-    (index: number) => {
-      setDraggingIndex(index);
-      setHoveredIndex(null);
-
-      const draggedKey = keyExtractor(data[index], index);
-      const draggedZIndex = getZIndexValue(draggedKey);
-      draggedZIndex.setValue(1000);
-    },
-    [data, keyExtractor, getZIndexValue],
-  );
 
   const handleDragEnd = useCallback(
-    (index: number, translationY: number) => {
-      const newIndex = Math.round(
-        (index * TOTAL_ITEM_HEIGHT + translationY) / TOTAL_ITEM_HEIGHT,
-      );
-      const clampedNewIndex = Math.max(0, Math.min(data.length - 1, newIndex));
-
-      if (clampedNewIndex !== index) {
-        onReorder(index, clampedNewIndex);
+    (index: number) => {
+      if (hoveredIndex !== null && hoveredIndex !== index) {
+        onReorder(index, hoveredIndex);
       }
-
-      Object.values(zIndexValues.current).forEach(zIndex => {
-        zIndex.setValue(0);
-      });
-
-      const currentTranslateY =
-        translateYValues.current[keyExtractor(data[index], index)];
-      Animated.timing(currentTranslateY, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }).start(() => {
-        setDraggingIndex(null);
-        setHoveredIndex(null);
-      });
+      setDraggingIndex(null);
+      setHoveredIndex(null);
     },
-    [data, keyExtractor, onReorder],
+    [hoveredIndex, onReorder],
   );
 
-  const checkHover = useCallback(
-    (draggedPosition: number) => {
-      const now = Date.now();
-      if (now - lastHoverTime.current < 50) {
+  const handleHover = useCallback(
+    (index: number, translationY: number, translationX: number) => {
+      if (draggingIndex === null) {
         return;
       }
-      lastHoverTime.current = now;
 
-      let newHoveredIndex: number | null = null;
+      // Calculate the position of each item in the grid
+      const itemPositions: {x: number; y: number}[] = [];
+      for (let i = 0; i < data.length; i++) {
+        const row = Math.floor(i / columns);
+        const col = i % columns;
+        const x = col * (itemSize + ITEM_MARGIN);
+        const y = row * (itemSize + ITEM_MARGIN);
+        itemPositions.push({x, y});
+      }
 
-      data.forEach((item, index) => {
-        if (index !== draggingIndex) {
-          const itemTop = itemPositions[index];
-          const itemBottom = itemTop + TOTAL_ITEM_HEIGHT;
-          const draggedTop = draggedPosition;
-          const draggedBottom = draggedPosition + TOTAL_ITEM_HEIGHT;
+      // Calculate the dragged item's current position
+      const draggedItemPos = itemPositions[draggingIndex];
+      const newX = draggedItemPos.x + translationX;
+      const newY = draggedItemPos.y + translationY;
 
-          const isHovering = draggedTop < itemBottom && draggedBottom > itemTop;
+      // Find which item position is closest
+      let closestIndex = draggingIndex;
+      let minDistance = Infinity;
 
-          if (isHovering) {
-            newHoveredIndex = index;
-          }
-
-          const itemKey = keyExtractor(item, index);
-          const itemZIndex = getZIndexValue(itemKey);
-          itemZIndex.setValue(isHovering ? 500 : 0);
+      for (let i = 0; i < data.length; i++) {
+        const distance = Math.sqrt(
+          Math.pow(newX - itemPositions[i].x, 2) +
+            Math.pow(newY - itemPositions[i].y, 2),
+        );
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestIndex = i;
         }
-      });
+      }
 
-      if (newHoveredIndex !== hoveredIndex) {
-        setHoveredIndex(newHoveredIndex);
+      if (closestIndex !== hoveredIndex) {
+        setHoveredIndex(closestIndex);
       }
     },
-    [
-      draggingIndex,
-      data,
-      keyExtractor,
-      getZIndexValue,
-      itemPositions,
-      hoveredIndex,
-    ],
+    [draggingIndex, hoveredIndex, data.length, columns, itemSize],
   );
 
-  useEffect(() => {
-    if (draggingIndex !== null) {
-      const draggedTranslateY =
-        translateYValues.current[
-          keyExtractor(data[draggingIndex], draggingIndex)
-        ];
-      let listenerId: string | null = null;
+  const renderGridItem = (item: any, index: number) => {
+    const col = index % columns;
 
-      if (draggedTranslateY) {
-        listenerId = draggedTranslateY.addListener(({value}) => {
-          const draggedPosition = draggingIndex * TOTAL_ITEM_HEIGHT + value;
-          checkHover(draggedPosition);
-        });
-      }
-
-      return () => {
-        if (listenerId && draggedTranslateY) {
-          draggedTranslateY.removeListener(listenerId);
-        }
-      };
-    }
-  }, [draggingIndex, data, keyExtractor, checkHover]);
-
-  useEffect(() => {
-    const translateValues = translateYValues.current;
-    const zIndexValuesRef = zIndexValues.current;
-
-    return () => {
-      Object.values(translateValues).forEach(value => {
-        value.stopAnimation();
-      });
-      Object.values(zIndexValuesRef).forEach(value => {
-        value.stopAnimation();
-      });
-    };
-  }, []);
-
-  const handleScroll = useCallback(
-    (event: any) => {
-      if (draggingIndex !== null) {
-        const scrollY = event.nativeEvent.contentOffset.y;
-        const itemTop = draggingIndex * TOTAL_ITEM_HEIGHT;
-        const itemBottom = itemTop + TOTAL_ITEM_HEIGHT;
-
-        if (scrollY > itemTop - 100) {
-          scrollViewRef.current?.scrollTo({
-            y: Math.max(0, scrollY - 50),
-            animated: true,
-          });
-        } else if (scrollY < itemBottom + 100) {
-          scrollViewRef.current?.scrollTo({
-            y: scrollY + 50,
-            animated: true,
-          });
-        }
-      }
-    },
-    [draggingIndex],
-  );
+    return (
+      <View
+        key={keyExtractor(item, index)}
+        style={[
+          {
+            width: itemSize,
+            height: itemSize,
+          },
+          col < columns - 1 ? styles.gridItemWithMargin : null,
+          styles.gridItemWithBottomMargin,
+        ]}>
+        <DraggableItem
+          item={item}
+          index={index}
+          isDragging={draggingIndex === index}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onHover={handleHover}
+          renderItem={renderItem}
+          itemSize={itemSize}
+        />
+      </View>
+    );
+  };
 
   return (
     <View style={[styles.container, style]}>
-      <ScrollView
-        ref={scrollViewRef}
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}>
-        <GestureHandlerRootView>
-          {data.map((item, index) => (
-            <DraggableItem
-              key={keyExtractor(item, index)}
-              item={item}
-              index={index}
-              isDragging={draggingIndex === index}
-              isHovered={hoveredIndex === index}
-              translateY={getTranslateYValue(keyExtractor(item, index))}
-              zIndex={getZIndexValue(keyExtractor(item, index))}
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-              renderItem={renderItem}
-            />
-          ))}
-        </GestureHandlerRootView>
-      </ScrollView>
+      <GestureHandlerRootView>
+        <View
+          style={[
+            styles.gridContainer,
+            {
+              width: availableWidth,
+              maxWidth: availableWidth,
+            },
+            styles.gridContainerCentered,
+          ]}>
+          {data.map((item, index) => renderGridItem(item, index))}
+        </View>
+      </GestureHandlerRootView>
     </View>
   );
 };
@@ -308,28 +229,47 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  scrollView: {
-    flex: 1,
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+  },
+  gridContainerCentered: {
+    alignSelf: 'center',
+  },
+  gridItemWithMargin: {
+    marginRight: ITEM_MARGIN,
+  },
+  gridItemWithBottomMargin: {
+    marginBottom: ITEM_MARGIN,
   },
   draggableItem: {
-    marginVertical: ITEM_MARGIN,
+    borderRadius: 12,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
     },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   draggingItem: {
     elevation: 10,
-  },
-  hoveredItem: {
-    borderWidth: 3,
-    borderColor: '#fff',
-    borderStyle: 'solid',
-    backgroundColor: 'rgba(76, 175, 80, 0.15)',
-    borderRadius: 15,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    zIndex: 1000,
   },
   gestureContainer: {
+    flex: 1,
+  },
+  touchableContainer: {
     flex: 1,
   },
 });
