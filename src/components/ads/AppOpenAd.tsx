@@ -1,12 +1,28 @@
 import {AppOpenAd, AdEventType} from 'react-native-google-mobile-ads';
-import {getAdUnitId} from './adConfig';
+import {getAdUnitId, isGoogleMobileAdsInitialized} from './adConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 let appOpenAd: AppOpenAd | null = null;
 let isAppOpenAdLoaded = false;
 let isShowingAd = false;
+let retryCount = 0;
+const MAX_RETRIES = 3;
 
 export async function loadAppOpenAd() {
+  // Wait for SDK initialization
+  if (!isGoogleMobileAdsInitialized()) {
+    return new Promise<void>(resolve => {
+      const checkInitialization = () => {
+        if (isGoogleMobileAdsInitialized()) {
+          loadAppOpenAd().then(resolve);
+        } else {
+          setTimeout(checkInitialization, 1000);
+        }
+      };
+      checkInitialization();
+    });
+  }
+
   if (appOpenAd) {
     appOpenAd.removeAllListeners();
   }
@@ -14,18 +30,27 @@ export async function loadAppOpenAd() {
   const consent = await AsyncStorage.getItem('trackingConsent');
   const requestNonPersonalizedAdsOnly = consent !== 'granted';
 
-  appOpenAd = AppOpenAd.createForAdRequest(getAdUnitId('appOpen')!, {
+  const adUnitId = getAdUnitId('appOpen');
+
+  appOpenAd = AppOpenAd.createForAdRequest(adUnitId!, {
     requestNonPersonalizedAdsOnly,
   });
 
   appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
     isAppOpenAdLoaded = true;
-    console.log('AppOpenAd loaded');
+    retryCount = 0; // Reset retry count on success
   });
 
-  appOpenAd.addAdEventListener(AdEventType.ERROR, (error: Error) => {
+  appOpenAd.addAdEventListener(AdEventType.ERROR, (_error: Error) => {
     isAppOpenAdLoaded = false;
-    console.error('AppOpenAd failed to load:', error);
+
+    // Retry loading if we haven't exceeded max retries
+    if (retryCount < MAX_RETRIES) {
+      retryCount++;
+      setTimeout(() => {
+        loadAppOpenAd().catch(console.error);
+      }, 2000);
+    }
   });
 
   appOpenAd.addAdEventListener(AdEventType.CLOSED, () => {
@@ -37,7 +62,7 @@ export async function loadAppOpenAd() {
   try {
     await appOpenAd.load();
   } catch (error) {
-    console.error('Error loading AppOpenAd:', error);
+    console.error('Error loading App open ad:', error);
     isAppOpenAdLoaded = false;
   }
 }
@@ -51,7 +76,7 @@ export async function showAppOpenAd() {
     isShowingAd = true;
     await appOpenAd.show();
   } catch (error) {
-    console.error('Error showing AppOpenAd:', error);
+    console.error('Error showing App open ad:', error);
     isShowingAd = false;
     isAppOpenAdLoaded = false;
     loadAppOpenAd();

@@ -34,9 +34,16 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
       setState(prev => ({...prev, audioContext: context}));
       AudioService.setAudioContext(context);
 
-      await UnlockService.initialize();
+      // Initialize UnlockService separately to avoid blocking
+      try {
+        await UnlockService.initialize();
+      } catch (error) {
+        console.error('AppContext: Error initializing UnlockService:', error);
+      }
     } catch (error) {
       console.error('AppContext: Error initializing AudioContext:', error);
+    } finally {
+      // Always set loading to false, even if there are errors
       setState(prev => ({...prev, isLoading: false}));
     }
   }, []);
@@ -148,7 +155,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
         }
       };
 
-      initializeAds();
+      // Initialize ads after a short delay to ensure app is fully loaded
+      setTimeout(initializeAds, 1000);
     }
   }, [state.audioContext, state.isLoading]);
 

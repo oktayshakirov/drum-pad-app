@@ -7,6 +7,7 @@ import {
   Image,
   Dimensions,
   ImageBackground,
+  Alert,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {soundPacks} from '../assets/sounds';
@@ -20,8 +21,6 @@ import {BlurView} from '@react-native-community/blur';
 import Equalizer from '../components/Equalizer';
 import ControlsButton from '../components/ControlsButton';
 import {UnlockService} from '../services/UnlockService';
-import {showRewardedAd, isRewardedAdReady} from '../components/ads/RewardedAd';
-import {showGlobalInterstitial} from '../components/ads/adsManager';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -49,13 +48,21 @@ const SoundPackDetailScreen: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isUnlocked, setIsUnlocked] = useState<boolean>(false);
   const [isLoadingAd, setIsLoadingAd] = useState<boolean>(false);
+  const [unlockStatus, setUnlockStatus] = useState<{
+    isUnlocked: boolean;
+    canGetFreeUnlock: boolean;
+    hasRewardedAd: boolean;
+    hoursUntilFreeUnlock: number;
+  } | null>(null);
   const {setCurrentSoundPack} = useAppContext();
 
   const pack = packId ? soundPacks[packId] : undefined;
 
   useEffect(() => {
     if (packId) {
-      setIsUnlocked(UnlockService.isPackUnlocked(packId));
+      const status = UnlockService.getUnlockStatus(packId);
+      setIsUnlocked(status.isUnlocked);
+      setUnlockStatus(status);
       setIsLoadingAd(false);
     }
   }, [packId]);
@@ -100,15 +107,39 @@ const SoundPackDetailScreen: React.FC = () => {
 
     setIsLoadingAd(true);
     try {
-      await showRewardedAd();
-      await UnlockService.unlockPack(packId);
-      setIsUnlocked(true);
-      await setCurrentSoundPack(packId);
-      navigation.navigate('DrumPad');
+      const result = await UnlockService.attemptUnlockWithFallbacks(packId);
+
+      if (result.success) {
+        if (result.method === 'rewarded') {
+          // Permanently unlock the pack
+          setIsUnlocked(true);
+          await setCurrentSoundPack(packId);
+
+          Alert.alert(
+            'Pack Unlocked!',
+            'Congratulations! You can now use this sound pack.',
+            [
+              {
+                text: 'Continue',
+                onPress: () => navigation.navigate('DrumPad'),
+              },
+            ],
+          );
+        } else if (result.method === 'free') {
+          // Temporarily unlock for this session only
+          await setCurrentSoundPack(packId);
+          navigation.navigate('DrumPad');
+        }
+      }
     } catch (error) {
       console.error('Error unlocking pack:', error);
     } finally {
       setIsLoadingAd(false);
+      // Refresh unlock status
+      if (packId) {
+        const status = UnlockService.getUnlockStatus(packId);
+        setUnlockStatus(status);
+      }
     }
   }, [packId, isLoadingAd, setCurrentSoundPack, navigation]);
 
@@ -117,15 +148,67 @@ const SoundPackDetailScreen: React.FC = () => {
       return;
     }
 
-    try {
-      await showGlobalInterstitial();
-    } catch (error) {
-      console.error('Error showing interstitial ad:', error);
-    }
-
     await setCurrentSoundPack(packId);
     navigation.navigate('DrumPad');
   }, [packId, setCurrentSoundPack, navigation]);
+
+  const getUnlockButtonText = (): string => {
+    if (isLoadingAd) {
+      return 'LOADING...';
+    }
+
+    if (unlockStatus?.hasRewardedAd) {
+      return 'WATCH VIDEO TO UNLOCK';
+    }
+
+    if (unlockStatus?.canGetFreeUnlock) {
+      return 'UNLOCK FREE';
+    }
+
+    return 'NO VIDEO AVAILABLE';
+  };
+
+  const getUnlockButtonStyle = () => {
+    if (isLoadingAd) {
+      return [styles.selectButton, styles.loadingButton];
+    }
+    if (unlockStatus?.hasRewardedAd) {
+      return [styles.selectButton, styles.unlockButton];
+    }
+    if (unlockStatus?.canGetFreeUnlock) {
+      return [styles.selectButton, styles.freeUnlockButton];
+    }
+    return [styles.selectButton, styles.disabledButton];
+  };
+
+  const getUnlockButtonIcon = () => {
+    if (isLoadingAd) {
+      return require('../assets/images/loading.png');
+    }
+    if (unlockStatus?.hasRewardedAd) {
+      return require('../assets/images/video.png');
+    }
+    return require('../assets/images/pack.png');
+  };
+
+  const isUnlockButtonDisabled = (): boolean => {
+    return (
+      isLoadingAd ||
+      (!unlockStatus?.hasRewardedAd && !unlockStatus?.canGetFreeUnlock)
+    );
+  };
+
+  const getStatusMessage = (): string => {
+    if (unlockStatus?.hasRewardedAd) {
+      return '';
+    }
+
+    if (unlockStatus?.canGetFreeUnlock) {
+      return 'No video ads available. Try once for free!';
+    }
+
+    return `No video ads available. Try again in ${unlockStatus?.hoursUntilFreeUnlock} hours.`;
+  };
 
   if (!pack || !pack.sounds || !pack.padConfig || !pack.soundGroups) {
     return null;
@@ -198,28 +281,23 @@ const SoundPackDetailScreen: React.FC = () => {
                   ) : (
                     <View style={styles.unlockContainer}>
                       <TouchableOpacity
-                        style={[styles.selectButton, styles.unlockButton]}
+                        style={getUnlockButtonStyle()}
                         onPress={handleUnlockPack}
-                        disabled={isLoadingAd || !isRewardedAdReady()}>
+                        disabled={isUnlockButtonDisabled()}>
                         <View style={styles.buttonContent}>
                           <Image
-                            source={
-                              isLoadingAd
-                                ? require('../assets/images/loading.png')
-                                : require('../assets/images/video.png')
-                            }
+                            source={getUnlockButtonIcon()}
                             style={styles.buttonIcon}
                           />
                           <Text style={styles.selectButtonText}>
-                            {isLoadingAd
-                              ? 'LOADING...'
-                              : 'WATCH VIDEO TO UNLOCK'}
+                            {getUnlockButtonText()}
                           </Text>
                         </View>
                       </TouchableOpacity>
-                      {!isRewardedAdReady() && !isLoadingAd && (
+
+                      {getStatusMessage() && (
                         <Text style={styles.preparingText}>
-                          Preparing video...
+                          {getStatusMessage()}
                         </Text>
                       )}
                     </View>
@@ -372,6 +450,15 @@ const styles = StyleSheet.create({
   unlockButton: {
     backgroundColor: '#FF6B6B',
   },
+  freeUnlockButton: {
+    backgroundColor: '#4CAF50',
+  },
+  disabledButton: {
+    backgroundColor: '#666',
+  },
+  loadingButton: {
+    backgroundColor: '#9E9E9E',
+  },
   unlockContainer: {
     alignItems: 'center',
   },
@@ -380,6 +467,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 8,
     fontStyle: 'italic',
+    textAlign: 'center',
   },
   selectButtonText: {
     color: '#000',

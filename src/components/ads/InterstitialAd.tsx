@@ -1,12 +1,28 @@
 import {InterstitialAd, AdEventType} from 'react-native-google-mobile-ads';
-import {getAdUnitId} from './adConfig';
+import {getAdUnitId, isGoogleMobileAdsInitialized} from './adConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 let interstitial: InterstitialAd | null = null;
 let isAdLoaded = false;
 let isShowingAd = false;
+let retryCount = 0;
+const MAX_RETRIES = 3;
 
 export async function initializeInterstitial() {
+  // Wait for SDK initialization
+  if (!isGoogleMobileAdsInitialized()) {
+    return new Promise<void>(resolve => {
+      const checkInitialization = () => {
+        if (isGoogleMobileAdsInitialized()) {
+          initializeInterstitial().then(resolve);
+        } else {
+          setTimeout(checkInitialization, 1000);
+        }
+      };
+      checkInitialization();
+    });
+  }
+
   if (interstitial) {
     interstitial.removeAllListeners();
   }
@@ -14,21 +30,27 @@ export async function initializeInterstitial() {
   const consent = await AsyncStorage.getItem('trackingConsent');
   const requestNonPersonalizedAdsOnly = consent !== 'granted';
 
-  interstitial = InterstitialAd.createForAdRequest(
-    getAdUnitId('interstitial')!,
-    {
-      requestNonPersonalizedAdsOnly,
-    },
-  );
+  const adUnitId = getAdUnitId('interstitial');
+
+  interstitial = InterstitialAd.createForAdRequest(adUnitId!, {
+    requestNonPersonalizedAdsOnly,
+  });
 
   interstitial.addAdEventListener(AdEventType.LOADED, () => {
     isAdLoaded = true;
-    console.log('Interstitial ad loaded');
+    retryCount = 0; // Reset retry count on success
   });
 
-  interstitial.addAdEventListener(AdEventType.ERROR, (error: Error) => {
+  interstitial.addAdEventListener(AdEventType.ERROR, (_error: Error) => {
     isAdLoaded = false;
-    console.error('Interstitial ad failed to load:', error);
+
+    // Retry loading if we haven't exceeded max retries
+    if (retryCount < MAX_RETRIES) {
+      retryCount++;
+      setTimeout(() => {
+        initializeInterstitial().catch(console.error);
+      }, 2000);
+    }
   });
 
   interstitial.addAdEventListener(AdEventType.CLOSED, () => {

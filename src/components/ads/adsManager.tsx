@@ -3,6 +3,7 @@ import {AppState} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {showInterstitial, initializeInterstitial} from './InterstitialAd';
 import {showAppOpenAd, loadAppOpenAd} from './AppOpenAd';
+import {initializeGoogleMobileAds} from './adConfig';
 
 const AD_INTERVAL_MS = 60000; // 1 minute
 
@@ -26,28 +27,46 @@ async function initializeAdTimings() {
 }
 
 export async function initializeGlobalAds() {
-  const hasInitializedKey = 'hasInitializedAds';
-  const hasInitialized = await AsyncStorage.getItem(hasInitializedKey);
+  try {
+    // Initialize Google Mobile Ads SDK first
+    await initializeGoogleMobileAds();
 
-  if (!hasInitialized) {
-    await initializeAdTimings();
-    await AsyncStorage.setItem(hasInitializedKey, 'true');
+    const hasInitializedKey = 'hasInitializedAds';
+    const hasInitialized = await AsyncStorage.getItem(hasInitializedKey);
+
+    if (!hasInitialized) {
+      await initializeAdTimings();
+      await AsyncStorage.setItem(hasInitializedKey, 'true');
+    }
+
+    // Initialize ads after SDK is ready
+    await Promise.all([initializeInterstitial(), loadAppOpenAd()]);
+  } catch (error) {
+    console.error('Failed to initialize global ads:', error);
+
+    // Retry initialization after a delay
+    setTimeout(() => {
+      initializeGlobalAds().catch(console.error);
+    }, 5000);
   }
-
-  await Promise.all([initializeInterstitial(), loadAppOpenAd()]);
 }
 
 async function canShowAd(adType: string): Promise<boolean> {
   const lastAdShownString = await AsyncStorage.getItem(
     `lastAdShownTime_${adType}`,
   );
+
   if (!lastAdShownString) {
     await updateLastAdShownTime(adType);
     return false;
   }
+
   const lastAdShownTime = parseInt(lastAdShownString, 10);
   const now = Date.now();
-  return now - lastAdShownTime > AD_INTERVAL_MS;
+  const timeSinceLastAd = now - lastAdShownTime;
+  const canShow = timeSinceLastAd > AD_INTERVAL_MS;
+
+  return canShow;
 }
 
 async function updateLastAdShownTime(adType: string) {
@@ -86,7 +105,7 @@ export function useGlobalAds() {
               await showAppOpenAd();
               await updateLastAdShownTime(AD_TYPES.APP_OPEN);
             } catch (e) {
-              console.log('AppOpenAd error', e);
+              console.error('AppOpenAd error:', e);
             }
           }
         }
