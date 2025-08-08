@@ -6,9 +6,10 @@ import {
   TouchableOpacity,
   Platform,
   StyleSheet,
+  SafeAreaView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import {initializeGlobalAds} from './adsManager';
 import {
   requestTrackingPermission,
   getTrackingStatus,
@@ -27,6 +28,7 @@ const ConsentDialog = ({onConsentCompleted}: ConsentDialogProps) => {
       if (storedConsent === null) {
         setModalVisible(true);
       } else {
+        await initializeGlobalAds();
         onConsentCompleted();
       }
     } catch (error) {
@@ -38,12 +40,12 @@ const ConsentDialog = ({onConsentCompleted}: ConsentDialogProps) => {
     checkConsent();
   }, [checkConsent]);
 
-  const handleAllow = async () => {
+  const handleConsent = async (consent: 'granted' | 'denied') => {
     try {
-      await AsyncStorage.setItem('trackingConsent', 'granted');
+      await AsyncStorage.setItem('trackingConsent', consent);
       setModalVisible(false);
 
-      if (Platform.OS === 'ios') {
+      if (consent === 'granted' && Platform.OS === 'ios') {
         try {
           const currentStatus = await getTrackingStatus();
 
@@ -53,60 +55,82 @@ const ConsentDialog = ({onConsentCompleted}: ConsentDialogProps) => {
           }
         } catch (error) {}
       }
+
+      await initializeGlobalAds();
+      onConsentCompleted();
     } catch (error) {
       setModalVisible(false);
+      onConsentCompleted();
     }
-
-    onConsentCompleted();
   };
 
-  const handleDontAllow = async () => {
-    try {
-      await AsyncStorage.setItem('trackingConsent', 'denied');
-    } catch (error) {}
-
-    setModalVisible(false);
-    onConsentCompleted();
-  };
+  const handleAllow = () => handleConsent('granted');
+  const handleDontAllow = () => handleConsent('denied');
 
   return (
     <Modal
       visible={modalVisible}
       transparent
-      animationType="slide"
+      animationType="fade"
+      statusBarTranslucent
       onRequestClose={() => setModalVisible(false)}>
-      <View style={styles.modalOverlay}>
+      <SafeAreaView style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
-          <Text style={styles.title}>Dear User</Text>
-          <Text style={styles.message}>
-            {Platform.OS === 'ios'
-              ? "To keep Shape Beats free, we use personalized ads. You'll see a system dialog next to confirm your choice."
-              : "To keep Shape Beats free and provide you with the best experience, we rely on personalized ads. Our partners will collect data which means you'll see ads that match your interests. Your privacy is our priority and your data is handled securely."}
-          </Text>
+          <View style={styles.header}>
+            <Text style={styles.title}>Privacy Settings</Text>
+            <Text style={styles.subtitle}>Help us improve your experience</Text>
+          </View>
+
+          <View style={styles.content}>
+            <Text style={styles.message}>
+              {Platform.OS === 'ios'
+                ? "We value your privacy and aim to keep Shape Beats free through personalized ads. You'll see a system dialog next to confirm your choice."
+                : 'We use data to provide you with a better experience and keep Shape Beats free through personalized ads. Your data is handled securely, and we prioritize your privacy at all times.'}
+            </Text>
+
+            <View style={styles.bulletPoints}>
+              <Text style={styles.bulletPoint}>
+                • Personalized content and ads
+              </Text>
+              <Text style={styles.bulletPoint}>• Better app experience</Text>
+              <Text style={styles.bulletPoint}>• Support app development</Text>
+            </View>
+          </View>
+
           <View style={styles.buttonContainer}>
             {Platform.OS === 'android' ? (
               <>
                 <TouchableOpacity
                   onPress={handleDontAllow}
-                  style={styles.button}>
-                  <Text style={styles.buttonText}>Don't Allow</Text>
+                  style={[styles.button, styles.declineButton]}>
+                  <Text style={[styles.buttonText, styles.declineButtonText]}>
+                    Don't Allow
+                  </Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleAllow} style={styles.button}>
-                  <Text style={[styles.buttonText, styles.agreeButton]}>
+                <TouchableOpacity
+                  onPress={handleAllow}
+                  style={[styles.button, styles.allowButton]}>
+                  <Text style={[styles.buttonText, styles.allowButtonText]}>
                     Allow
                   </Text>
                 </TouchableOpacity>
               </>
             ) : (
-              <TouchableOpacity onPress={handleAllow} style={styles.button}>
-                <Text style={[styles.buttonText, styles.continueButton]}>
+              <TouchableOpacity
+                onPress={handleAllow}
+                style={[
+                  styles.button,
+                  styles.allowButton,
+                  styles.singleButton,
+                ]}>
+                <Text style={[styles.buttonText, styles.allowButtonText]}>
                   Continue
                 </Text>
               </TouchableOpacity>
             )}
           </View>
         </View>
-      </View>
+      </SafeAreaView>
     </Modal>
   );
 };
@@ -114,47 +138,93 @@ const ConsentDialog = ({onConsentCompleted}: ConsentDialogProps) => {
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   modalContainer: {
-    width: '80%',
-    backgroundColor: '#333333',
-    padding: 20,
-    borderRadius: 10,
+    backgroundColor: '#121212',
+    borderRadius: 16,
+    padding: 24,
+    width: '90%',
+    maxWidth: 400,
     elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  header: {
+    marginBottom: 16,
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#fff',
+    color: '#FFFFFF',
+    marginBottom: 8,
     textAlign: 'center',
   },
-  message: {
-    marginBottom: 15,
+  subtitle: {
     fontSize: 16,
-    color: '#fff',
-    textAlign: 'left',
+    color: '#E0E0E0',
+    textAlign: 'center',
+  },
+  content: {
+    marginBottom: 24,
+  },
+  message: {
+    fontSize: 14,
+    color: '#E0E0E0',
+    lineHeight: 20,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  bulletPoints: {
+    marginTop: 8,
+  },
+  bulletPoint: {
+    fontSize: 14,
+    color: '#E0E0E0',
+    marginBottom: 8,
+    paddingLeft: 8,
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
+    gap: 12,
   },
   button: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    flex: 1,
+    backgroundColor: '#1E1E1E',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#333333',
+  },
+  singleButton: {
+    minWidth: 150,
+  },
+  declineButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#404040',
+  },
+  allowButton: {
+    backgroundColor: '#2196F3',
+    borderColor: '#1976D2',
   },
   buttonText: {
+    color: '#FFFFFF',
     fontSize: 16,
-    color: '#ffffff',
+    fontWeight: '600',
   },
-  continueButton: {
-    fontWeight: 'bold',
+  declineButtonText: {
+    color: '#B3B3B3',
   },
-  agreeButton: {
-    fontWeight: 'bold',
+  allowButtonText: {
+    color: '#FFFFFF',
   },
 });
 

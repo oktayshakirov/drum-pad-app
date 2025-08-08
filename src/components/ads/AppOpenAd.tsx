@@ -7,6 +7,10 @@ let isAppOpenAdLoaded = false;
 let isShowingAd = false;
 
 export async function loadAppOpenAd() {
+  if (appOpenAd) {
+    appOpenAd.removeAllListeners();
+  }
+
   const consent = await AsyncStorage.getItem('trackingConsent');
   const requestNonPersonalizedAdsOnly = consent !== 'granted';
 
@@ -27,26 +31,31 @@ export async function loadAppOpenAd() {
   appOpenAd.addAdEventListener(AdEventType.CLOSED, () => {
     isShowingAd = false;
     isAppOpenAdLoaded = false;
-    appOpenAd?.load();
+    loadAppOpenAd();
   });
 
-  appOpenAd.load();
-}
-
-export async function showAppOpenAd() {
-  if (appOpenAd && isAppOpenAdLoaded && !isShowingAd) {
-    try {
-      isShowingAd = true;
-      await appOpenAd.show();
-    } catch (error) {
-      console.error('Error showing AppOpenAd:', error);
-      isShowingAd = false;
-    }
+  try {
+    await appOpenAd.load();
+  } catch (error) {
+    console.error('Error loading AppOpenAd:', error);
+    isAppOpenAdLoaded = false;
   }
 }
 
-export function isAppOpenAdReady(): boolean {
-  return isAppOpenAdLoaded && !isShowingAd;
+export async function showAppOpenAd() {
+  if (!appOpenAd || !isAppOpenAdLoaded || isShowingAd) {
+    return;
+  }
+
+  try {
+    isShowingAd = true;
+    await appOpenAd.show();
+  } catch (error) {
+    console.error('Error showing AppOpenAd:', error);
+    isShowingAd = false;
+    isAppOpenAdLoaded = false;
+    loadAppOpenAd();
+  }
 }
 
 export default null;

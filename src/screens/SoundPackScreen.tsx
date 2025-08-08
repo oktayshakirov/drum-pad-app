@@ -21,7 +21,7 @@ import Equalizer from '../components/Equalizer';
 import ControlsButton from '../components/ControlsButton';
 import {UnlockService} from '../services/UnlockService';
 import {showRewardedAd, isRewardedAdReady} from '../components/ads/RewardedAd';
-import {showInterstitial} from '../components/ads/InterstitialAd';
+import {showGlobalInterstitial} from '../components/ads/adsManager';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -118,7 +118,7 @@ const SoundPackDetailScreen: React.FC = () => {
     }
 
     try {
-      await showInterstitial();
+      await showGlobalInterstitial();
     } catch (error) {
       console.error('Error showing interstitial ad:', error);
     }

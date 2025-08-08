@@ -5,14 +5,14 @@
   "splash": {
     "image": "./src/assets/images/splash-icon.png",
     "resizeMode": "contain",
-    "backgroundColor": "#000000"
+    "backgroundColor": "#121212"
   },
   "android": {
     "package": "com.shadev.shapebeats",
     "versionCode": 1,
     "adaptiveIcon": {
       "foregroundImage": "./src/assets/images/icon.png",
-      "backgroundColor": "#FFFFFF"
+      "backgroundColor": "#121212"
     }
   },
   "ios": {
