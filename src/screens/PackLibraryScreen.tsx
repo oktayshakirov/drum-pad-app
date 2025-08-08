@@ -61,7 +61,7 @@ interface ModalHeaderProps {
 
 const ModalHeader: React.FC<ModalHeaderProps> = memo(({onClose}) => (
   <View style={styles.header}>
-    <Text style={styles.headerTitle}>All Packs</Text>
+    <Text style={styles.headerTitle}>Sound Packs</Text>
     <TouchableOpacity
       onPress={onClose}
       style={styles.closeButton}
@@ -71,10 +71,35 @@ const ModalHeader: React.FC<ModalHeaderProps> = memo(({onClose}) => (
   </View>
 ));
 
+interface TabButtonProps {
+  title: string;
+  isActive: boolean;
+  onPress: () => void;
+}
+
+const TabButton: React.FC<TabButtonProps> = memo(
+  ({title, isActive, onPress}) => (
+    <TouchableOpacity
+      style={[styles.tabButton, isActive && styles.activeTabButton]}
+      onPress={onPress}>
+      <Text
+        style={[styles.tabButtonText, isActive && styles.activeTabButtonText]}>
+        {title}
+      </Text>
+    </TouchableOpacity>
+  ),
+);
+
 const PackLibraryScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [playingPackId, setPlayingPackId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'all' | 'my'>('all');
   const packs = Object.values(SOUND_PACKS);
+
+  const filteredPacks =
+    activeTab === 'all'
+      ? packs
+      : packs.filter(pack => UnlockService.isPackUnlocked(pack.id));
 
   const cleanupDemo = useCallback(async (): Promise<void> => {
     if (playingPackId) {
@@ -136,8 +161,20 @@ const PackLibraryScreen: React.FC = () => {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.modalContainer}>
         <ModalHeader onClose={handleClose} />
+        <View style={styles.tabContainer}>
+          <TabButton
+            title="All Packs"
+            isActive={activeTab === 'all'}
+            onPress={() => setActiveTab('all')}
+          />
+          <TabButton
+            title="My Packs"
+            isActive={activeTab === 'my'}
+            onPress={() => setActiveTab('my')}
+          />
+        </View>
         <FlatList
-          data={packs}
+          data={filteredPacks}
           renderItem={renderPackItem}
           keyExtractor={(item: any) => item.id}
           numColumns={2}
@@ -224,6 +261,31 @@ const styles = StyleSheet.create({
   },
   lockIcon: {
     fontSize: 18,
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#333',
+  },
+  tabButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    marginHorizontal: 5,
+    borderRadius: 20,
+    backgroundColor: '#333',
+  },
+  activeTabButton: {
+    backgroundColor: '#666',
+  },
+  tabButtonText: {
+    color: '#aaa',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  activeTabButtonText: {
+    color: '#fff',
   },
 });
 

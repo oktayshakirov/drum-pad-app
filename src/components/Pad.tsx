@@ -26,7 +26,7 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [showIndicator, setShowIndicator] = useState(false);
   const [indicatorAnim, setIndicatorAnim] = useState<
-    'fadeIn' | 'flash' | undefined
+    'fadeIn' | 'fadeOut' | undefined
   >(undefined);
   const latestPlayInstanceId = useRef<number | null>(null);
   const brighterColor = brightenColor(color, 0.9);
@@ -89,7 +89,7 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
       setShowIndicator(true);
       setIndicatorAnim('fadeIn');
     } else if (showIndicator) {
-      setIndicatorAnim('flash');
+      setIndicatorAnim('fadeOut');
       const timeout = setTimeout(() => setShowIndicator(false), 300);
       return () => clearTimeout(timeout);
     }
@@ -216,17 +216,17 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
                 useNativeDriver>
                 <Svg style={StyleSheet.absoluteFill} viewBox="0 0 100 100">
                   <Rect
-                    x="3"
-                    y="3"
-                    width="94"
-                    height="94"
+                    x="2"
+                    y="2"
+                    width="96"
+                    height="96"
                     rx="10"
                     ry="10"
                     stroke={brighterColor}
-                    strokeWidth="7"
+                    strokeWidth="4"
                     fill="none"
-                    strokeDasharray={376}
-                    strokeDashoffset={(1 - progress) * 376}
+                    strokeDasharray={384}
+                    strokeDashoffset={(1 - progress) * 384}
                   />
                 </Svg>
               </Animatable.View>

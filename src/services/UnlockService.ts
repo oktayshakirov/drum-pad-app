@@ -1,9 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const UNLOCKED_PACKS_KEY = 'unlockedPacks';
+const DEFAULT_UNLOCKED_PACKS = ['brabus'];
 
 export class UnlockService {
-  private static unlockedPacks: Set<string> = new Set();
+  private static unlockedPacks: Set<string> = new Set(DEFAULT_UNLOCKED_PACKS);
 
   static async initialize(): Promise<void> {
     try {
@@ -12,7 +13,10 @@ export class UnlockService {
       );
       if (unlockedPacksString) {
         const unlockedPacksArray = JSON.parse(unlockedPacksString);
-        this.unlockedPacks = new Set(unlockedPacksArray);
+        this.unlockedPacks = new Set([
+          ...DEFAULT_UNLOCKED_PACKS,
+          ...unlockedPacksArray,
+        ]);
       }
     } catch (error) {
       console.error('Error loading unlocked packs:', error);
