@@ -17,9 +17,7 @@ class AudioService {
   private demoState: DemoState;
   private soundPackState: SoundPackState;
   private soundListeners: Set<(event: SoundEvent) => void> = new Set();
-  private playInstanceCounter: number = 0;
-  private isRestoringAfterAd: boolean = false;
-  private restoreAfterAdPromise: Promise<void> | null = null;
+  private playInstanceCounter: number = 0; // Add this line
 
   constructor() {
     this.audioContext = null;
@@ -57,71 +55,6 @@ class AudioService {
   setAudioContext(audioContext: AudioContext) {
     this.audioContext = audioContext;
     this._initializeMetronomeGainNode();
-  }
-
-  async restoreAfterAd(): Promise<void> {
-    if (this.isRestoringAfterAd && this.restoreAfterAdPromise) {
-      return this.restoreAfterAdPromise;
-    }
-
-    this.isRestoringAfterAd = true;
-    this.restoreAfterAdPromise = (async () => {
-      try {
-        const previousPack = this.soundPackState.currentPack;
-
-        await this.stopAllSounds();
-
-        if (this.audioContext && this.audioContext.state !== 'closed') {
-          try {
-            await this.audioContext.close();
-          } catch {}
-        }
-
-        const context = new AudioContext();
-        this.setAudioContext(context);
-
-        if (previousPack) {
-          try {
-            await this.setSoundPack(previousPack);
-          } catch {}
-        }
-
-        await this._primeSilentOutput();
-      } catch (e) {
-        console.error(
-          `${LOG_PREFIX} restoreAfterAd error:`,
-          (e as Error).message,
-        );
-      } finally {
-        this.isRestoringAfterAd = false;
-        this.restoreAfterAdPromise = null;
-      }
-    })();
-
-    return this.restoreAfterAdPromise;
-  }
-
-  private async _primeSilentOutput(): Promise<void> {
-    if (!this.audioContext) {
-      return;
-    }
-
-    try {
-      const durationSeconds = 0.05;
-      const sampleRate = this.audioContext.sampleRate || 44100;
-      const frameCount = Math.max(1, Math.floor(durationSeconds * sampleRate));
-      const buffer = this.audioContext.createBuffer(1, frameCount, sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < frameCount; i++) {
-        data[i] = 0.00001;
-      }
-      const src = this.audioContext.createBufferSource();
-      src.buffer = buffer;
-      src.connect(this.audioContext.destination);
-      src.start();
-    } catch (e) {
-      console.warn(`${LOG_PREFIX} prime silent failed:`, (e as Error).message);
-    }
   }
 
   async setSoundPack(soundPack: string): Promise<boolean> {

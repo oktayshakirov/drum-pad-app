@@ -1,7 +1,6 @@
 import {AppOpenAd, AdEventType} from 'react-native-google-mobile-ads';
 import {getAdUnitId, isGoogleMobileAdsInitialized} from './adConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import AudioService from '../../services/AudioService';
 
 let appOpenAd: AppOpenAd | null = null;
 let isAppOpenAdLoaded = false;
@@ -10,6 +9,7 @@ let retryCount = 0;
 const MAX_RETRIES = 3;
 
 export async function loadAppOpenAd() {
+  // Wait for SDK initialization
   if (!isGoogleMobileAdsInitialized()) {
     return new Promise<void>(resolve => {
       const checkInitialization = () => {
@@ -38,12 +38,13 @@ export async function loadAppOpenAd() {
 
   appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
     isAppOpenAdLoaded = true;
-    retryCount = 0;
+    retryCount = 0; // Reset retry count on success
   });
 
   appOpenAd.addAdEventListener(AdEventType.ERROR, (_error: Error) => {
     isAppOpenAdLoaded = false;
 
+    // Retry loading if we haven't exceeded max retries
     if (retryCount < MAX_RETRIES) {
       retryCount++;
       setTimeout(() => {
@@ -52,14 +53,9 @@ export async function loadAppOpenAd() {
     }
   });
 
-  appOpenAd.addAdEventListener(AdEventType.CLOSED, async () => {
+  appOpenAd.addAdEventListener(AdEventType.CLOSED, () => {
     isShowingAd = false;
     isAppOpenAdLoaded = false;
-    try {
-      await AudioService.restoreAfterAd();
-    } catch (e) {
-      console.error('restoreAfterAd error (app open):', e);
-    }
     loadAppOpenAd();
   });
 

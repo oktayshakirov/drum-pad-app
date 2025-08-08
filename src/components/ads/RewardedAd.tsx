@@ -1,12 +1,12 @@
 import {RewardedAd, RewardedAdEventType} from 'react-native-google-mobile-ads';
 import {getAdUnitId, isGoogleMobileAdsInitialized} from './adConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import AudioService from '../../services/AudioService';
 
 let rewardedAd: RewardedAd | null = null;
 let isAdLoaded = false;
 
 export async function initializeRewardedAd() {
+  // Wait for SDK initialization
   if (!isGoogleMobileAdsInitialized()) {
     return new Promise<void>(resolve => {
       const checkInitialization = () => {
@@ -37,16 +37,9 @@ export async function initializeRewardedAd() {
     isAdLoaded = true;
   });
 
-  rewardedAd.addAdEventListener(
-    RewardedAdEventType.EARNED_REWARD,
-    async _reward => {
-      try {
-        await AudioService.restoreAfterAd();
-      } catch (e) {
-        console.error('restoreAfterAd error (rewarded):', e);
-      }
-    },
-  );
+  rewardedAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, _reward => {
+    // Handle reward earning if needed
+  });
 
   try {
     await rewardedAd.load();
@@ -63,15 +56,12 @@ export async function showRewardedAd() {
 
   try {
     await rewardedAd.show();
-  } catch (error) {
-    console.error('Error showing rewarded ad:', error);
-  } finally {
     isAdLoaded = false;
     rewardedAd = null;
-    try {
-      await AudioService.restoreAfterAd();
-    } catch {}
     initializeRewardedAd();
+  } catch (error) {
+    console.error('Error showing rewarded ad:', error);
+    isAdLoaded = false;
   }
 }
 

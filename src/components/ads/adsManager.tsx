@@ -4,7 +4,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {showInterstitial, initializeInterstitial} from './InterstitialAd';
 import {showAppOpenAd, loadAppOpenAd} from './AppOpenAd';
 import {initializeGoogleMobileAds} from './adConfig';
-import AudioService from '../../services/AudioService';
 
 const AD_INTERVAL_MS = 60000; // 1 minute
 
@@ -101,10 +100,6 @@ export function useGlobalAds() {
           appState.current.match(/inactive|background/) &&
           nextAppState === 'active'
         ) {
-          try {
-            await AudioService.restoreAfterAd();
-          } catch (e) {}
-
           if (await canShowAd(AD_TYPES.APP_OPEN)) {
             try {
               await showAppOpenAd();
