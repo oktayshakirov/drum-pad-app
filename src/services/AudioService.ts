@@ -17,7 +17,7 @@ class AudioService {
   private demoState: DemoState;
   private soundPackState: SoundPackState;
   private soundListeners: Set<(event: SoundEvent) => void> = new Set();
-  private playInstanceCounter: number = 0; // Add this line
+  private playInstanceCounter: number = 0;
 
   constructor() {
     this.audioContext = null;

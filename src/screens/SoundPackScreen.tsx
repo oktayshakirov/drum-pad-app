@@ -7,7 +7,6 @@ import {
   Image,
   Dimensions,
   ImageBackground,
-  Alert,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {soundPacks} from '../assets/sounds';
@@ -115,18 +114,8 @@ const SoundPackDetailScreen: React.FC = () => {
           setIsUnlocked(true);
           await setCurrentSoundPack(packId);
 
-          Alert.alert(
-            'Pack Unlocked!',
-            'Congratulations! You can now use this sound pack.',
-            [
-              {
-                text: 'Continue',
-                onPress: () => navigation.navigate('DrumPad'),
-              },
-            ],
-          );
+          navigation.navigate('DrumPad');
         } else if (result.method === 'free') {
-          // Temporarily unlock for this session only
           await setCurrentSoundPack(packId);
           navigation.navigate('DrumPad');
         }
@@ -135,7 +124,6 @@ const SoundPackDetailScreen: React.FC = () => {
       console.error('Error unlocking pack:', error);
     } finally {
       setIsLoadingAd(false);
-      // Refresh unlock status
       if (packId) {
         const status = UnlockService.getUnlockStatus(packId);
         setUnlockStatus(status);
