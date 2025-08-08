@@ -1,6 +1,7 @@
 import {InterstitialAd, AdEventType} from 'react-native-google-mobile-ads';
 import {getAdUnitId, isGoogleMobileAdsInitialized} from './adConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AudioService from '../../services/AudioService';
 
 let interstitial: InterstitialAd | null = null;
 let isAdLoaded = false;
@@ -53,9 +54,14 @@ export async function initializeInterstitial() {
     }
   });
 
-  interstitial.addAdEventListener(AdEventType.CLOSED, () => {
+  interstitial.addAdEventListener(AdEventType.CLOSED, async () => {
     isShowingAd = false;
     isAdLoaded = false;
+    try {
+      await AudioService.restoreAfterAd();
+    } catch (e) {
+      console.error('restoreAfterAd error (interstitial):', e);
+    }
     initializeInterstitial();
   });
 
