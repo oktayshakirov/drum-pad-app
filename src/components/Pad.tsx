@@ -1,12 +1,17 @@
 import React, {useRef} from 'react';
 import {TouchableOpacity, StyleSheet, Animated, View, Text} from 'react-native';
 import AudioService from '../services/AudioService';
-import {Svg, Rect} from 'react-native-svg';
+import {Svg, Rect, Defs, RadialGradient, Stop} from 'react-native-svg';
 import {useEffect, useState} from 'react';
 import type {SoundEvent} from '../types/audioService';
 import * as Animatable from 'react-native-animatable';
 import {iconMap} from '../assets/sounds/icons';
 import {brightenColor} from '../utils/colorUtils';
+import Reanimated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
 
 interface PadProps {
   sound: string | null;
@@ -18,8 +23,18 @@ interface PadProps {
 
 const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
   const scale = useRef(new Animated.Value(1)).current;
-  const glowOpacity = useRef(new Animated.Value(0.4)).current;
-  const brightnessOpacity = useRef(new Animated.Value(0)).current;
+  const innerShadowOpacity = useSharedValue(0.18);
+  const innerShadowStyle = useAnimatedStyle(() => ({
+    opacity: innerShadowOpacity.value,
+  }));
+  const gradientIdRef = useRef(
+    `inner_${Math.random().toString(36).slice(2, 9)}`,
+  );
+  const pressHighlightOpacity = useSharedValue(0);
+  const pressHighlightStyle = useAnimatedStyle(() => ({
+    opacity: pressHighlightOpacity.value,
+  }));
+  const highlightIdRef = useRef(`hl_${Math.random().toString(36).slice(2, 9)}`);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const progressAnim = useRef(new Animated.Value(0)).current;
@@ -98,11 +113,9 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
   useEffect(() => {
     return () => {
       scale.stopAnimation();
-      glowOpacity.stopAnimation();
-      brightnessOpacity.stopAnimation();
       progressAnim.stopAnimation();
     };
-  }, [scale, glowOpacity, brightnessOpacity, progressAnim]);
+  }, [scale, progressAnim]);
 
   const handlePressIn = async (): Promise<void> => {
     if (!sound) {
@@ -110,8 +123,6 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
     }
 
     scale.stopAnimation();
-    glowOpacity.stopAnimation();
-    brightnessOpacity.stopAnimation();
 
     Animated.parallel([
       Animated.spring(scale, {
@@ -119,17 +130,9 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
         friction: 9,
         useNativeDriver: true,
       }),
-      Animated.timing(glowOpacity, {
-        toValue: 1,
-        duration: 50,
-        useNativeDriver: true,
-      }),
-      Animated.timing(brightnessOpacity, {
-        toValue: 0.3,
-        duration: 50,
-        useNativeDriver: true,
-      }),
     ]).start();
+    innerShadowOpacity.value = withTiming(0.08, {duration: 90});
+    pressHighlightOpacity.value = withTiming(0.25, {duration: 90});
 
     try {
       await AudioService.playSound(soundPack, sound);
@@ -140,8 +143,6 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
 
   const handlePressOut = (): void => {
     scale.stopAnimation();
-    glowOpacity.stopAnimation();
-    brightnessOpacity.stopAnimation();
 
     Animated.parallel([
       Animated.spring(scale, {
@@ -149,17 +150,9 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
         friction: 9,
         useNativeDriver: true,
       }),
-      Animated.timing(glowOpacity, {
-        toValue: 0.4,
-        duration: 150,
-        useNativeDriver: true,
-      }),
-      Animated.timing(brightnessOpacity, {
-        toValue: 0,
-        duration: 150,
-        useNativeDriver: true,
-      }),
     ]).start();
+    innerShadowOpacity.value = withTiming(0.18, {duration: 160});
+    pressHighlightOpacity.value = withTiming(0, {duration: 160});
   };
 
   const padColor = sound ? color : '#333';
@@ -178,17 +171,70 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
           <View style={[styles.pad, {backgroundColor: padColor}]}>
             {sound && (
               <>
-                <Animated.Image
-                  source={require('../assets/images/glow.png')}
-                  style={[styles.glow, {opacity: glowOpacity}]}
-                  resizeMode="contain"
-                />
-                <Animated.View
-                  style={[
-                    styles.brightnessOverlay,
-                    {opacity: brightnessOpacity},
-                  ]}
-                />
+                {/* Inner shadow overlay (no glow) */}
+                <Reanimated.View
+                  style={[styles.innerShadowOverlay, innerShadowStyle]}
+                  pointerEvents="none">
+                  <Svg style={StyleSheet.absoluteFill} viewBox="0 0 100 100">
+                    <Defs>
+                      <RadialGradient
+                        id={gradientIdRef.current}
+                        cx="50%"
+                        cy="50%"
+                        r="60%">
+                        <Stop
+                          offset="60%"
+                          stopColor="#000000"
+                          stopOpacity="0"
+                        />
+                        <Stop
+                          offset="100%"
+                          stopColor="#000000"
+                          stopOpacity="1"
+                        />
+                      </RadialGradient>
+                    </Defs>
+                    <Rect
+                      x="0"
+                      y="0"
+                      width="100"
+                      height="100"
+                      rx="10"
+                      ry="10"
+                      fill={`url(#${gradientIdRef.current})`}
+                    />
+                  </Svg>
+                </Reanimated.View>
+                {/* Center highlight that brightens on press */}
+                <Reanimated.View
+                  style={[styles.centerHighlightOverlay, pressHighlightStyle]}
+                  pointerEvents="none">
+                  <Svg style={StyleSheet.absoluteFill} viewBox="0 0 100 100">
+                    <Defs>
+                      <RadialGradient
+                        id={highlightIdRef.current}
+                        cx="50%"
+                        cy="50%"
+                        r="55%">
+                        <Stop offset="0%" stopColor="#FFFFFF" stopOpacity="1" />
+                        <Stop
+                          offset="100%"
+                          stopColor="#FFFFFF"
+                          stopOpacity="0"
+                        />
+                      </RadialGradient>
+                    </Defs>
+                    <Rect
+                      x="0"
+                      y="0"
+                      width="100"
+                      height="100"
+                      rx="10"
+                      ry="10"
+                      fill={`url(#${highlightIdRef.current})`}
+                    />
+                  </Svg>
+                </Reanimated.View>
                 <View style={styles.iconContainer}>
                   {IconComponent && (
                     <IconComponent
@@ -223,7 +269,7 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
                     rx="10"
                     ry="10"
                     stroke={brighterColor}
-                    strokeWidth="4"
+                    strokeWidth="5"
                     fill="none"
                     strokeDasharray={384}
                     strokeDashoffset={(1 - progress) * 384}
@@ -264,23 +310,25 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 6,
+      height: 2,
     },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 10,
+    shadowOpacity: 0.6,
+    shadowRadius: 2,
+    elevation: 3,
   },
-  glow: {
+  innerShadowOverlay: {
     position: 'absolute',
     width: '100%',
     height: '100%',
-  },
-  brightnessOverlay: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'white',
     borderRadius: 15,
+    overflow: 'hidden',
+  },
+  centerHighlightOverlay: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    borderRadius: 15,
+    overflow: 'hidden',
   },
   iconContainer: {
     alignItems: 'center',

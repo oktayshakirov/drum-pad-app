@@ -6,8 +6,10 @@ import {
   Image,
   GestureResponderEvent,
   Text,
+  Platform,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
+import {BlurView} from '@react-native-community/blur';
 
 interface ControlsButtonProps {
   variant?: 'play' | 'default' | 'control';
@@ -186,6 +188,8 @@ const ControlsButton = forwardRef<ControlsButtonRef, ControlsButtonProps>(
       );
     }
 
+    const blurType = Platform.OS === 'ios' ? 'ultraThinMaterialDark' : 'dark';
+
     return (
       <Animatable.View
         ref={animRef}
@@ -196,7 +200,15 @@ const ControlsButton = forwardRef<ControlsButtonRef, ControlsButtonProps>(
           {width: size, height: size, borderRadius: size / 2},
           disabled && styles.disabledButton,
         ]}>
+        <BlurView
+          style={StyleSheet.absoluteFill}
+          blurType={blurType}
+          blurAmount={18}
+          reducedTransparencyFallbackColor="#101418"
+        />
+        <View style={styles.glassTint} />
         <TouchableOpacity
+          style={styles.touchable}
           onPress={handlePress}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
@@ -212,13 +224,26 @@ const ControlsButton = forwardRef<ControlsButtonRef, ControlsButtonProps>(
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#fff',
+    overflow: 'hidden',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(255,255,255,0.25)',
+    backgroundColor: 'rgba(255,255,255,0.04)',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#fff',
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    shadowOffset: {width: 0, height: 0},
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    shadowOffset: {width: 0, height: 2},
+  },
+  glassTint: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+  },
+  touchable: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   playIcon: {
     width: 0,
@@ -227,25 +252,26 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderTopColor: 'transparent',
     borderBottomColor: 'transparent',
-    borderLeftColor: '#000',
+    borderLeftColor: '#fff',
   },
   stopIcon: {
-    backgroundColor: '#000',
+    backgroundColor: '#fff',
   },
   iconImage: {
     resizeMode: 'contain',
+    tintColor: '#fff',
   },
   controlText: {
-    color: '#000',
+    color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
     textAlignVertical: 'center',
   },
   disabledButton: {
-    backgroundColor: 'rgba(255,255,255,0.5)',
+    backgroundColor: 'rgba(255,255,255,0.2)',
   },
   disabledText: {
-    color: 'rgba(0,0,0,0.2)',
+    color: 'rgba(255,255,255,0.35)',
   },
 });
 

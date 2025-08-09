@@ -9,7 +9,11 @@ import CustomizeButton, {
   CustomizeButtonRef,
 } from '../components/CustomizeButton';
 import {useAppContext} from '../contexts/AppContext';
-import {getPadConfigs, getPadConfigsSync} from '../utils/soundUtils';
+import {
+  getPadConfigs,
+  getPadConfigsSync,
+  getPackTheme,
+} from '../utils/soundUtils';
 import AdBanner from '../components/ads/BannerAd';
 import AudioService from '../services/AudioService';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
@@ -60,6 +64,7 @@ const DrumPadScreen: React.FC = () => {
     : padConfigs;
   const {soundPacks} = require('../assets/sounds');
   const currentPack = soundPacks[currentSoundPack];
+  const blurType = getPackTheme(currentSoundPack) === 'dark' ? 'dark' : 'light';
 
   const handleOpenPackLibrary = async (): Promise<void> => {
     setIsMetronomePlaying(false);
@@ -88,7 +93,7 @@ const DrumPadScreen: React.FC = () => {
       />
       <BlurView
         style={StyleSheet.absoluteFill}
-        blurType="dark"
+        blurType={blurType}
         blurAmount={40}
       />
       <SafeAreaView

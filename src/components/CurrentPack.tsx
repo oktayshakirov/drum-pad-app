@@ -1,5 +1,13 @@
 import React from 'react';
-import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Platform,
+} from 'react-native';
+import {BlurView} from '@react-native-community/blur';
 import {useAppContext} from '../contexts/AppContext';
 import {SOUND_PACKS} from '../utils/soundUtils';
 
@@ -23,19 +31,32 @@ const CurrentPackHeader: React.FC<CurrentPackHeaderProps> = ({
     }
   };
 
+  const blurType = Platform.OS === 'ios' ? 'ultraThinMaterialDark' : 'dark';
+
   return (
     <View style={styles.container}>
-      <Image source={activePack.image} style={styles.packImage} />
-      <View style={styles.packInfo}>
-        <Text style={styles.packName}>{activePack.name}</Text>
-        <Text style={styles.packGenre}>{activePack.genre}</Text>
-      </View>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={styles.allPacksButton}
-          onPress={handleOpenModal}>
-          <Text style={styles.allPacksText}>ALL PACKS</Text>
-        </TouchableOpacity>
+      <View style={styles.glassCard}>
+        <BlurView
+          style={StyleSheet.absoluteFill}
+          blurType={blurType}
+          blurAmount={18}
+          reducedTransparencyFallbackColor="#101418"
+        />
+        <View style={styles.glassTint} />
+        <View style={styles.contentRow}>
+          <Image source={activePack.image} style={styles.packImage} />
+          <View style={styles.packInfo}>
+            <Text style={styles.packName}>{activePack.name}</Text>
+            <Text style={styles.packGenre}>{activePack.genre}</Text>
+          </View>
+          <View style={styles.buttonsContainer}>
+            <TouchableOpacity
+              style={styles.allPacksButton}
+              onPress={handleOpenModal}>
+              <Text style={styles.allPacksText}>ALL PACKS</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
     </View>
   );
@@ -43,6 +64,29 @@ const CurrentPackHeader: React.FC<CurrentPackHeaderProps> = ({
 
 const styles = StyleSheet.create({
   container: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    width: '100%',
+  },
+  glassCard: {
+    position: 'relative',
+    borderRadius: 18,
+    overflow: 'hidden',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(255,255,255,0.25)',
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 2,
+    width: '100%',
+  },
+  glassTint: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+  },
+  contentRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 15,
@@ -63,7 +107,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   packGenre: {
-    color: '#8c8c8c',
+    color: '#D9DEE4',
     fontSize: 16,
   },
   buttonsContainer: {

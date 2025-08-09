@@ -1,18 +1,23 @@
 import {PadColors, SoundPack} from '../../../../types/soundPacks';
 
 const PAD_COLORS: PadColors = {
-  // Drums group - Soft Pastel Gold shades
-  DRUMS_MAIN: '#FFE5A2', // Soft Pastel Gold
-  DRUMS_ACCENT: '#FFF2CC', // Lighter Pastel Gold
-  // Bass group - Soft Pastel Gray shades
-  BASS_MAIN: '#D3D3D3', // Soft Pastel Gray
-  BASS_ACCENT: '#E9E9E9', // Lighter Pastel Gray
-  // Melody group - Soft Pastel Yellow shades
-  MELODY_MAIN: '#FFF2A2', // Soft Pastel Yellow
-  MELODY_ACCENT: '#FFF9CC', // Lighter Pastel Yellow
-  // SFX group - Soft Pastel Silver shades
-  SFX_MAIN: '#D3D3D3', // Soft Pastel Silver
-  SFX_ACCENT: '#E9E9E9', // Lighter Pastel Silver
+  // Brighter, high-contrast palette for Brabus (silver/white/bluish)
+  // Drums group – bright steel blue
+  DRUMS_MAIN: '#9CC5FF',
+  DRUMS_ACCENT: '#C4DDFF',
+  // Singles within drum family
+  SNARE_MAIN: '#C8D3DC', // lighter silver
+  HIHAT_MAIN: '#E0E6EC', // brighter silver
+  HIT_MAIN: '#F3F6F9', // near-white
+  // Bass – graphite silver
+  BASS_MAIN: '#B8C2CC',
+  BASS_ACCENT: '#D1D9E0',
+  // Melody/Synth/Choir – vivid electric blue/cyan
+  MELODY_MAIN: '#6FA4FF',
+  MELODY_ACCENT: '#9BE4FF',
+  // SFX/Chants – white and warm amber for clarity
+  SFX_MAIN: '#FFFFFF',
+  SFX_ACCENT: '#FFD07A',
 };
 
 const soundPack: SoundPack = {
@@ -22,6 +27,7 @@ const soundPack: SoundPack = {
   bpm: '150',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
+  theme: 'dark',
   sounds: {
     // Drums
     drums_1: require('./samples/drums_1.mp3'),
@@ -93,35 +99,35 @@ const soundPack: SoundPack = {
     {
       id: 5,
       sound: 'snare',
-      color: PAD_COLORS.DRUMS_ACCENT,
+      color: PAD_COLORS.SNARE_MAIN,
       icon: 'snare',
       title: 'Snare',
     },
     {
       id: 6,
       sound: 'hi_hat',
-      color: PAD_COLORS.DRUMS_ACCENT,
+      color: PAD_COLORS.HIHAT_MAIN,
       icon: 'hi_hat',
       title: 'Hi Hat',
     },
     {
       id: 7,
       sound: 'hit_1',
-      color: PAD_COLORS.DRUMS_ACCENT,
+      color: PAD_COLORS.HIT_MAIN,
       icon: 'hit',
       title: 'Hit I',
     },
     {
       id: 8,
       sound: 'hit_2',
-      color: PAD_COLORS.DRUMS_ACCENT,
+      color: PAD_COLORS.HIT_MAIN,
       icon: 'hit',
       title: 'Hit II',
     },
     {
       id: 9,
       sound: 'hit_3',
-      color: PAD_COLORS.DRUMS_ACCENT,
+      color: PAD_COLORS.HIT_MAIN,
       icon: 'hit',
       title: 'Hit III',
     },
@@ -164,7 +170,7 @@ const soundPack: SoundPack = {
     {
       id: 15,
       sound: 'snare_roll',
-      color: PAD_COLORS.DRUMS_ACCENT,
+      color: PAD_COLORS.SNARE_MAIN,
       icon: 'snare',
       title: 'Snare Roll',
     },

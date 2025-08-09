@@ -8,6 +8,8 @@ export interface PadColors {
   [key: string]: string;
 }
 
+export type Theme = 'light' | 'dark';
+
 export interface SoundPack {
   id: string;
   name: string;
@@ -25,4 +27,5 @@ export interface SoundPack {
     icon?: string;
     title?: string;
   }>;
+  theme?: Theme;
 }

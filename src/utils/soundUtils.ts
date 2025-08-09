@@ -1,11 +1,13 @@
 import {soundPacks, metronome} from '../assets/sounds';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import type {Theme} from '../types/soundPacks';
 
 interface SoundPack {
   id: string;
   name: string;
   genre: string;
   image: any;
+  theme?: Theme;
 }
 
 interface PadConfig {
@@ -26,6 +28,7 @@ export const SOUND_PACKS: Record<string, SoundPack> = Object.keys(
     name: pack.name,
     genre: pack.genre,
     image: pack.cover,
+    theme: pack.theme || 'light',
   };
   return acc;
 }, {} as Record<string, SoundPack>);
@@ -58,4 +61,9 @@ export const getAvailableSoundNames = (packName: string): string[] => {
     return [];
   }
   return Object.keys((soundPacks as any)[packName].sounds);
+};
+
+export const getPackTheme = (packName: string): Theme => {
+  const pack = (soundPacks as any)[packName];
+  return (pack?.theme as Theme) || 'light';
 };
