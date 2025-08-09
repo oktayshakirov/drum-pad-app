@@ -1,18 +1,14 @@
 import {PadColors, SoundPack} from '../../../../types/soundPacks';
 
 const PAD_COLORS: PadColors = {
-  // Drums group - Soft Pastel Orange shades
-  DRUMS_MAIN: '#FFB347', // Soft Pastel Orange
-  DRUMS_ACCENT: '#FFD700', // Lighter Pastel Orange
-  // Bass group - Soft Pastel Yellow shades
-  BASS_MAIN: '#F0E68C', // Soft Pastel Yellow
-  BASS_ACCENT: '#F5F5DC', // Lighter Pastel Yellow
-  // Melody group - Soft Pastel Red shades
-  MELODY_MAIN: '#FFB6C1', // Soft Pastel Red
-  MELODY_ACCENT: '#FFC0CB', // Lighter Pastel Red
-  // SFX group - Soft Pastel Pink shades
-  SFX_MAIN: '#FFB6C1', // Soft Pastel Pink
-  SFX_ACCENT: '#FFC0CB', // Lighter Pastel Pink
+  DRUMS_MAIN: '#FFB347',
+  DRUMS_SECONDARY: '#FFD700',
+  BASS_MAIN: '#F0E68C',
+  BASS_SECONDARY: '#F5F5DC',
+  MELODY_MAIN: '#FFB6C1',
+  MELODY_SECONDARY: '#FFC0CB',
+  SFX_MAIN: '#FFB6C1',
+  SFX_SECONDARY: '#FFC0CB',
 };
 
 const soundPack: SoundPack = {
@@ -24,20 +20,16 @@ const soundPack: SoundPack = {
   demo: require('./demo.mp3'),
   theme: 'light',
   sounds: {
-    // Melodies
     melody_1: require('./samples/melody_1.mp3'),
     melody_2: require('./samples/melody_2.mp3'),
     flute: require('./samples/flute.mp3'),
-    // Chants
     chant_hey: require('./samples/chant_hey.mp3'),
-    // Drums
     drums_1_1: require('./samples/drums_1_1.mp3'),
     drums_1_2: require('./samples/drums_1_2.mp3'),
     drums_2: require('./samples/drums_2.mp3'),
     clap: require('./samples/clap.mp3'),
     hit: require('./samples/hit.mp3'),
     shaker: require('./samples/shaker.mp3'),
-    // Percussion
     percussion_1: require('./samples/percussion_1.mp3'),
     percussion_2: require('./samples/percussion_2.mp3'),
   },
@@ -71,14 +63,14 @@ const soundPack: SoundPack = {
     {
       id: 4,
       sound: 'clap',
-      color: PAD_COLORS.DRUMS_ACCENT,
+      color: PAD_COLORS.DRUMS_SECONDARY,
       icon: 'clap',
       title: 'Clap',
     },
     {
       id: 5,
       sound: 'hit',
-      color: PAD_COLORS.DRUMS_ACCENT,
+      color: PAD_COLORS.DRUMS_SECONDARY,
       icon: 'hit',
       title: 'Hit',
     },
@@ -92,14 +84,14 @@ const soundPack: SoundPack = {
     {
       id: 7,
       sound: 'percussion_1',
-      color: PAD_COLORS.BASS_ACCENT,
+      color: PAD_COLORS.BASS_SECONDARY,
       icon: 'percussion',
       title: 'Percussion I',
     },
     {
       id: 8,
       sound: 'percussion_2',
-      color: PAD_COLORS.BASS_ACCENT,
+      color: PAD_COLORS.BASS_SECONDARY,
       icon: 'percussion',
       title: 'Percussion II',
     },
@@ -120,7 +112,7 @@ const soundPack: SoundPack = {
     {
       id: 11,
       sound: 'flute',
-      color: PAD_COLORS.MELODY_ACCENT,
+      color: PAD_COLORS.MELODY_SECONDARY,
       icon: 'flute',
       title: 'Flute',
     },

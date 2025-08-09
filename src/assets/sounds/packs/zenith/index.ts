@@ -1,21 +1,14 @@
 import {PadColors, SoundPack} from '../../../../types/soundPacks';
 
 const PAD_COLORS: PadColors = {
-  // Drums group - Soft Pastel Purple shades
-  DRUMS_MAIN: '#D8BFD8', // Soft Pastel Purple
-  DRUMS_ACCENT: '#E6D3E6', // Lighter Pastel Purple
-  // Bass group - Soft Pastel Blue shades
-  BASS_MAIN: '#B0C4DE', // Soft Pastel Blue
-  BASS_ACCENT: '#D0E6FA', // Lighter Pastel Blue
-  // Melody group - Soft Pastel Pink shades
-  MELODY_MAIN: '#FFB6C1', // Soft Pastel Pink
-  MELODY_ACCENT: '#FFC0CB', // Lighter Pastel Pink
-  // SFX group - Soft Pastel Lavender shades
-  SFX_MAIN: '#E6E6FA', // Soft Pastel Lavender
-  SFX_ACCENT: '#F0F0FF', // Lighter Pastel Lavender
-  // Percussion group - Soft Pastel Coral shades
-  PERCUSSION_MAIN: '#FFB6C1', // Soft Pastel Coral
-  PERCUSSION_ACCENT: '#FFC0CB', // Lighter Pastel Coral
+  DRUMS_MAIN: '#D8BFD8',
+  DRUMS_SECONDARY: '#E6D3E6',
+  MELODY_MAIN: '#FFB6C1',
+  MELODY_SECONDARY: '#FFC0CB',
+  SFX_MAIN: '#E6E6FA',
+  SFX_SECONDARY: '#F0F0FF',
+  PERCUSSION_MAIN: '#FFB6C1',
+  PERCUSSION_SECONDARY: '#FFC0CB',
 };
 
 const soundPack: SoundPack = {
@@ -27,21 +20,17 @@ const soundPack: SoundPack = {
   demo: require('./demo.mp3'),
   theme: 'light',
   sounds: {
-    // Melodies first
     melody_1: require('./samples/melody_1.mp3'),
     melody_2: require('./samples/melody_2.mp3'),
     melody_3: require('./samples/melody_3.mp3'),
-    // Drums
     kick: require('./samples/kick.mp3'),
     clap: require('./samples/clap.mp3'),
     hi_hat: require('./samples/hi_hat.mp3'),
     crash: require('./samples/crash.mp3'),
     drums_1: require('./samples/drums_1.mp3'),
     drums_2: require('./samples/drums_2.mp3'),
-    // Percussion
     percussion_1: require('./samples/percussion_1.mp3'),
     percussion_2: require('./samples/percussion_2.mp3'),
-    // Vocals
     vocal: require('./samples/vocal.mp3'),
   },
   soundGroups: {
@@ -73,21 +62,21 @@ const soundPack: SoundPack = {
     {
       id: 4,
       sound: 'crash',
-      color: PAD_COLORS.DRUMS_ACCENT,
+      color: PAD_COLORS.DRUMS_SECONDARY,
       icon: 'open_hat',
       title: 'Crash',
     },
     {
       id: 5,
       sound: 'drums_1',
-      color: PAD_COLORS.DRUMS_ACCENT,
+      color: PAD_COLORS.DRUMS_SECONDARY,
       icon: 'drums',
       title: 'Drums I',
     },
     {
       id: 6,
       sound: 'drums_2',
-      color: PAD_COLORS.DRUMS_ACCENT,
+      color: PAD_COLORS.DRUMS_SECONDARY,
       icon: 'drums',
       title: 'Drums II',
     },
@@ -101,7 +90,7 @@ const soundPack: SoundPack = {
     {
       id: 8,
       sound: 'percussion_2',
-      color: PAD_COLORS.PERCUSSION_ACCENT,
+      color: PAD_COLORS.PERCUSSION_SECONDARY,
       icon: 'percussion',
       title: 'Percussion II',
     },
@@ -122,14 +111,14 @@ const soundPack: SoundPack = {
     {
       id: 11,
       sound: 'melody_3',
-      color: PAD_COLORS.MELODY_ACCENT,
+      color: PAD_COLORS.MELODY_SECONDARY,
       icon: 'melody',
       title: 'Melody III',
     },
     {
       id: 12,
       sound: 'vocal',
-      color: PAD_COLORS.MELODY_ACCENT,
+      color: PAD_COLORS.MELODY_SECONDARY,
       icon: 'vocal',
       title: 'Vocal',
     },

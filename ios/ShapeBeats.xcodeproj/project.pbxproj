@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		10006D30A33245A3811B80C2 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 80728E157FDA4283B26E1FE5 /* icon.png */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		ACB2CACBBFADC2395383F179 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
@@ -27,7 +26,6 @@
 		7A0101E6D10F553031ECD5C8 /* Pods-ShapeBeatsApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShapeBeatsApp.debug.xcconfig"; path = "Target Support Files/Pods-ShapeBeatsApp/Pods-ShapeBeatsApp.debug.xcconfig"; sourceTree = "<group>"; };
 		80728E157FDA4283B26E1FE5 /* icon.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = icon.png; path = ../src/assets/images/icon.png; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ShapeBeatsApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -106,7 +104,6 @@
 		ED8AA93C13434A498C9DEAF7 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				
 				80728E157FDA4283B26E1FE5 /* icon.png */,
 			);
 			name = Resources;
@@ -176,7 +173,6 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				ACB2CACBBFADC2395383F179 /* PrivacyInfo.xcprivacy in Resources */,
-				
 				10006D30A33245A3811B80C2 /* icon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

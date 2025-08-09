@@ -1,18 +1,10 @@
 import {PadColors, SoundPack} from '../../../../types/soundPacks';
 
 const PAD_COLORS: PadColors = {
-  // Drums group - Soft Pastel Brown shades
-  DRUMS_MAIN: '#DEB887', // Soft Pastel Brown
-  DRUMS_ACCENT: '#F5DEB3', // Lighter Pastel Brown
-  // Bass group - Soft Pastel Tan shades
-  BASS_MAIN: '#D2B48C', // Soft Pastel Tan
-  BASS_ACCENT: '#E6D3B3', // Lighter Pastel Tan
-  // Melody group - Soft Pastel Cream shades
-  MELODY_MAIN: '#F5F5DC', // Soft Pastel Cream
-  MELODY_ACCENT: '#FAFAF0', // Lighter Pastel Cream
-  // SFX group - Soft Pastel Beige shades
-  SFX_MAIN: '#F5F5DC', // Soft Pastel Beige
-  SFX_ACCENT: '#FAFAF0', // Lighter Pastel Beige
+  DRUMS_MAIN: '#DEB887',
+  DRUMS_SECONDARY: '#F5DEB3',
+  MELODY_MAIN: '#F5F5DC',
+  MELODY_SECONDARY: '#FAFAF0',
 };
 
 const soundPack: SoundPack = {
@@ -24,16 +16,13 @@ const soundPack: SoundPack = {
   demo: require('./demo.mp3'),
   theme: 'light',
   sounds: {
-    // Melodies
     melody_1: require('./samples/melody_1.mp3'),
     melody_2: require('./samples/melody_2.mp3'),
     melody_3: require('./samples/melody_3.mp3'),
     melody_4: require('./samples/melody_4.mp3'),
-    // Vocals
     vocals_1: require('./samples/vocals_1.mp3'),
     vocals_2: require('./samples/vocals_2.mp3'),
     vocals_3: require('./samples/vocals_3.mp3'),
-    // Drums
     kick: require('./samples/kick.mp3'),
     clap: require('./samples/clap.mp3'),
     snap: require('./samples/snap.mp3'),
@@ -69,14 +58,14 @@ const soundPack: SoundPack = {
     {
       id: 4,
       sound: 'open_hat',
-      color: PAD_COLORS.DRUMS_ACCENT,
+      color: PAD_COLORS.DRUMS_SECONDARY,
       icon: 'open_hat',
       title: 'Open Hat',
     },
     {
       id: 5,
       sound: 'crash',
-      color: PAD_COLORS.DRUMS_ACCENT,
+      color: PAD_COLORS.DRUMS_SECONDARY,
       icon: 'open_hat',
       title: 'Crash',
     },
@@ -111,21 +100,21 @@ const soundPack: SoundPack = {
     {
       id: 10,
       sound: 'vocals_1',
-      color: PAD_COLORS.MELODY_ACCENT,
+      color: PAD_COLORS.MELODY_SECONDARY,
       icon: 'melody',
       title: 'Vocals I',
     },
     {
       id: 11,
       sound: 'vocals_2',
-      color: PAD_COLORS.MELODY_ACCENT,
+      color: PAD_COLORS.MELODY_SECONDARY,
       icon: 'melody',
       title: 'Vocals II',
     },
     {
       id: 12,
       sound: 'vocals_3',
-      color: PAD_COLORS.MELODY_ACCENT,
+      color: PAD_COLORS.MELODY_SECONDARY,
       icon: 'melody',
       title: 'Vocals III',
     },

@@ -1,23 +1,14 @@
 import {PadColors, SoundPack} from '../../../../types/soundPacks';
 
 const PAD_COLORS: PadColors = {
-  // Brighter, high-contrast palette for Brabus (silver/white/bluish)
-  // Drums group – bright steel blue
-  DRUMS_MAIN: '#9CC5FF',
-  DRUMS_ACCENT: '#C4DDFF',
-  // Singles within drum family
-  SNARE_MAIN: '#C8D3DC', // lighter silver
-  HIHAT_MAIN: '#E0E6EC', // brighter silver
-  HIT_MAIN: '#F3F6F9', // near-white
-  // Bass – graphite silver
-  BASS_MAIN: '#B8C2CC',
-  BASS_ACCENT: '#D1D9E0',
-  // Melody/Synth/Choir – vivid electric blue/cyan
+  DRUMS_MAIN: '#E5BEFE',
+  SNARE_MAIN: '#C8D3DC',
+  HIHAT_MAIN: '#E0E6EC',
+  HIT_MAIN: '#F3F6F9',
   MELODY_MAIN: '#6FA4FF',
-  MELODY_ACCENT: '#9BE4FF',
-  // SFX/Chants – white and warm amber for clarity
+  MELODY_SECONDARY: '#9BE4FF',
   SFX_MAIN: '#FFFFFF',
-  SFX_ACCENT: '#FFD07A',
+  SFX_SECONDARY: '#FFD07A',
 };
 
 const soundPack: SoundPack = {
@@ -29,7 +20,6 @@ const soundPack: SoundPack = {
   demo: require('./demo.mp3'),
   theme: 'dark',
   sounds: {
-    // Drums
     drums_1: require('./samples/drums_1.mp3'),
     drums_2: require('./samples/drums_2.mp3'),
     drums_3: require('./samples/drums_3.mp3'),
@@ -42,17 +32,14 @@ const soundPack: SoundPack = {
     hit_1: require('./samples/hit_1.mp3'),
     hit_2: require('./samples/hit_2.mp3'),
     hit_3: require('./samples/hit_3.mp3'),
-    // Melodies
     melody_1: require('./samples/melody_1.mp3'),
     melody_2_1: require('./samples/melody_2_1.mp3'),
     melody_2_2: require('./samples/melody_2_2.mp3'),
     melody_3: require('./samples/melody_3.mp3'),
     synth_1: require('./samples/synth_1.mp3'),
     synth_2: require('./samples/synth_2.mp3'),
-    // Choirs
     choir_1: require('./samples/choir_1.mp3'),
     choir_2: require('./samples/choir_2.mp3'),
-    // SFX and Chants
     sfx_sirens: require('./samples/sfx_sirens.mp3'),
     sfx_money: require('./samples/sfx_money.mp3'),
     chant_fight: require('./samples/chant_fight.mp3'),
@@ -67,7 +54,6 @@ const soundPack: SoundPack = {
     chant: ['chant_fight', 'chant_countdown'],
   },
   padConfig: [
-    // Screen 1 - Essential Live Elements (12 sounds)
     {
       id: 1,
       sound: 'drums_1',
@@ -141,18 +127,17 @@ const soundPack: SoundPack = {
     {
       id: 11,
       sound: 'synth_1',
-      color: PAD_COLORS.MELODY_ACCENT,
+      color: PAD_COLORS.MELODY_SECONDARY,
       icon: 'synth',
       title: 'Synth I',
     },
     {
       id: 12,
       sound: 'chant_fight',
-      color: PAD_COLORS.SFX_ACCENT,
+      color: PAD_COLORS.SFX_SECONDARY,
       icon: 'chant',
       title: 'Fight',
     },
-    // Screen 2 - Variation & Effects (12 sounds)
     {
       id: 13,
       sound: 'drums_5',
@@ -198,21 +183,21 @@ const soundPack: SoundPack = {
     {
       id: 19,
       sound: 'synth_2',
-      color: PAD_COLORS.MELODY_ACCENT,
+      color: PAD_COLORS.MELODY_SECONDARY,
       icon: 'synth',
       title: 'Synth II',
     },
     {
       id: 20,
       sound: 'choir_1',
-      color: PAD_COLORS.MELODY_ACCENT,
+      color: PAD_COLORS.MELODY_SECONDARY,
       icon: 'choir_female',
       title: 'Choir I',
     },
     {
       id: 21,
       sound: 'choir_2',
-      color: PAD_COLORS.MELODY_ACCENT,
+      color: PAD_COLORS.MELODY_SECONDARY,
       icon: 'choir_female',
       title: 'Choir II',
     },
@@ -233,7 +218,7 @@ const soundPack: SoundPack = {
     {
       id: 24,
       sound: 'chant_countdown',
-      color: PAD_COLORS.SFX_ACCENT,
+      color: PAD_COLORS.SFX_SECONDARY,
       icon: 'chant',
       title: 'Countdown',
     },

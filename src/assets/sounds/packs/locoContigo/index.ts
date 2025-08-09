@@ -1,18 +1,11 @@
 import {PadColors, SoundPack} from '../../../../types/soundPacks';
 
 const PAD_COLORS: PadColors = {
-  // Drums group - Soft Pastel Orange shades
-  DRUMS_MAIN: '#FFB347', // Soft Pastel Orange
-  DRUMS_ACCENT: '#FFD700', // Lighter Pastel Orange
-  // Bass group - Soft Pastel Yellow shades
-  BASS_MAIN: '#F0E68C', // Soft Pastel Yellow
-  BASS_ACCENT: '#F5F5DC', // Lighter Pastel Yellow
-  // Melody group - Soft Pastel Red shades
-  MELODY_MAIN: '#FFB6C1', // Soft Pastel Red
-  MELODY_ACCENT: '#FFC0CB', // Lighter Pastel Red
-  // SFX group - Soft Pastel Pink shades
-  SFX_MAIN: '#FFB6C1', // Soft Pastel Pink
-  SFX_ACCENT: '#FFC0CB', // Lighter Pastel Pink
+  DRUMS_MAIN: '#FFB347',
+  DRUMS_SECONDARY: '#FFD700',
+  BASS_MAIN: '#F0E68C',
+  MELODY_MAIN: '#FFB6C1',
+  MELODY_SECONDARY: '#FFC0CB',
 };
 
 const soundPack: SoundPack = {
@@ -24,15 +17,12 @@ const soundPack: SoundPack = {
   demo: require('./demo.mp3'),
   theme: 'light',
   sounds: {
-    // Drums
     drums: require('./samples/drums.mp3'),
     open_hat: require('./samples/open_hat.mp3'),
     clap: require('./samples/clap.mp3'),
     snare_roll: require('./samples/snare_roll.mp3'),
     percussion: require('./samples/percussion.mp3'),
-    // Bass
     bass_808: require('./samples/808.mp3'),
-    // Melodies
     melody_1_1: require('./samples/melody_1_1.mp3'),
     melody_1_2: require('./samples/melody_1_2.mp3'),
     melody_2_1: require('./samples/melody_2_1.mp3'),
@@ -70,14 +60,14 @@ const soundPack: SoundPack = {
     {
       id: 4,
       sound: 'snare_roll',
-      color: PAD_COLORS.DRUMS_ACCENT,
+      color: PAD_COLORS.DRUMS_SECONDARY,
       icon: 'snare',
       title: 'Snare Roll',
     },
     {
       id: 5,
       sound: 'percussion',
-      color: PAD_COLORS.DRUMS_ACCENT,
+      color: PAD_COLORS.DRUMS_SECONDARY,
       icon: 'percussion',
       title: 'Percussion',
     },
@@ -105,7 +95,7 @@ const soundPack: SoundPack = {
     {
       id: 9,
       sound: 'melody_3_1',
-      color: PAD_COLORS.MELODY_ACCENT,
+      color: PAD_COLORS.MELODY_SECONDARY,
       icon: 'melody',
       title: 'Melody I',
     },
@@ -119,14 +109,14 @@ const soundPack: SoundPack = {
     {
       id: 11,
       sound: 'melody_2_2',
-      color: PAD_COLORS.MELODY_ACCENT,
+      color: PAD_COLORS.MELODY_SECONDARY,
       icon: 'trumpet',
       title: 'Trumpet IV',
     },
     {
       id: 12,
       sound: 'melody_3_2',
-      color: PAD_COLORS.MELODY_ACCENT,
+      color: PAD_COLORS.MELODY_SECONDARY,
       icon: 'melody',
       title: 'Melody II',
     },

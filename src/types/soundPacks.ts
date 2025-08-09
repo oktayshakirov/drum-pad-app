@@ -1,10 +1,4 @@
 export interface PadColors {
-  DRUMS_MAIN: string;
-  DRUMS_ACCENT: string;
-  MELODY_MAIN: string;
-  MELODY_ACCENT: string;
-  SFX_MAIN: string;
-  SFX_ACCENT: string;
   [key: string]: string;
 }
 

@@ -1,18 +1,12 @@
 import {PadColors, SoundPack} from '../../../../types/soundPacks';
 
 const PAD_COLORS: PadColors = {
-  // Drums group - Dark Red/Brown with bright red icons
-  DRUMS_MAIN: '#2d1b1b', // Dark Red-Brown
-  DRUMS_ACCENT: '#3d2b2b', // Darker Red-Brown
-  // Bass group - Dark Green with bright green icons
-  BASS_MAIN: '#1b2d1b', // Dark Green
-  BASS_ACCENT: '#2b3d2b', // Darker Green
-  // Melody group - Dark Blue with bright blue icons
-  MELODY_MAIN: '#1b1b2d', // Dark Blue
-  MELODY_ACCENT: '#2b2b3d', // Darker Blue
-  // SFX group - Dark Purple with bright purple icons
-  SFX_MAIN: '#2d1b2d', // Dark Purple
-  SFX_ACCENT: '#3d2b3d', // Darker Purple
+  DRUMS_MAIN: '#2d1b1b',
+  DRUMS_SECONDARY: '#3d2b2b',
+  MELODY_MAIN: '#1b1b2d',
+  MELODY_SECONDARY: '#2b2b3d',
+  SFX_MAIN: '#2d1b2d',
+  SFX_SECONDARY: '#3d2b3d',
 };
 
 const soundPack: SoundPack = {
@@ -24,18 +18,15 @@ const soundPack: SoundPack = {
   demo: require('./demo.mp3'),
   theme: 'light',
   sounds: {
-    // Drums
     drums_1: require('./samples/drums_1.mp3'),
     drums_2: require('./samples/drums_2.mp3'),
     drums_3: require('./samples/drums_3.mp3'),
     snare: require('./samples/snare.mp3'),
-    // Melodies
     melody_1_1: require('./samples/melody_1_1.mp3'),
     melody_1_2: require('./samples/melody_1_2.mp3'),
     melody_2: require('./samples/melody_2.mp3'),
     melody_3: require('./samples/melody_3.mp3'),
     synth: require('./samples/synth.mp3'),
-    // SFX
     sfx_sword_1: require('./samples/sfx_sword_1.mp3'),
     sfx_sword_2: require('./samples/sfx_sword_2.mp3'),
     sfx_reverse: require('./samples/sfx_reverse.mp3'),
@@ -70,7 +61,7 @@ const soundPack: SoundPack = {
     {
       id: 4,
       sound: 'snare',
-      color: PAD_COLORS.DRUMS_ACCENT,
+      color: PAD_COLORS.DRUMS_SECONDARY,
       icon: 'snare',
       title: 'Snare',
     },
@@ -84,7 +75,7 @@ const soundPack: SoundPack = {
     {
       id: 6,
       sound: 'synth',
-      color: PAD_COLORS.MELODY_ACCENT,
+      color: PAD_COLORS.MELODY_SECONDARY,
       icon: 'synth',
       title: 'Synth',
     },
@@ -126,7 +117,7 @@ const soundPack: SoundPack = {
     {
       id: 12,
       sound: 'sfx_reverse',
-      color: PAD_COLORS.SFX_ACCENT,
+      color: PAD_COLORS.SFX_SECONDARY,
       icon: 'reverse',
       title: 'Reverse',
     },
