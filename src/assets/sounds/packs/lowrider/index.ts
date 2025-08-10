@@ -18,7 +18,7 @@ const soundPack: SoundPack = {
   bpm: '138',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
-  theme: 'light',
+  theme: 'dark',
   sounds: {
     kick: require('./samples/kick.mp3'),
     snare: require('./samples/snare.mp3'),

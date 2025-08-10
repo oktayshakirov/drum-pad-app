@@ -1,11 +1,11 @@
 import {PadColors, SoundPack} from '../../../../types/soundPacks';
 
 const PAD_COLORS: PadColors = {
-  DRUMS_MAIN: '#FFB347',
-  DRUMS_SECONDARY: '#FFD700',
-  BASS_MAIN: '#F0E68C',
+  DRUMS_MAIN: '#FFF8DC',
+  DRUMS_SECONDARY: '#FFEBCD',
+  BASS_MAIN: '#FFE4B5',
   MELODY_MAIN: '#FFB6C1',
-  MELODY_SECONDARY: '#FFC0CB',
+  MELODY_SECONDARY: '#FFCCCB',
 };
 
 const soundPack: SoundPack = {

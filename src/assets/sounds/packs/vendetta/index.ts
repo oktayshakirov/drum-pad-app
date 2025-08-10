@@ -1,14 +1,16 @@
 import {PadColors, SoundPack} from '../../../../types/soundPacks';
 
 const PAD_COLORS: PadColors = {
-  DRUMS_MAIN: '#CD5C5C',
-  DRUMS_SECONDARY: '#E6B3B3',
-  BASS_MAIN: '#A9A9A9',
-  BASS_SECONDARY: '#C0C0C0',
-  MELODY_MAIN: '#9370DB',
-  MELODY_SECONDARY: '#B8A9D9',
-  SFX_MAIN: '#6495ED',
-  SFX_SECONDARY: '#A7C7E7',
+  DRUMS_MAIN: '#FFB3B3',
+  DRUMS_SECONDARY: '#FFC9C9',
+  BASS_MAIN: '#D3D3D3',
+  BASS_SECONDARY: '#E0E0E0',
+  MELODY_MAIN: '#B3C9FF',
+  MELODY_SECONDARY: '#C9D9FF',
+  SYNTH_MAIN: '#D3B3FF',
+  CHANT_MAIN: '#FFB3D3',
+  SFX_MAIN: '#FFB3B3',
+  SFX_SECONDARY: '#FFC9C9',
 };
 
 const soundPack: SoundPack = {
@@ -138,7 +140,7 @@ const soundPack: SoundPack = {
     {
       id: 12,
       sound: 'synth_1',
-      color: PAD_COLORS.MELODY_SECONDARY,
+      color: PAD_COLORS.SYNTH_MAIN,
       icon: 'synth',
       title: 'Synth I',
     },
@@ -166,28 +168,28 @@ const soundPack: SoundPack = {
     {
       id: 16,
       sound: 'synth_2',
-      color: PAD_COLORS.MELODY_SECONDARY,
+      color: PAD_COLORS.SYNTH_MAIN,
       icon: 'synth',
       title: 'Synth II',
     },
     {
       id: 17,
       sound: 'chant_demon',
-      color: PAD_COLORS.MELODY_SECONDARY,
+      color: PAD_COLORS.CHANT_MAIN,
       icon: 'chant',
       title: 'Demon Chant',
     },
     {
       id: 18,
       sound: 'chant_die',
-      color: PAD_COLORS.MELODY_SECONDARY,
+      color: PAD_COLORS.CHANT_MAIN,
       icon: 'chant',
       title: 'Die Chant',
     },
     {
       id: 19,
       sound: 'chant_sorry',
-      color: PAD_COLORS.MELODY_SECONDARY,
+      color: PAD_COLORS.CHANT_MAIN,
       icon: 'chant',
       title: 'Sorry Chant',
     },

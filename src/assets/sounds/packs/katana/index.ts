@@ -1,12 +1,12 @@
 import {PadColors, SoundPack} from '../../../../types/soundPacks';
 
 const PAD_COLORS: PadColors = {
-  DRUMS_MAIN: '#2d1b1b',
-  DRUMS_SECONDARY: '#3d2b2b',
-  MELODY_MAIN: '#1b1b2d',
-  MELODY_SECONDARY: '#2b2b3d',
-  SFX_MAIN: '#2d1b2d',
-  SFX_SECONDARY: '#3d2b3d',
+  DRUMS_MAIN: '#0A1625',
+  DRUMS_SECONDARY: '#132030',
+  MELODY_MAIN: '#1A2540',
+  MELODY_SECONDARY: '#203050',
+  SFX_MAIN: '#40152A',
+  SFX_SECONDARY: '#501A35',
 };
 
 const soundPack: SoundPack = {
@@ -16,7 +16,7 @@ const soundPack: SoundPack = {
   bpm: '140',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
-  theme: 'light',
+  theme: 'dark',
   sounds: {
     drums_1: require('./samples/drums_1.mp3'),
     drums_2: require('./samples/drums_2.mp3'),

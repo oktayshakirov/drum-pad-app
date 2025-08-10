@@ -1,14 +1,15 @@
 import {PadColors, SoundPack} from '../../../../types/soundPacks';
 
 const PAD_COLORS: PadColors = {
-  DRUMS_MAIN: '#D3D3D3',
-  DRUMS_SECONDARY: '#E9E9E9',
-  BASS_MAIN: '#A9A9A9',
-  BASS_SECONDARY: '#C0C0C0',
-  MELODY_MAIN: '#C0C0C0',
-  MELODY_SECONDARY: '#D3D3D3',
-  SFX_MAIN: '#E9E9E9',
-  SFX_SECONDARY: '#F5F5F5',
+  DRUMS_MAIN: '#0A0A0A',
+  DRUMS_SECONDARY: '#1A1A1A',
+  HIT_MAIN: '#2A1A0A',
+  BASS_MAIN: '#2A1A2A',
+  BASS_SECONDARY: '#3A253A',
+  MELODY_MAIN: '#1A2A1A',
+  MELODY_SECONDARY: '#25352A',
+  SFX_MAIN: '#2A1A1A',
+  SFX_SECONDARY: '#3A252A',
 };
 
 const soundPack: SoundPack = {
@@ -18,7 +19,7 @@ const soundPack: SoundPack = {
   bpm: '134',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
-  theme: 'light',
+  theme: 'dark',
   sounds: {
     melody_1: require('./samples/melody_1.mp3'),
     melody_2: require('./samples/melody_2.mp3'),
@@ -69,14 +70,14 @@ const soundPack: SoundPack = {
     {
       id: 5,
       sound: 'hit_1',
-      color: PAD_COLORS.DRUMS_SECONDARY,
+      color: PAD_COLORS.HIT_MAIN,
       icon: 'hit',
       title: 'Hit I',
     },
     {
       id: 6,
       sound: 'hit_2',
-      color: PAD_COLORS.DRUMS_SECONDARY,
+      color: PAD_COLORS.HIT_MAIN,
       icon: 'hit',
       title: 'Hit II',
     },
