@@ -84,7 +84,7 @@ const Metronome: React.FC<MetronomeProps> = ({isPlaying, setIsPlaying}) => {
           variant="play"
           isPlaying={isPlaying}
           onPress={handleToggleMetronome}
-          size={40}
+          size={46}
           playIconSrc={playIcon}
           pauseIconSrc={pauseIcon}
         />
@@ -103,7 +103,7 @@ const Metronome: React.FC<MetronomeProps> = ({isPlaying, setIsPlaying}) => {
           variant="default"
           iconSrc={settingsIcon}
           onPress={handleSettingsPress}
-          size={40}
+          size={46}
         />
       </View>
 

@@ -24,8 +24,8 @@ const CustomizeButton = forwardRef<CustomizeButtonRef, CustomizeButtonProps>(
       <ControlsButton
         ref={buttonRef}
         variant="default"
-        iconSrc={require('../assets/images/sort.png')}
-        size={40}
+        iconSrc={require('../assets/images/pad-settings.png')}
+        size={46}
         onPress={onPress}
         disabled={disabled}
       />

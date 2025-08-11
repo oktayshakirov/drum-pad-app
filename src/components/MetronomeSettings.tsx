@@ -1,4 +1,4 @@
-import React, {useRef, useEffect} from 'react';
+import React, {useRef, useEffect, useContext} from 'react';
 import {
   Modal,
   View,
@@ -6,8 +6,12 @@ import {
   StyleSheet,
   TouchableOpacity,
   Animated,
+  ImageBackground,
 } from 'react-native';
+import {BlurView} from '@react-native-community/blur';
 import {METRONOME_SOUNDS, MetronomeSound} from '../assets/sounds/metronome';
+import {soundPacks} from '../assets/sounds';
+import {AppContext} from '../contexts/AppContext';
 import ControlsButton from './ControlsButton';
 
 const BPM_MIN = 40;
@@ -36,6 +40,7 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
   metronomeVolume,
   setMetronomeVolume,
 }) => {
+  const context = useContext(AppContext);
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
@@ -101,6 +106,9 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
   const isVolumeMin = metronomeVolume <= VOLUME_MIN;
   const isVolumeMax = metronomeVolume >= VOLUME_MAX;
 
+  // Get current pack for background
+  const currentPack = context ? soundPacks[context.currentSoundPack] : null;
+
   return (
     <Modal
       visible={isVisible}
@@ -116,80 +124,97 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
               opacity: opacityAnim,
             },
           ]}>
-          <Text style={styles.title}>Metronome Settings</Text>
+          {currentPack && (
+            <>
+              <ImageBackground
+                source={currentPack.cover}
+                style={StyleSheet.absoluteFill}
+                resizeMode="cover"
+                imageStyle={styles.backgroundImage}
+              />
+              <BlurView
+                style={StyleSheet.absoluteFill}
+                blurType="dark"
+                blurAmount={50}
+              />
+            </>
+          )}
+          <View style={styles.contentContainer}>
+            <Text style={styles.title}>Metronome Settings</Text>
 
-          <Text style={styles.sectionTitle}>BPM</Text>
-          <View style={styles.buttonControlContainer}>
-            <ControlsButton
-              variant="control"
-              symbol="-"
-              size={60}
-              disabled={isBpmMin}
-              onPress={() => changeBpm(-1)}
-              onPressIn={() => changeBpm(-1)}
-              onPressOut={() => {}}
-            />
-            <Text style={styles.bpmDisplay}>{bpm}</Text>
-            <ControlsButton
-              variant="control"
-              symbol="+"
-              size={60}
-              disabled={isBpmMax}
-              onPress={() => changeBpm(1)}
-              onPressIn={() => changeBpm(1)}
-              onPressOut={() => {}}
-            />
-          </View>
+            <Text style={styles.sectionTitle}>BPM</Text>
+            <View style={styles.buttonControlContainer}>
+              <ControlsButton
+                variant="control"
+                symbol="-"
+                size={60}
+                disabled={isBpmMin}
+                onPress={() => changeBpm(-1)}
+                onPressIn={() => changeBpm(-1)}
+                onPressOut={() => {}}
+              />
+              <Text style={styles.bpmDisplay}>{bpm}</Text>
+              <ControlsButton
+                variant="control"
+                symbol="+"
+                size={60}
+                disabled={isBpmMax}
+                onPress={() => changeBpm(1)}
+                onPressIn={() => changeBpm(1)}
+                onPressOut={() => {}}
+              />
+            </View>
 
-          <Text style={styles.sectionTitle}>Sound</Text>
-          <View style={styles.soundOptionsContainer}>
-            {METRONOME_SOUNDS.map(sound => (
-              <TouchableOpacity
-                key={sound}
-                style={[
-                  styles.soundOption,
-                  metronomeSound === sound && styles.activeSoundOption,
-                ]}
-                onPress={() => setMetronomeSound(sound)}>
-                <Text
+            <Text style={styles.sectionTitle}>Sound</Text>
+            <View style={styles.soundOptionsContainer}>
+              {METRONOME_SOUNDS.map(sound => (
+                <TouchableOpacity
+                  key={sound}
                   style={[
-                    styles.soundOptionText,
-                    metronomeSound === sound && styles.activeSoundOptionText,
-                  ]}>
-                  {sound.charAt(0).toUpperCase() + sound.slice(1)}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+                    styles.soundOption,
+                    metronomeSound === sound && styles.activeSoundOption,
+                  ]}
+                  onPress={() => setMetronomeSound(sound)}>
+                  <Text
+                    style={[
+                      styles.soundOptionText,
+                      metronomeSound === sound && styles.activeSoundOptionText,
+                    ]}>
+                    {sound.charAt(0).toUpperCase() + sound.slice(1)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
 
-          <Text style={styles.sectionTitle}>Volume</Text>
-          <View style={styles.buttonControlContainer}>
-            <ControlsButton
-              variant="control"
-              symbol="-"
-              size={60}
-              disabled={isVolumeMin}
-              onPress={() => changeVolume(-0.1)}
-              onPressIn={() => changeVolume(-0.1)}
-              onPressOut={() => {}}
-            />
-            <Text style={styles.valueText}>
-              {(metronomeVolume * 100).toFixed(0)}%
-            </Text>
-            <ControlsButton
-              variant="control"
-              symbol="+"
-              size={60}
-              disabled={isVolumeMax}
-              onPress={() => changeVolume(0.1)}
-              onPressIn={() => changeVolume(0.1)}
-              onPressOut={() => {}}
-            />
-          </View>
+            <Text style={styles.sectionTitle}>Volume</Text>
+            <View style={styles.buttonControlContainer}>
+              <ControlsButton
+                variant="control"
+                symbol="-"
+                size={60}
+                disabled={isVolumeMin}
+                onPress={() => changeVolume(-0.1)}
+                onPressIn={() => changeVolume(-0.1)}
+                onPressOut={() => {}}
+              />
+              <Text style={styles.valueText}>
+                {(metronomeVolume * 100).toFixed(0)}%
+              </Text>
+              <ControlsButton
+                variant="control"
+                symbol="+"
+                size={60}
+                disabled={isVolumeMax}
+                onPress={() => changeVolume(0.1)}
+                onPressIn={() => changeVolume(0.1)}
+                onPressOut={() => {}}
+              />
+            </View>
 
-          <TouchableOpacity style={styles.doneButton} onPress={onClose}>
-            <Text style={styles.doneButtonText}>Done</Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.doneButton} onPress={onClose}>
+              <Text style={styles.doneButtonText}>Done</Text>
+            </TouchableOpacity>
+          </View>
         </Animated.View>
       </View>
     </Modal>
@@ -208,13 +233,21 @@ const styles = StyleSheet.create({
     maxWidth: 350,
     backgroundColor: '#2c2c2e',
     borderRadius: 20,
-    padding: 25,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    overflow: 'hidden',
+  },
+  backgroundImage: {
+    borderRadius: 20,
+  },
+  contentContainer: {
+    width: '100%',
+    padding: 25,
+    alignItems: 'center',
   },
   title: {
     color: '#fff',
