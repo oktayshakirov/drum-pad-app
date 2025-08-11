@@ -13,7 +13,7 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:$agpVersion")
-        classpath("com.facebook.react:react-native-gradle-plugin") // This version is tied to your RN version
+        classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     }
 }

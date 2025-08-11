@@ -19,5 +19,9 @@
     "bundleIdentifier": "com.shadev.shapebeats",
     "buildNumber": "1",
     "supportsTablet": true
+  },
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-5852582960793521~5819935712",
+    "ios_app_id": "ca-app-pub-5852582960793521~8324193015"
   }
 }
