@@ -168,7 +168,12 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
           onPressOut={handlePressOut}
           activeOpacity={1}
           disabled={!sound}>
-          <View style={[styles.pad, {backgroundColor: padColor}]}>
+          <View
+            style={[
+              styles.pad,
+              {backgroundColor: padColor},
+              showIndicator && styles.padNoShadow,
+            ]}>
             {sound && (
               <>
                 {/* Inner shadow overlay (no glow) */}
@@ -205,7 +210,6 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
                     />
                   </Svg>
                 </Reanimated.View>
-                {/* Center highlight that brightens on press */}
                 <Reanimated.View
                   style={[styles.centerHighlightOverlay, pressHighlightStyle]}
                   pointerEvents="none">
@@ -266,10 +270,10 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
                     y="2"
                     width="96"
                     height="96"
-                    rx="10"
-                    ry="10"
+                    rx="13"
+                    ry="13"
                     stroke={brighterColor}
-                    strokeWidth="5"
+                    strokeWidth="3"
                     fill="none"
                     strokeDasharray={384}
                     strokeDashoffset={(1 - progress) * 384}
@@ -315,6 +319,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.6,
     shadowRadius: 2,
     elevation: 3,
+  },
+  padNoShadow: {
+    shadowOpacity: 0,
+    elevation: 0,
   },
   innerShadowOverlay: {
     position: 'absolute',

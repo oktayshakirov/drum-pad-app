@@ -18,6 +18,7 @@ import {getPadConfigs, getPadConfigsSync} from '../utils/soundUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {iconMap} from '../assets/sounds/icons';
 import DraggableList from '../components/DraggableList';
+import {brightenColor} from '../utils/colorUtils';
 
 const CustomizeScreen: React.FC = () => {
   const route = useRoute<RouteProp<RootStackParamList, 'Customize'>>();
@@ -139,6 +140,7 @@ const CustomizeScreen: React.FC = () => {
               const IconComponent = iconMap[item.icon];
               const isLargePack = customPads.length === 24;
               const channel = isLargePack ? (index < 12 ? 'A' : 'B') : null;
+              const brighterColor = brightenColor(item.color, 0.9);
 
               return (
                 <View
@@ -172,11 +174,13 @@ const CustomizeScreen: React.FC = () => {
                         <IconComponent
                           width={32}
                           height={32}
-                          fill="#000"
+                          fill={brighterColor}
                           style={styles.icon}
                         />
                       )}
-                      <Text style={styles.padTitle} numberOfLines={2}>
+                      <Text
+                        style={[styles.padTitle, {color: brighterColor}]}
+                        numberOfLines={2}>
                         {item.title}
                       </Text>
                     </View>
@@ -280,7 +284,6 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   padTitle: {
-    color: '#000',
     fontSize: 11,
     fontWeight: 'bold',
     textAlign: 'center',

@@ -347,8 +347,8 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   coverImage: {
-    width: screenWidth * 0.8,
-    height: (screenWidth * 0.8 * 9) / 16,
+    width: screenWidth * 0.95,
+    height: (screenWidth * 0.95 * 9) / 16,
     borderRadius: 20,
   },
 

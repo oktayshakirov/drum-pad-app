@@ -68,7 +68,20 @@ class AudioService {
     }
 
     await this.stopAllSounds();
+
+    // Properly dispose of AudioBuffers to prevent memory leaks
+    this.soundPackState.soundBuffers.forEach((buffer, key) => {
+      try {
+        // AudioBuffer doesn't have explicit dispose, but clear references
+        this.soundPackState.soundBuffers.delete(key);
+      } catch (e) {
+        console.warn(`${LOG_PREFIX} Error disposing buffer ${key}:`, e);
+      }
+    });
     this.soundPackState.soundBuffers.clear();
+
+    // Clear demo buffers to prevent accumulation
+    this.clearDemoBuffers();
     this.soundPackState.currentPack = soundPack;
     this.soundPackState.soundGroups =
       (soundPacks as any)[soundPack]?.soundGroups || {};
@@ -376,6 +389,16 @@ class AudioService {
       } catch (e) {}
     });
     this.soundPackState.activeSingleSources.clear();
+  }
+
+  // Add method to clean up demo buffers
+  clearDemoBuffers(): void {
+    try {
+      this.demoState.buffers.clear();
+      console.log(`${LOG_PREFIX} Demo buffers cleared`);
+    } catch (e) {
+      console.warn(`${LOG_PREFIX} Error clearing demo buffers:`, e);
+    }
   }
 
   private async _ensureInitialized(): Promise<void> {

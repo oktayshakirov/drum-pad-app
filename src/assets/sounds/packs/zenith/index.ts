@@ -9,6 +9,7 @@ const PAD_COLORS: PadColors = {
   SFX_SECONDARY: '#E8C9C9',
   PERCUSSION_MAIN: '#D3B3E0',
   PERCUSSION_SECONDARY: '#E0C9E8',
+  VOCAL: '#F8E8E8',
 };
 
 const soundPack: SoundPack = {
@@ -118,7 +119,7 @@ const soundPack: SoundPack = {
     {
       id: 12,
       sound: 'vocal',
-      color: PAD_COLORS.MELODY_SECONDARY,
+      color: PAD_COLORS.VOCAL,
       icon: 'vocal',
       title: 'Vocal',
     },
