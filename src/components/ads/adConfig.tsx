@@ -1,7 +1,7 @@
 import {Platform} from 'react-native';
 import {TestIds, MobileAds} from 'react-native-google-mobile-ads';
 
-export const USE_TEST_ADS = true;
+export const USE_TEST_ADS = false;
 
 export const adUnitIDs = {
   banner: Platform.select({
@@ -64,25 +64,4 @@ export async function initializeGoogleMobileAds(): Promise<void> {
 
 export function isGoogleMobileAdsInitialized(): boolean {
   return isInitialized;
-}
-
-export function debugAdConfiguration() {
-  // Debug function kept for potential future use
-}
-
-export function logAdRequest(
-  type: AdType,
-  adUnitId: string,
-  additionalInfo?: any,
-) {
-  console.log('📡 [AD REQUEST] ===== NEW AD REQUEST =====');
-  console.log('📡 [AD REQUEST] Type:', type);
-  console.log('📡 [AD REQUEST] Ad Unit ID:', adUnitId);
-  console.log('📡 [AD REQUEST] SDK Initialized:', isInitialized);
-  console.log('📡 [AD REQUEST] Test Mode:', USE_TEST_ADS);
-  console.log('📡 [AD REQUEST] Platform:', Platform.OS);
-  if (additionalInfo) {
-    console.log('📡 [AD REQUEST] Additional Info:', additionalInfo);
-  }
-  console.log('📡 [AD REQUEST] ===== END AD REQUEST =====');
 }

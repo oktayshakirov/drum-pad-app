@@ -75,6 +75,7 @@ export async function showAppOpenAd() {
   try {
     isShowingAd = true;
     await appOpenAd.show();
+    isShowingAd = false; // Reset state after successful show
   } catch (error) {
     console.error('Error showing App open ad:', error);
     isShowingAd = false;

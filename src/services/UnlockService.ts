@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {showRewardedAd, isRewardedAdReady} from '../components/ads/RewardedAd';
-import {showGlobalInterstitial} from '../components/ads/adsManager';
 
 const UNLOCKED_PACKS_KEY = 'unlockedPacks';
 const FREE_UNLOCK_ATTEMPTS_KEY = 'freeUnlockAttempts';
@@ -143,14 +142,7 @@ export class UnlockService {
       }
     }
 
-    // Method 2: Try Interstitial Ad (doesn't unlock, just shows ad)
-    try {
-      await showGlobalInterstitial();
-    } catch (error) {
-      // Continue to fallback even if interstitial fails
-    }
-
-    // Method 3: Free Unlock (if available)
+    // Method 2: Try Free Unlock (if available)
     if (this.canGetFreeUnlock(packId)) {
       await this.useFreeUnlock(packId);
       // Note: We don't unlock the pack permanently - it stays locked for future attempts

@@ -6,10 +6,18 @@ let interstitial: InterstitialAd | null = null;
 let isAdLoaded = false;
 let isShowingAd = false;
 let retryCount = 0;
+let isInitializing = false;
 const MAX_RETRIES = 3;
 
 export async function initializeInterstitial() {
+  if (isInitializing) {
+    return;
+  }
+
+  isInitializing = true;
+
   if (!isGoogleMobileAdsInitialized()) {
+    isInitializing = false;
     return new Promise<void>(resolve => {
       const checkInitialization = () => {
         if (isGoogleMobileAdsInitialized()) {
@@ -38,10 +46,12 @@ export async function initializeInterstitial() {
   interstitial.addAdEventListener(AdEventType.LOADED, () => {
     isAdLoaded = true;
     retryCount = 0;
+    isInitializing = false;
   });
 
   interstitial.addAdEventListener(AdEventType.ERROR, (_error: Error) => {
     isAdLoaded = false;
+    isInitializing = false;
 
     if (retryCount < MAX_RETRIES) {
       retryCount++;
@@ -62,6 +72,7 @@ export async function initializeInterstitial() {
   } catch (error) {
     console.error('Error loading Interstitial ad:', error);
     isAdLoaded = false;
+    isInitializing = false;
   }
 }
 
@@ -74,6 +85,7 @@ export async function showInterstitial() {
     isShowingAd = true;
     await interstitial.show();
     isAdLoaded = false;
+    isShowingAd = false;
   } catch (error) {
     console.error('Error showing Interstitial ad:', error);
     isShowingAd = false;
