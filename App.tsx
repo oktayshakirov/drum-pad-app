@@ -11,6 +11,7 @@ import CustomizeScreen from './src/screens/CustomizeScreen';
 import {AppProvider, useAppContext} from './src/contexts/AppContext';
 import {soundPacks} from './src/assets/sounds';
 import ConsentDialog from './src/components/ads/ConsentDialog';
+import CustomSplashScreen from './src/components/CustomSplashScreen';
 import {StyleSheet, View, ActivityIndicator, StatusBar} from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
@@ -68,6 +69,11 @@ const AppNavigatorContent: React.FC = () => {
 
 const App: React.FC = () => {
   const [consentCompleted, setConsentCompleted] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
+
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+  };
 
   return (
     <GestureHandlerRootView style={styles.container}>
@@ -78,7 +84,12 @@ const App: React.FC = () => {
             backgroundColor="transparent"
             translucent={true}
           />
-          {!consentCompleted ? (
+          {showSplash ? (
+            <CustomSplashScreen
+              isVisible={showSplash}
+              onAnimationComplete={handleSplashComplete}
+            />
+          ) : !consentCompleted ? (
             <ConsentDialog
               onConsentCompleted={() => setConsentCompleted(true)}
             />
