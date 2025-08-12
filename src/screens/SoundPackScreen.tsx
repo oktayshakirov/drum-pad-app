@@ -226,78 +226,85 @@ const SoundPackDetailScreen: React.FC = () => {
           <View style={styles.container}>
             <ModalHeader onClose={handleClose} packName={pack.name} />
             <View style={styles.content}>
-              <View style={styles.coverContainer}>
-                <Image source={pack.cover} style={styles.coverImage} />
-                {isPlaying && <Equalizer />}
+              <View style={styles.scrollableContent}>
+                <View style={styles.coverContainer}>
+                  <Image source={pack.cover} style={styles.coverImage} />
+                  {isPlaying && <Equalizer />}
+                </View>
+                <View style={styles.infoContainer}>
+                  <View style={styles.packHeader}>
+                    <Text style={styles.packName}>{pack.name}</Text>
+                  </View>
+                  <Text style={styles.packGenre}>{pack.genre}</Text>
+                  <View style={styles.statsContainer}>
+                    <View style={styles.statItem}>
+                      <Text style={styles.statLabel}>Sounds</Text>
+                      <Text style={styles.statValue}>
+                        {pack.sounds ? Object.keys(pack.sounds).length : 0}
+                      </Text>
+                    </View>
+                    <View style={styles.statItem}>
+                      <Text style={styles.statLabel}>BPM</Text>
+                      <Text style={styles.statValue}>{pack.bpm}</Text>
+                    </View>
+                    <View style={styles.statItem}>
+                      <Text style={styles.statLabel}>
+                        {isUnlocked ? 'UNLOCKED' : 'LOCKED'}
+                      </Text>
+                      <Text style={styles.lockBadgeIcon}>
+                        {isUnlocked ? '🔓' : '🔒'}
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles.playButtonContainer}>
+                    <ControlsButton
+                      variant="play"
+                      isPlaying={isPlaying}
+                      onPress={handlePlayStop}
+                      size={60}
+                    />
+                  </View>
+                </View>
               </View>
-              <View style={styles.infoContainer}>
-                <View style={styles.packHeader}>
-                  <Text style={styles.packName}>{pack.name}</Text>
-                </View>
-                <Text style={styles.packGenre}>{pack.genre}</Text>
-                <Text style={styles.packBpm}>BPM: {pack.bpm}</Text>
-                <View style={styles.statsContainer}>
-                  <View style={styles.statItem}>
-                    <Text style={styles.statLabel}>Sounds</Text>
-                    <Text style={styles.statValue}>
-                      {pack.sounds ? Object.keys(pack.sounds).length : 0}
-                    </Text>
-                  </View>
-                  <View style={styles.statItem}>
-                    <Text style={styles.statLabel}>
-                      {isUnlocked ? 'UNLOCKED' : 'LOCKED'}
-                    </Text>
-                    <Text style={styles.lockBadgeIcon}>
-                      {isUnlocked ? '🔓' : '🔒'}
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.actionsContainer}>
-                  <ControlsButton
-                    variant="play"
-                    isPlaying={isPlaying}
-                    onPress={handlePlayStop}
-                    size={60}
-                  />
-                  {isUnlocked ? (
+              <View style={styles.bottomButtonContainer}>
+                {isUnlocked ? (
+                  <TouchableOpacity
+                    style={styles.selectButton}
+                    onPress={handleSelectPack}>
+                    <View style={styles.buttonContent}>
+                      <Image
+                        source={require('../assets/images/pack.png')}
+                        style={styles.buttonIcon}
+                      />
+                      <Text style={styles.selectButtonText}>
+                        SELECT THIS PACK
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ) : (
+                  <View style={styles.unlockContainer}>
                     <TouchableOpacity
-                      style={styles.selectButton}
-                      onPress={handleSelectPack}>
+                      style={getUnlockButtonStyle()}
+                      onPress={handleUnlockPack}
+                      disabled={isUnlockButtonDisabled()}>
                       <View style={styles.buttonContent}>
                         <Image
-                          source={require('../assets/images/pack.png')}
+                          source={getUnlockButtonIcon()}
                           style={styles.buttonIcon}
                         />
                         <Text style={styles.selectButtonText}>
-                          SELECT THIS PACK
+                          {getUnlockButtonText()}
                         </Text>
                       </View>
                     </TouchableOpacity>
-                  ) : (
-                    <View style={styles.unlockContainer}>
-                      <TouchableOpacity
-                        style={getUnlockButtonStyle()}
-                        onPress={handleUnlockPack}
-                        disabled={isUnlockButtonDisabled()}>
-                        <View style={styles.buttonContent}>
-                          <Image
-                            source={getUnlockButtonIcon()}
-                            style={styles.buttonIcon}
-                          />
-                          <Text style={styles.selectButtonText}>
-                            {getUnlockButtonText()}
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
 
-                      {getStatusMessage() && (
-                        <Text style={styles.preparingText}>
-                          {getStatusMessage()}
-                        </Text>
-                      )}
-                    </View>
-                  )}
-                </View>
+                    {getStatusMessage() && (
+                      <Text style={styles.preparingText}>
+                        {getStatusMessage()}
+                      </Text>
+                    )}
+                  </View>
+                )}
               </View>
             </View>
           </View>
@@ -346,11 +353,15 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  scrollableContent: {
+    flex: 1,
   },
   coverContainer: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 25,
     position: 'relative',
   },
   coverImage: {
@@ -361,6 +372,7 @@ const styles = StyleSheet.create({
 
   infoContainer: {
     flex: 1,
+    justifyContent: 'flex-start',
   },
   packHeader: {
     flexDirection: 'row',
@@ -373,6 +385,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     textAlign: 'center',
+    marginBottom: 5,
   },
   lockIcon: {
     width: 30,
@@ -390,21 +403,19 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 20,
   },
-  packBpm: {
-    color: '#fff',
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 30,
-  },
+
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 40,
+    marginTop: 20,
+    marginBottom: 30,
+    paddingHorizontal: 20,
   },
   statItem: {
     alignItems: 'center',
+    flex: 1,
   },
   statLabel: {
     color: '#aaa',
@@ -429,18 +440,23 @@ const styles = StyleSheet.create({
   lockBadgeIcon: {
     fontSize: 16,
   },
-  actionsContainer: {
+  playButtonContainer: {
     alignItems: 'center',
-    gap: 20,
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  bottomButtonContainer: {
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    alignItems: 'center',
   },
   selectButton: {
     backgroundColor: '#FFD700',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 25,
-    minWidth: 200,
+    minWidth: 220,
     alignItems: 'center',
-    marginTop: 26,
   },
   unlockButton: {
     backgroundColor: '#FF6B6B',
@@ -456,6 +472,7 @@ const styles = StyleSheet.create({
   },
   unlockContainer: {
     alignItems: 'center',
+    width: '100%',
   },
   preparingText: {
     color: '#aaa',

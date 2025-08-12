@@ -124,7 +124,7 @@ const soundPack: SoundPack = {
       sound: 'chant_azis',
       color: PAD_COLORS.SFX_MAIN,
       icon: 'chant',
-      title: 'Azis Chant',
+      title: 'Chant',
     },
   ],
 };

@@ -266,12 +266,12 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
                 useNativeDriver>
                 <Svg style={StyleSheet.absoluteFill} viewBox="0 0 100 100">
                   <Rect
-                    x="2"
-                    y="2"
-                    width="96"
-                    height="96"
-                    rx="13"
-                    ry="13"
+                    x="1.5"
+                    y="1.5"
+                    width="97"
+                    height="97"
+                    rx="10"
+                    ry="10"
                     stroke={brighterColor}
                     strokeWidth="3"
                     fill="none"

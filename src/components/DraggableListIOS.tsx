@@ -74,7 +74,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
       'worklet';
       isActive.value = true;
       runOnJS(onDragStart)(index);
-      zIndex.value = withTiming(1000);
+      zIndex.value = 1000; // Use direct integer assignment instead of withTiming
       scale.value = withSpring(1.1, {
         damping: Platform.OS === 'android' ? 20 : 15,
         stiffness: Platform.OS === 'android' ? 200 : 150,
@@ -93,7 +93,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
       scale.value = withSpring(1, {
         damping: Platform.OS === 'android' ? 20 : 15,
       });
-      zIndex.value = withTiming(0);
+      zIndex.value = 0; // Use direct integer assignment instead of withTiming
     })
     .onTouchesDown(() => {
       'worklet';
@@ -104,7 +104,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
       translateX.value = withTiming(0);
       translateY.value = withTiming(0);
       scale.value = withSpring(1);
-      zIndex.value = withTiming(0);
+      zIndex.value = 0; // Use direct integer assignment instead of withTiming
     })
     .minDistance(Platform.OS === 'android' ? 8 : 2)
     .maxPointers(1);

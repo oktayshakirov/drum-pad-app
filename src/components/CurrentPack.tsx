@@ -10,6 +10,9 @@ import {
 import {BlurView} from '@react-native-community/blur';
 import {useAppContext} from '../contexts/AppContext';
 import {SOUND_PACKS} from '../utils/soundUtils';
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RootStackParamList} from '../../App';
 
 interface CurrentPackHeaderProps {
   onOpenPackLibrary?: () => void;
@@ -19,6 +22,7 @@ const CurrentPackHeader: React.FC<CurrentPackHeaderProps> = ({
   onOpenPackLibrary,
 }) => {
   const {currentSoundPack} = useAppContext();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const activePack = SOUND_PACKS[currentSoundPack];
 
   if (!activePack) {
@@ -29,6 +33,10 @@ const CurrentPackHeader: React.FC<CurrentPackHeaderProps> = ({
     if (onOpenPackLibrary) {
       onOpenPackLibrary();
     }
+  };
+
+  const handlePackPress = (): void => {
+    navigation.navigate('SoundPackDetail', {packId: currentSoundPack});
   };
 
   const blurType = Platform.OS === 'ios' ? 'ultraThinMaterialDark' : 'dark';
@@ -44,11 +52,16 @@ const CurrentPackHeader: React.FC<CurrentPackHeaderProps> = ({
         />
         <View style={styles.glassTint} />
         <View style={styles.contentRow}>
-          <Image source={activePack.image} style={styles.packImage} />
-          <View style={styles.packInfo}>
-            <Text style={styles.packName}>{activePack.name}</Text>
-            <Text style={styles.packGenre}>{activePack.genre}</Text>
-          </View>
+          <TouchableOpacity
+            style={styles.packInfoTouchable}
+            onPress={handlePackPress}
+            activeOpacity={0.8}>
+            <Image source={activePack.image} style={styles.packImage} />
+            <View style={styles.packInfo}>
+              <Text style={styles.packName}>{activePack.name}</Text>
+              <Text style={styles.packGenre}>{activePack.genre}</Text>
+            </View>
+          </TouchableOpacity>
           <View style={styles.buttonsContainer}>
             <TouchableOpacity
               style={styles.allPacksButton}
@@ -125,6 +138,11 @@ const styles = StyleSheet.create({
     color: '#000',
     fontWeight: 'bold',
     fontSize: 14,
+  },
+  packInfoTouchable: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
   },
 });
 
