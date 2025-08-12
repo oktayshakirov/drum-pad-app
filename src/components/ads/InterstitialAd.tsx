@@ -9,7 +9,6 @@ let retryCount = 0;
 const MAX_RETRIES = 3;
 
 export async function initializeInterstitial() {
-  // Wait for SDK initialization
   if (!isGoogleMobileAdsInitialized()) {
     return new Promise<void>(resolve => {
       const checkInitialization = () => {
@@ -38,13 +37,12 @@ export async function initializeInterstitial() {
 
   interstitial.addAdEventListener(AdEventType.LOADED, () => {
     isAdLoaded = true;
-    retryCount = 0; // Reset retry count on success
+    retryCount = 0;
   });
 
   interstitial.addAdEventListener(AdEventType.ERROR, (_error: Error) => {
     isAdLoaded = false;
 
-    // Retry loading if we haven't exceeded max retries
     if (retryCount < MAX_RETRIES) {
       retryCount++;
       setTimeout(() => {

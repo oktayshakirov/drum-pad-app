@@ -6,6 +6,7 @@ import {showAppOpenAd, loadAppOpenAd} from './AppOpenAd';
 import {initializeGoogleMobileAds} from './adConfig';
 
 const AD_INTERVAL_MS = 60000; // 1 minute
+const APP_OPEN_AFTER_INTERSTITIAL_COOLDOWN_MS = 30000; // 30 seconds
 
 const AD_TYPES = {
   INTERSTITIAL: 'interstitial',
@@ -28,7 +29,6 @@ async function initializeAdTimings() {
 
 export async function initializeGlobalAds() {
   try {
-    // Initialize Google Mobile Ads SDK first
     await initializeGoogleMobileAds();
 
     const hasInitializedKey = 'hasInitializedAds';
@@ -39,12 +39,10 @@ export async function initializeGlobalAds() {
       await AsyncStorage.setItem(hasInitializedKey, 'true');
     }
 
-    // Initialize ads after SDK is ready
     await Promise.all([initializeInterstitial(), loadAppOpenAd()]);
   } catch (error) {
     console.error('Failed to initialize global ads:', error);
 
-    // Retry initialization after a delay
     setTimeout(() => {
       initializeGlobalAds().catch(console.error);
     }, 5000);
@@ -64,8 +62,22 @@ async function canShowAd(adType: string): Promise<boolean> {
   const lastAdShownTime = parseInt(lastAdShownString, 10);
   const now = Date.now();
   const timeSinceLastAd = now - lastAdShownTime;
-  const canShow = timeSinceLastAd > AD_INTERVAL_MS;
 
+  // Special case: Block app open ads if interstitial was recently shown
+  if (adType === AD_TYPES.APP_OPEN) {
+    const lastInterstitialString = await AsyncStorage.getItem(
+      `lastAdShownTime_${AD_TYPES.INTERSTITIAL}`,
+    );
+    if (lastInterstitialString) {
+      const lastInterstitialTime = parseInt(lastInterstitialString, 10);
+      const timeSinceInterstitial = now - lastInterstitialTime;
+      if (timeSinceInterstitial < APP_OPEN_AFTER_INTERSTITIAL_COOLDOWN_MS) {
+        return false;
+      }
+    }
+  }
+
+  const canShow = timeSinceLastAd > AD_INTERVAL_MS;
   return canShow;
 }
 

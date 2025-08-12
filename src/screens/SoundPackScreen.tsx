@@ -20,6 +20,7 @@ import {BlurView} from '@react-native-community/blur';
 import Equalizer from '../components/Equalizer';
 import ControlsButton from '../components/ControlsButton';
 import {UnlockService} from '../services/UnlockService';
+import {showGlobalInterstitial} from '../components/ads/adsManager';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -134,6 +135,12 @@ const SoundPackDetailScreen: React.FC = () => {
   const handleSelectPack = useCallback(async (): Promise<void> => {
     if (!packId) {
       return;
+    }
+
+    try {
+      await showGlobalInterstitial();
+    } catch (error) {
+      console.log('Interstitial ad not available:', error);
     }
 
     await setCurrentSoundPack(packId);

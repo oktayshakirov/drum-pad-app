@@ -1,5 +1,11 @@
-import React, {useState, useCallback} from 'react';
-import {StyleSheet, View, TouchableOpacity, Dimensions} from 'react-native';
+import React, {useState, useCallback, useEffect} from 'react';
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Dimensions,
+  Platform,
+} from 'react-native';
 import {
   GestureHandlerRootView,
   Gesture,
@@ -13,8 +19,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-const {width: screenWidth} = Dimensions.get('window');
-const ITEM_MARGIN = 8;
+const ITEM_MARGIN = 6;
 
 interface DraggableItemProps {
   item: any;
@@ -41,8 +46,10 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
   const translateX = useSharedValue(0);
   const scale = useSharedValue(1);
   const zIndex = useSharedValue(0);
+  const isActive = useSharedValue(false);
 
   const animatedStyle = useAnimatedStyle(() => {
+    'worklet';
     return {
       transform: [
         {translateX: translateX.value},
@@ -50,27 +57,57 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
         {scale: scale.value},
       ],
       zIndex: zIndex.value,
+      elevation: Platform.OS === 'android' ? zIndex.value : 0,
     };
-  });
+  }, []);
 
   const panGesture = Gesture.Pan()
     .onUpdate(event => {
-      translateX.value = event.translationX;
-      translateY.value = event.translationY;
-      runOnJS(onHover)(index, event.translationY, event.translationX);
+      'worklet';
+      if (isActive.value) {
+        translateX.value = event.translationX;
+        translateY.value = event.translationY;
+        runOnJS(onHover)(index, event.translationY, event.translationX);
+      }
     })
     .onStart(() => {
+      'worklet';
+      isActive.value = true;
       runOnJS(onDragStart)(index);
       zIndex.value = withTiming(1000);
-      scale.value = withSpring(1.1);
+      scale.value = withSpring(1.1, {
+        damping: Platform.OS === 'android' ? 20 : 15,
+        stiffness: Platform.OS === 'android' ? 200 : 150,
+      });
     })
     .onEnd(() => {
+      'worklet';
+      isActive.value = false;
       runOnJS(onDragEnd)(index);
+      translateX.value = withTiming(0, {
+        duration: Platform.OS === 'android' ? 200 : 150,
+      });
+      translateY.value = withTiming(0, {
+        duration: Platform.OS === 'android' ? 200 : 150,
+      });
+      scale.value = withSpring(1, {
+        damping: Platform.OS === 'android' ? 20 : 15,
+      });
+      zIndex.value = withTiming(0);
+    })
+    .onTouchesDown(() => {
+      'worklet';
+    })
+    .onTouchesCancelled(() => {
+      'worklet';
+      isActive.value = false;
       translateX.value = withTiming(0);
       translateY.value = withTiming(0);
       scale.value = withSpring(1);
       zIndex.value = withTiming(0);
-    });
+    })
+    .minDistance(Platform.OS === 'android' ? 8 : 2)
+    .maxPointers(1);
 
   return (
     <Animated.View
@@ -79,13 +116,19 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
         {width: itemSize, height: itemSize},
         isDragging && styles.draggingItem,
         animatedStyle,
-      ]}>
+      ]}
+      renderToHardwareTextureAndroid={Platform.OS === 'android'}
+      needsOffscreenAlphaCompositing={Platform.OS === 'android'}>
       <GestureDetector gesture={panGesture}>
         <Animated.View style={styles.gestureContainer}>
           <TouchableOpacity
             style={styles.touchableContainer}
             activeOpacity={0.8}
+            disabled={isDragging}
             onLongPress={() => {
+              if (Platform.OS === 'android') {
+                return;
+              }
               onDragStart(index);
             }}>
             {renderItem(item, index)}
@@ -104,7 +147,7 @@ interface DraggableListProps {
   style?: any;
 }
 
-const DraggableList: React.FC<DraggableListProps> = ({
+const DraggableListIOS: React.FC<DraggableListProps> = ({
   data,
   renderItem,
   onReorder,
@@ -113,11 +156,24 @@ const DraggableList: React.FC<DraggableListProps> = ({
 }) => {
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [screenDimensions, setScreenDimensions] = useState(() =>
+    Dimensions.get('window'),
+  );
+
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({window}) => {
+      setScreenDimensions(window);
+    });
+    return () => subscription?.remove();
+  }, []);
+
   const numItems = data.length;
   const columns = numItems === 24 ? 4 : 3;
-  const availableWidth = screenWidth - 42;
+
+  const horizontalPadding = 20;
+  const availableWidth = screenDimensions.width - horizontalPadding;
   const totalMarginWidth = (columns - 1) * ITEM_MARGIN;
-  const itemSize = (availableWidth - totalMarginWidth) / columns;
+  const itemSize = Math.floor((availableWidth - totalMarginWidth) / columns);
 
   const handleDragStart = useCallback((index: number) => {
     setDraggingIndex(index);
@@ -126,56 +182,77 @@ const DraggableList: React.FC<DraggableListProps> = ({
 
   const handleDragEnd = useCallback(
     (index: number) => {
-      if (hoveredIndex !== null && hoveredIndex !== index) {
-        onReorder(index, hoveredIndex);
+      try {
+        if (
+          hoveredIndex !== null &&
+          hoveredIndex !== index &&
+          hoveredIndex >= 0 &&
+          hoveredIndex < data.length &&
+          index >= 0 &&
+          index < data.length
+        ) {
+          onReorder(index, hoveredIndex);
+        }
+      } catch (error) {
+        console.warn('DraggableList reorder error:', error);
+      } finally {
+        setDraggingIndex(null);
+        setHoveredIndex(null);
       }
-      setDraggingIndex(null);
-      setHoveredIndex(null);
     },
-    [hoveredIndex, onReorder],
+    [hoveredIndex, onReorder, data.length],
   );
 
   const handleHover = useCallback(
     (index: number, translationY: number, translationX: number) => {
-      if (draggingIndex === null) {
-        return;
-      }
-
-      // Calculate the position of each item in the grid
-      const itemPositions: {x: number; y: number}[] = [];
-      for (let i = 0; i < data.length; i++) {
-        const row = Math.floor(i / columns);
-        const col = i % columns;
-        const x = col * (itemSize + ITEM_MARGIN);
-        const y = row * (itemSize + ITEM_MARGIN);
-        itemPositions.push({x, y});
-      }
-
-      // Calculate the dragged item's current position
-      const draggedItemPos = itemPositions[draggingIndex];
-      const newX = draggedItemPos.x + translationX;
-      const newY = draggedItemPos.y + translationY;
-
-      // Find which item position is closest
-      let closestIndex = draggingIndex;
-      let minDistance = Infinity;
-
-      for (let i = 0; i < data.length; i++) {
-        const distance = Math.sqrt(
-          Math.pow(newX - itemPositions[i].x, 2) +
-            Math.pow(newY - itemPositions[i].y, 2),
-        );
-        if (distance < minDistance) {
-          minDistance = distance;
-          closestIndex = i;
+      try {
+        if (draggingIndex === null || !data || data.length === 0) {
+          return;
         }
-      }
 
-      if (closestIndex !== hoveredIndex) {
-        setHoveredIndex(closestIndex);
-      }
+        const itemPositions: {x: number; y: number}[] = [];
+        for (let i = 0; i < data.length; i++) {
+          const row = Math.floor(i / columns);
+          const col = i % columns;
+          const x = col * (itemSize + ITEM_MARGIN);
+          const y = row * (itemSize + ITEM_MARGIN);
+          itemPositions.push({x, y});
+        }
+
+        const draggedItemPos = itemPositions[draggingIndex];
+        if (!draggedItemPos) {
+          return;
+        }
+
+        const newX = draggedItemPos.x + translationX;
+        const newY = draggedItemPos.y + translationY;
+
+        let closestIndex = draggingIndex;
+        let minDistance = Infinity;
+        const threshold =
+          Platform.OS === 'android' ? itemSize * 0.4 : itemSize * 0.2;
+
+        for (let i = 0; i < data.length; i++) {
+          const distance = Math.sqrt(
+            Math.pow(newX - itemPositions[i].x, 2) +
+              Math.pow(newY - itemPositions[i].y, 2),
+          );
+          if (distance < minDistance && distance < threshold) {
+            minDistance = distance;
+            closestIndex = i;
+          }
+        }
+
+        if (
+          closestIndex !== hoveredIndex &&
+          closestIndex >= 0 &&
+          closestIndex < data.length
+        ) {
+          setHoveredIndex(closestIndex);
+        }
+      } catch (error) {}
     },
-    [draggingIndex, hoveredIndex, data.length, columns, itemSize],
+    [draggingIndex, hoveredIndex, data, columns, itemSize],
   );
 
   const renderGridItem = (item: any, index: number) => {
@@ -208,17 +285,20 @@ const DraggableList: React.FC<DraggableListProps> = ({
 
   return (
     <View style={[styles.container, style]}>
-      <GestureHandlerRootView>
+      <GestureHandlerRootView style={styles.gestureRootView}>
         <View
           style={[
             styles.gridContainer,
             {
-              width: availableWidth,
-              maxWidth: availableWidth,
+              width: screenDimensions.width,
+              paddingHorizontal: horizontalPadding / 2,
             },
-            styles.gridContainerCentered,
           ]}>
-          {data.map((item, index) => renderGridItem(item, index))}
+          {data &&
+            data.length > 0 &&
+            data.map((item, index) =>
+              item ? renderGridItem(item, index) : null,
+            )}
         </View>
       </GestureHandlerRootView>
     </View>
@@ -234,9 +314,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-  },
-  gridContainerCentered: {
-    alignSelf: 'center',
   },
   gridItemWithMargin: {
     marginRight: ITEM_MARGIN,
@@ -272,6 +349,9 @@ const styles = StyleSheet.create({
   touchableContainer: {
     flex: 1,
   },
+  gestureRootView: {
+    flex: 1,
+  },
 });
 
-export default DraggableList;
+export default DraggableListIOS;

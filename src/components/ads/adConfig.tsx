@@ -1,7 +1,7 @@
 import {Platform} from 'react-native';
 import {TestIds, MobileAds} from 'react-native-google-mobile-ads';
 
-export const USE_TEST_ADS = false;
+export const USE_TEST_ADS = true;
 
 export const adUnitIDs = {
   banner: Platform.select({
@@ -70,7 +70,6 @@ export function debugAdConfiguration() {
   // Debug function kept for potential future use
 }
 
-// Enhanced debugging for ad requests
 export function logAdRequest(
   type: AdType,
   adUnitId: string,

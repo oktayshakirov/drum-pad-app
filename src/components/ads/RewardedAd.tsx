@@ -6,7 +6,6 @@ let rewardedAd: RewardedAd | null = null;
 let isAdLoaded = false;
 
 export async function initializeRewardedAd() {
-  // Wait for SDK initialization
   if (!isGoogleMobileAdsInitialized()) {
     return new Promise<void>(resolve => {
       const checkInitialization = () => {

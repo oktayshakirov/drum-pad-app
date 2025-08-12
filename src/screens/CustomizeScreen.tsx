@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ImageBackground,
   Alert,
+  Platform,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useRoute, useNavigation} from '@react-navigation/native';
@@ -17,7 +18,8 @@ import {soundPacks} from '../assets/sounds';
 import {getPadConfigs, getPadConfigsSync} from '../utils/soundUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {iconMap} from '../assets/sounds/icons';
-import DraggableList from '../components/DraggableList';
+import DraggableListIOS from '../components/DraggableListIOS';
+import DraggableListAndroid from '../components/DraggableListAndroid';
 import {brightenColor} from '../utils/colorUtils';
 
 const CustomizeScreen: React.FC = () => {
@@ -134,64 +136,125 @@ const CustomizeScreen: React.FC = () => {
             </Text>
           </View>
 
-          <DraggableList
-            data={customPads}
-            renderItem={(item, index) => {
-              const IconComponent = iconMap[item.icon];
-              const isLargePack = customPads.length === 24;
-              const channel = isLargePack ? (index < 12 ? 'A' : 'B') : null;
-              const brighterColor = brightenColor(item.color, 0.9);
+          {Platform.OS === 'android' ? (
+            <DraggableListAndroid
+              data={customPads}
+              renderItem={(item, index) => {
+                const IconComponent = iconMap[item.icon];
+                const isLargePack = customPads.length === 24;
+                const channel = isLargePack ? (index < 12 ? 'A' : 'B') : null;
+                const brighterColor = brightenColor(item.color, 0.9);
 
-              return (
-                <View
-                  style={[
-                    styles.padItem,
-                    {
-                      backgroundColor: item.color,
-                    },
-                  ]}>
-                  <View style={styles.padContent}>
-                    <View style={styles.padHeader}>
-                      <View style={styles.badgeContainer}>
-                        <View style={styles.positionIndicator}>
-                          <Text style={styles.positionText}>{index + 1}</Text>
-                        </View>
-                        {channel && (
-                          <View style={styles.channelIndicator}>
-                            <Text style={styles.channelText}>{channel}</Text>
+                return (
+                  <View
+                    style={[
+                      styles.padItem,
+                      {
+                        backgroundColor: item.color,
+                      },
+                    ]}>
+                    <View style={styles.padContent}>
+                      <View style={styles.padHeader}>
+                        <View style={styles.badgeContainer}>
+                          <View style={styles.positionIndicator}>
+                            <Text style={styles.positionText}>{index + 1}</Text>
                           </View>
-                        )}
+                          {channel && (
+                            <View style={styles.channelIndicator}>
+                              <Text style={styles.channelText}>{channel}</Text>
+                            </View>
+                          )}
+                        </View>
+                        <View style={styles.dragHandle}>
+                          <View style={styles.dragDot} />
+                          <View style={styles.dragDot} />
+                          <View style={styles.dragDot} />
+                        </View>
                       </View>
-                      <View style={styles.dragHandle}>
-                        <View style={styles.dragDot} />
-                        <View style={styles.dragDot} />
-                        <View style={styles.dragDot} />
-                      </View>
-                    </View>
 
-                    <View style={styles.padCenter}>
-                      {IconComponent && (
-                        <IconComponent
-                          width={32}
-                          height={32}
-                          fill={brighterColor}
-                          style={styles.icon}
-                        />
-                      )}
-                      <Text
-                        style={[styles.padTitle, {color: brighterColor}]}
-                        numberOfLines={2}>
-                        {item.title}
-                      </Text>
+                      <View style={styles.padCenter}>
+                        {IconComponent && (
+                          <IconComponent
+                            width={32}
+                            height={32}
+                            fill={brighterColor}
+                            style={styles.icon}
+                          />
+                        )}
+                        <Text
+                          style={[styles.padTitle, {color: brighterColor}]}
+                          numberOfLines={2}>
+                          {item.title}
+                        </Text>
+                      </View>
                     </View>
                   </View>
-                </View>
-              );
-            }}
-            onReorder={handleReorder}
-            keyExtractor={item => item.id}
-            style={styles.content}
-          />
+                );
+              }}
+              onReorder={handleReorder}
+              keyExtractor={item => item.id}
+              style={styles.content}
+            />
+          ) : (
+            <DraggableListIOS
+              data={customPads}
+              renderItem={(item, index) => {
+                const IconComponent = iconMap[item.icon];
+                const isLargePack = customPads.length === 24;
+                const channel = isLargePack ? (index < 12 ? 'A' : 'B') : null;
+                const brighterColor = brightenColor(item.color, 0.9);
+
+                return (
+                  <View
+                    style={[
+                      styles.padItem,
+                      {
+                        backgroundColor: item.color,
+                      },
+                    ]}>
+                    <View style={styles.padContent}>
+                      <View style={styles.padHeader}>
+                        <View style={styles.badgeContainer}>
+                          <View style={styles.positionIndicator}>
+                            <Text style={styles.positionText}>{index + 1}</Text>
+                          </View>
+                          {channel && (
+                            <View style={styles.channelIndicator}>
+                              <Text style={styles.channelText}>{channel}</Text>
+                            </View>
+                          )}
+                        </View>
+                        <View style={styles.dragHandle}>
+                          <View style={styles.dragDot} />
+                          <View style={styles.dragDot} />
+                          <View style={styles.dragDot} />
+                        </View>
+                      </View>
+
+                      <View style={styles.padCenter}>
+                        {IconComponent && (
+                          <IconComponent
+                            width={32}
+                            height={32}
+                            fill={brighterColor}
+                            style={styles.icon}
+                          />
+                        )}
+                        <Text
+                          style={[styles.padTitle, {color: brighterColor}]}
+                          numberOfLines={2}>
+                          {item.title}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                );
+              }}
+              onReorder={handleReorder}
+              keyExtractor={item => item.id}
+              style={styles.content}
+            />
+          )}
 
           <View style={styles.footer}>
             <TouchableOpacity
@@ -224,13 +287,16 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 20,
+    paddingTop: 20,
+    paddingBottom: 20,
+    paddingHorizontal: 0, // Remove horizontal padding to let draggable list handle it
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 20,
+    paddingHorizontal: 20,
   },
   headerTitle: {
     color: '#fff',
@@ -249,7 +315,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   instructions: {
-    // Dynamic marginBottom applied inline
+    paddingHorizontal: 20,
   },
   instructionsText: {
     color: '#aaa',
@@ -318,6 +384,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 10,
+    paddingHorizontal: 20,
   },
   resetButton: {
     backgroundColor: 'rgba(255, 107, 107, 0.8)',
