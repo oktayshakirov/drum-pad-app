@@ -11,7 +11,11 @@ import {
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {soundPacks} from '../assets/sounds';
 import AudioService from '../services/AudioService';
-import {useRoute, useNavigation} from '@react-navigation/native';
+import {
+  useRoute,
+  useNavigation,
+  useFocusEffect,
+} from '@react-navigation/native';
 import {RouteProp} from '@react-navigation/native';
 import {RootStackParamList} from '../../App';
 import {useAppContext} from '../contexts/AppContext';
@@ -78,6 +82,14 @@ const SoundPackDetailScreen: React.FC = () => {
     await cleanupDemo();
     navigation.goBack();
   }, [cleanupDemo, navigation]);
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        cleanupDemo();
+      };
+    }, [cleanupDemo]),
+  );
 
   const handlePlayStop = useCallback(async (): Promise<void> => {
     if (isPlaying) {
