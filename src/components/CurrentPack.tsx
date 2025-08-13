@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   allPacksButton: {
-    backgroundColor: '#FFD700',
+    backgroundColor: '#ffffff',
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 30,

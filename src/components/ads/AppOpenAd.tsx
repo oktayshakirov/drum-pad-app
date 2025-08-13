@@ -52,12 +52,7 @@ export async function loadAppOpenAd() {
     }
   });
 
-  appOpenAd.addAdEventListener(AdEventType.CLOSED, () => {
-    isShowingAd = false;
-    isAppOpenAdLoaded = false;
-    AudioService.recoverFromVideoAdAudioIssue();
-    loadAppOpenAd();
-  });
+  // Note: CLOSED and ERROR events are now handled in showAppOpenAd Promise
 
   try {
     await appOpenAd.load();
@@ -67,21 +62,39 @@ export async function loadAppOpenAd() {
   }
 }
 
-export async function showAppOpenAd() {
+export async function showAppOpenAd(): Promise<void> {
   if (!appOpenAd || !isAppOpenAdLoaded || isShowingAd) {
     return;
   }
 
-  try {
-    isShowingAd = true;
-    await appOpenAd.show();
-    isShowingAd = false;
-  } catch (error) {
-    console.error('Error showing App open ad:', error);
-    isShowingAd = false;
-    isAppOpenAdLoaded = false;
-    loadAppOpenAd();
-  }
+  return new Promise((resolve, reject) => {
+    const handleAdClosed = () => {
+      isShowingAd = false;
+      isAppOpenAdLoaded = false;
+      AudioService.recoverFromVideoAdAudioIssue();
+      loadAppOpenAd();
+      resolve();
+    };
+
+    const handleAdError = (error: Error) => {
+      isShowingAd = false;
+      isAppOpenAdLoaded = false;
+      reject(error);
+    };
+
+    // Add one-time listeners for this specific ad show
+    appOpenAd!.addAdEventListener(AdEventType.CLOSED, handleAdClosed);
+    appOpenAd!.addAdEventListener(AdEventType.ERROR, handleAdError);
+
+    try {
+      isShowingAd = true;
+      appOpenAd!.show();
+    } catch (error) {
+      isShowingAd = false;
+      isAppOpenAdLoaded = false;
+      reject(error);
+    }
+  });
 }
 
 export default null;

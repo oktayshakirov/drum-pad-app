@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   activeSoundOption: {
-    backgroundColor: '#FFD700',
+    backgroundColor: '#ffffff',
   },
   soundOptionText: {
     color: '#fff',
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   doneButton: {
-    backgroundColor: '#FFD700',
+    backgroundColor: '#ffffff',
     paddingVertical: 15,
     borderRadius: 30,
     width: '100%',

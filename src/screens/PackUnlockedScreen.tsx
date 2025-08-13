@@ -148,7 +148,7 @@ const PackUnlockedScreen: React.FC<PackUnlockedScreenProps> = () => {
           <View style={styles.statusContainer}>
             {isLoadingAudio && (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#FFD700" />
+                <ActivityIndicator size="large" color="#ffffff" />
                 <Text style={styles.loadingText}>Preparing your sounds...</Text>
               </View>
             )}
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   headerTitle: {
-    color: '#FFD700',
+    color: '#ffffff',
     fontSize: 32,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingText: {
-    color: '#FFD700',
+    color: '#ffffff',
     fontSize: 16,
     marginTop: 12,
     textAlign: 'center',
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   enabledButton: {
-    backgroundColor: '#FFD700',
+    backgroundColor: '#ffffff',
   },
   disabledButton: {
     backgroundColor: '#666',
