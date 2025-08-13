@@ -3,7 +3,7 @@ import {showRewardedAd, isRewardedAdReady} from '../components/ads/RewardedAd';
 
 const UNLOCKED_PACKS_KEY = 'unlockedPacks';
 const FREE_UNLOCK_ATTEMPTS_KEY = 'freeUnlockAttempts';
-const FREE_UNLOCK_COOLDOWN_HOURS = 24; // 24 hours between free unlocks per pack
+const FREE_UNLOCK_COOLDOWN_HOURS = 24;
 const DEFAULT_UNLOCKED_PACKS = ['brabus'];
 
 export class UnlockService {
@@ -24,7 +24,6 @@ export class UnlockService {
         ]);
       }
 
-      // Load free unlock attempts
       const attemptsString = await AsyncStorage.getItem(
         FREE_UNLOCK_ATTEMPTS_KEY,
       );
@@ -32,14 +31,11 @@ export class UnlockService {
         const attempts = JSON.parse(attemptsString);
         this.freeUnlockAttempts = new Map(Object.entries(attempts));
       }
-    } catch (error) {
-      console.error('Error loading unlocked packs:', error);
-    }
+    } catch (error) {}
   }
 
   static async unlockPack(packId: string): Promise<void> {
     if (!packId || typeof packId !== 'string') {
-      console.error('Invalid packId provided to unlockPack:', packId);
       return;
     }
 
@@ -50,9 +46,7 @@ export class UnlockService {
         UNLOCKED_PACKS_KEY,
         JSON.stringify(unlockedPacksArray),
       );
-    } catch (error) {
-      console.error('Error unlocking pack:', error);
-    }
+    } catch (error) {}
   }
 
   static isPackUnlocked(packId: string): boolean {
@@ -63,12 +57,11 @@ export class UnlockService {
     return new Set(this.unlockedPacks);
   }
 
-  // Check if user can get a free unlock for this specific pack
   static canGetFreeUnlock(packId: string): boolean {
     const attempts = this.freeUnlockAttempts.get(packId);
     if (!attempts) {
       return true;
-    } // First time trying this pack
+    }
 
     const hoursSinceLastAttempt =
       (Date.now() - attempts.lastAttempt) / (1000 * 60 * 60);
@@ -77,12 +70,10 @@ export class UnlockService {
     return cooldownExpired;
   }
 
-  // Mark free unlock as used for this specific pack
   static async useFreeUnlock(packId: string): Promise<void> {
     const now = Date.now();
     this.freeUnlockAttempts.set(packId, {lastAttempt: now});
 
-    // Save to AsyncStorage
     const attemptsObject = Object.fromEntries(this.freeUnlockAttempts);
     await AsyncStorage.setItem(
       FREE_UNLOCK_ATTEMPTS_KEY,
@@ -90,7 +81,6 @@ export class UnlockService {
     );
   }
 
-  // Get unlock status and available options
   static getUnlockStatus(packId: string): {
     isUnlocked: boolean;
     canGetFreeUnlock: boolean;
@@ -101,7 +91,6 @@ export class UnlockService {
     const canGetFreeUnlock = this.canGetFreeUnlock(packId);
     const hasRewardedAd = isRewardedAdReady();
 
-    // Calculate hours until next free unlock
     const attempts = this.freeUnlockAttempts.get(packId);
     let hoursUntilFreeUnlock = 0;
     if (attempts) {
@@ -121,46 +110,48 @@ export class UnlockService {
     };
   }
 
-  // Comprehensive unlock method with fallbacks
   static async attemptUnlockWithFallbacks(packId: string): Promise<{
     success: boolean;
     method: 'rewarded' | 'free' | 'failed';
     showCongratulatoryAlert: boolean;
   }> {
-    // Method 1: Try Rewarded Ad
     if (isRewardedAdReady()) {
       try {
-        await showRewardedAd();
-        await this.unlockPack(packId);
-        return {
-          success: true,
-          method: 'rewarded',
-          showCongratulatoryAlert: true,
-        };
-      } catch (error) {
-        // Continue to fallback
-      }
+        const adResult = await showRewardedAd();
+
+        if (adResult.success && adResult.rewardEarned) {
+          await this.unlockPack(packId);
+          return {
+            success: true,
+            method: 'rewarded',
+            showCongratulatoryAlert: true,
+          };
+        } else {
+          return {
+            success: false,
+            method: 'failed',
+            showCongratulatoryAlert: false,
+          };
+        }
+      } catch (error) {}
     }
 
-    // Method 2: Try Free Unlock (if available)
     if (this.canGetFreeUnlock(packId)) {
       await this.useFreeUnlock(packId);
-      // Note: We don't unlock the pack permanently - it stays locked for future attempts
       return {
         success: true,
         method: 'free',
-        showCongratulatoryAlert: false, // No alert for free unlocks
-      };
-    } else {
-      return {
-        success: false,
-        method: 'failed',
         showCongratulatoryAlert: false,
       };
     }
+
+    return {
+      success: false,
+      method: 'failed',
+      showCongratulatoryAlert: false,
+    };
   }
 
-  // Reset free unlock attempts (for testing purposes)
   static async resetFreeUnlockAttempts(packId?: string): Promise<void> {
     if (packId) {
       this.freeUnlockAttempts.delete(packId);

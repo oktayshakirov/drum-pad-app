@@ -127,6 +127,34 @@ class AudioService {
     this.soundListeners.forEach(listener => listener(event));
   }
 
+  async recoverFromVideoAdAudioIssue(): Promise<void> {
+    if (!this.audioContext) {
+      return;
+    }
+
+    try {
+      await this.stopMetronome();
+
+      await this.stopAllSounds();
+
+      const oldContext = this.audioContext;
+      this.audioContext = new AudioContext();
+
+      this.soundPackState.soundBuffers.clear();
+
+      this.metronomeState.soundBuffers.clear();
+
+      this._initializeMetronomeGainNode();
+
+      await oldContext.close();
+    } catch (error) {
+      console.error(
+        `${LOG_PREFIX} Failed to recover from video ad audio issue:`,
+        error,
+      );
+    }
+  }
+
   async playSound(soundPack: string, soundName: string): Promise<boolean> {
     await this._ensureInitialized();
 

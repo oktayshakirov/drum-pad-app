@@ -7,6 +7,7 @@ import {
 import DrumPadScreen from './src/screens/DrumPadScreen';
 import PackLibraryScreen from './src/screens/PackLibraryScreen';
 import SoundPackScreen from './src/screens/SoundPackScreen';
+import PackUnlockedScreen from './src/screens/PackUnlockedScreen';
 import CustomizeScreen from './src/screens/CustomizeScreen';
 import {AppProvider, useAppContext} from './src/contexts/AppContext';
 import {soundPacks} from './src/assets/sounds';
@@ -20,6 +21,7 @@ export type RootStackParamList = {
   DrumPad: undefined;
   PackLibrary: undefined;
   SoundPackDetail: {packId: string};
+  PackUnlocked: {packId: string};
   Customize: {packId: string};
 };
 
@@ -55,6 +57,11 @@ const AppNavigatorContent: React.FC = () => {
         <Stack.Screen
           name="SoundPackDetail"
           component={SoundPackScreen}
+          options={{presentation: 'modal'}}
+        />
+        <Stack.Screen
+          name="PackUnlocked"
+          component={PackUnlockedScreen}
           options={{presentation: 'modal'}}
         />
         <Stack.Screen

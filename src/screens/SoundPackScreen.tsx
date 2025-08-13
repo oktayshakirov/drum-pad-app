@@ -111,18 +111,16 @@ const SoundPackDetailScreen: React.FC = () => {
 
       if (result.success) {
         if (result.method === 'rewarded') {
-          // Permanently unlock the pack
           setIsUnlocked(true);
-          await setCurrentSoundPack(packId);
-
-          navigation.navigate('DrumPad');
+          setTimeout(() => {
+            navigation.navigate('PackUnlocked', {packId});
+          }, 100);
         } else if (result.method === 'free') {
           await setCurrentSoundPack(packId);
           navigation.navigate('DrumPad');
         }
       }
     } catch (error) {
-      console.error('Error unlocking pack:', error);
     } finally {
       setIsLoadingAd(false);
       if (packId) {
@@ -139,9 +137,7 @@ const SoundPackDetailScreen: React.FC = () => {
 
     try {
       await showGlobalInterstitial();
-    } catch (error) {
-      console.log('Interstitial ad not available:', error);
-    }
+    } catch (error) {}
 
     await setCurrentSoundPack(packId);
     navigation.navigate('DrumPad');
