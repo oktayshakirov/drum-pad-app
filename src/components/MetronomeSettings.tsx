@@ -106,8 +106,9 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
   const isVolumeMin = metronomeVolume <= VOLUME_MIN;
   const isVolumeMax = metronomeVolume >= VOLUME_MAX;
 
-  // Get current pack for background
   const currentPack = context ? soundPacks[context.currentSoundPack] : null;
+  const currentColor = context ? context.metronomeColor : 'white';
+  const setColor = context ? context.setMetronomeColor : undefined;
 
   return (
     <Modal
@@ -211,6 +212,30 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
               />
             </View>
 
+            <Text style={styles.sectionTitle}>Color</Text>
+            <View style={styles.colorOptionsContainer}>
+              {[
+                {key: 'white', color: '#ffffff'},
+                {key: 'green', color: '#4CAF50'},
+                {key: 'blue', color: '#2196F3'},
+                {key: 'red', color: '#F44336'},
+                {key: 'yellow', color: '#FFEB3B'},
+              ].map(option => {
+                const isSelected = currentColor === option.key;
+                return (
+                  <ControlsButton
+                    key={option.key}
+                    variant="default"
+                    size={isSelected ? 44 : 36}
+                    onPress={() => setColor && setColor(option.key as any)}
+                    onPressIn={() => {}}
+                    onPressOut={() => {}}
+                    accentColor={option.color}
+                  />
+                );
+              })}
+            </View>
+
             <TouchableOpacity style={styles.doneButton} onPress={onClose}>
               <Text style={styles.doneButtonText}>Done</Text>
             </TouchableOpacity>
@@ -262,6 +287,14 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 10,
     alignSelf: 'center',
+  },
+  colorOptionsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    gap: 10,
   },
   bpmDisplay: {
     color: '#fff',

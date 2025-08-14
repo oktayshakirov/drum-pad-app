@@ -10,7 +10,12 @@ import AudioService from '../services/AudioService';
 import {SOUND_PACKS} from '../utils/soundUtils';
 import {soundPacks} from '../assets/sounds';
 import {MetronomeSound} from '../assets/sounds/metronome';
-import {AppContextType, AppState, AppProviderProps} from '../types/appContext';
+import {
+  AppContextType,
+  AppState,
+  AppProviderProps,
+  MetronomeColor,
+} from '../types/appContext';
 import {loadAppOpenAd} from '../components/ads/AppOpenAd';
 import {initializeRewardedAd} from '../components/ads/RewardedAd';
 import {initializeInterstitial} from '../components/ads/InterstitialAd';
@@ -25,6 +30,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
     bpm: 120,
     metronomeSound: 'tick',
     metronomeVolume: 1,
+    metronomeColor: 'green',
     audioContext: null,
   });
 
@@ -34,7 +40,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
       setState(prev => ({...prev, audioContext: context}));
       AudioService.setAudioContext(context);
 
-      // Initialize UnlockService separately to avoid blocking
       try {
         await UnlockService.initialize();
       } catch (error) {
@@ -43,7 +48,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
     } catch (error) {
       console.error('AppContext: Error initializing AudioContext:', error);
     } finally {
-      // Always set loading to false, even if there are errors
       setState(prev => ({...prev, isLoading: false}));
     }
   }, []);
@@ -119,6 +123,10 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
     setState(prev => ({...prev, metronomeVolume: newVolume}));
   }, []);
 
+  const setMetronomeColor = useCallback((color: MetronomeColor): void => {
+    setState(prev => ({...prev, metronomeColor: color}));
+  }, []);
+
   const handleMetronomeSoundChange = useCallback(
     async (newSound: MetronomeSound): Promise<void> => {
       try {
@@ -172,6 +180,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
     setMetronomeSound: handleMetronomeSoundChange,
     metronomeVolume: state.metronomeVolume,
     setMetronomeVolume,
+    metronomeColor: state.metronomeColor,
+    setMetronomeColor,
 
     audioContext: state.audioContext,
   };

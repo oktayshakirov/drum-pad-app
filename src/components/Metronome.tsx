@@ -63,7 +63,19 @@ const Metronome: React.FC<MetronomeProps> = ({isPlaying, setIsPlaying}) => {
     setMetronomeSound,
     metronomeVolume,
     setMetronomeVolume,
+    metronomeColor,
   } = context;
+
+  let borderColorStyle = styles.borderGreen;
+  if (metronomeColor === 'white') {
+    borderColorStyle = styles.borderWhite;
+  } else if (metronomeColor === 'blue') {
+    borderColorStyle = styles.borderBlue;
+  } else if (metronomeColor === 'red') {
+    borderColorStyle = styles.borderRed;
+  } else if (metronomeColor === 'yellow') {
+    borderColorStyle = styles.borderYellow;
+  }
 
   const handleToggleMetronome = (): void => {
     setIsPlaying(!isPlaying);
@@ -91,7 +103,11 @@ const Metronome: React.FC<MetronomeProps> = ({isPlaying, setIsPlaying}) => {
 
         <View style={styles.bpmDisplay}>
           <Animated.View
-            style={[styles.bpmCircle, {transform: [{scale: beatAnim}]}]}
+            style={[
+              styles.bpmCircle,
+              {transform: [{scale: beatAnim}]},
+              borderColorStyle,
+            ]}
           />
           <View style={styles.bpmTextContainer}>
             <Text style={styles.bpmValue}>{bpm}</Text>
@@ -142,8 +158,12 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     backgroundColor: '#222',
     borderWidth: 4,
-    borderColor: '#4CAF50',
   },
+  borderWhite: {borderColor: '#ffffff'},
+  borderGreen: {borderColor: '#4CAF50'},
+  borderBlue: {borderColor: '#2196F3'},
+  borderRed: {borderColor: '#F44336'},
+  borderYellow: {borderColor: '#FFEB3B'},
   bpmTextContainer: {
     position: 'absolute',
     justifyContent: 'center',

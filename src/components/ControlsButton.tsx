@@ -25,6 +25,7 @@ interface ControlsButtonProps {
   symbol?: string;
   disabled?: boolean;
   animation?: string;
+  accentColor?: string;
 }
 
 export interface ControlsButtonRef {
@@ -47,6 +48,7 @@ const ControlsButton = forwardRef<ControlsButtonRef, ControlsButtonProps>(
       symbol,
       disabled = false,
       animation,
+      accentColor,
     },
     ref,
   ) => {
@@ -199,16 +201,22 @@ const ControlsButton = forwardRef<ControlsButtonRef, ControlsButtonProps>(
           styles.button,
           {width: size, height: size, borderRadius: size / 2},
           disabled && styles.disabledButton,
+          accentColor && {borderColor: accentColor},
         ]}>
-        <BlurView
-          style={StyleSheet.absoluteFill}
-          blurType={blurType}
-          blurAmount={18}
-          reducedTransparencyFallbackColor="#101418"
-        />
-        <View style={styles.glassTint} />
+        {!accentColor && (
+          <BlurView
+            style={StyleSheet.absoluteFill}
+            blurType={blurType}
+            blurAmount={18}
+            reducedTransparencyFallbackColor="#101418"
+          />
+        )}
+        {!accentColor && <View style={styles.glassTint} />}
         <TouchableOpacity
-          style={styles.touchable}
+          style={[
+            styles.touchable,
+            accentColor && {backgroundColor: accentColor},
+          ]}
           onPress={handlePress}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
