@@ -58,9 +58,13 @@ const SoundPackDetailScreen: React.FC = () => {
     hasRewardedAd: boolean;
     hoursUntilFreeUnlock: number;
   } | null>(null);
-  const {setCurrentSoundPack} = useAppContext();
+  const {setCurrentSoundPack, currentSoundPack} = useAppContext();
 
   const pack = packId ? soundPacks[packId] : undefined;
+
+  const isCurrentPack = useCallback((): boolean => {
+    return currentSoundPack === packId;
+  }, [currentSoundPack, packId]);
 
   useEffect(() => {
     if (packId) {
@@ -147,13 +151,18 @@ const SoundPackDetailScreen: React.FC = () => {
       return;
     }
 
+    if (isCurrentPack()) {
+      navigation.navigate('DrumPad');
+      return;
+    }
+
     try {
       await showGlobalInterstitial();
     } catch (error) {}
 
     await setCurrentSoundPack(packId);
     navigation.navigate('DrumPad');
-  }, [packId, setCurrentSoundPack, navigation]);
+  }, [packId, setCurrentSoundPack, navigation, isCurrentPack]);
 
   const getUnlockButtonText = (): string => {
     if (isLoadingAd) {
@@ -201,6 +210,13 @@ const SoundPackDetailScreen: React.FC = () => {
     );
   };
 
+  const getSelectButtonText = (): string => {
+    if (isCurrentPack()) {
+      return 'GO BACK TO THIS PACK';
+    }
+    return 'SELECT THIS PACK';
+  };
+
   const getStatusMessage = (): string => {
     if (unlockStatus?.hasRewardedAd) {
       return '';
@@ -235,6 +251,13 @@ const SoundPackDetailScreen: React.FC = () => {
             <ModalHeader onClose={handleClose} packName={pack.name} />
             <View style={styles.content}>
               <View style={styles.scrollableContent}>
+                {isCurrentPack() && (
+                  <View style={styles.currentPackIndicator}>
+                    <Text style={styles.currentPackText}>
+                      ⭐ Currently Active Pack
+                    </Text>
+                  </View>
+                )}
                 <View style={styles.coverContainer}>
                   <Image source={pack.cover} style={styles.coverImage} />
                   {isPlaying && <Equalizer />}
@@ -285,7 +308,7 @@ const SoundPackDetailScreen: React.FC = () => {
                         style={styles.buttonIcon}
                       />
                       <Text style={styles.selectButtonText}>
-                        SELECT THIS PACK
+                        {getSelectButtonText()}
                       </Text>
                     </View>
                   </TouchableOpacity>
@@ -376,6 +399,22 @@ const styles = StyleSheet.create({
     width: screenWidth * 0.95,
     height: (screenWidth * 0.95 * 9) / 16,
     borderRadius: 20,
+  },
+  currentPackIndicator: {
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    marginBottom: 20,
+    alignSelf: 'center',
+  },
+  currentPackText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 
   infoContainer: {

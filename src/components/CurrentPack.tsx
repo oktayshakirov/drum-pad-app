@@ -13,6 +13,7 @@ import {SOUND_PACKS} from '../utils/soundUtils';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../../App';
+import AudioService from '../services/AudioService';
 
 interface CurrentPackHeaderProps {
   onOpenPackLibrary?: () => void;
@@ -35,7 +36,8 @@ const CurrentPackHeader: React.FC<CurrentPackHeaderProps> = ({
     }
   };
 
-  const handlePackPress = (): void => {
+  const handlePackPress = async (): Promise<void> => {
+    await AudioService.stopMetronome();
     navigation.navigate('SoundPackDetail', {packId: currentSoundPack});
   };
 
