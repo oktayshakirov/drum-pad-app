@@ -1,5 +1,5 @@
 import React, {useRef} from 'react';
-import {TouchableOpacity, StyleSheet, Animated, View, Text} from 'react-native';
+import {StyleSheet, Animated, View, Text} from 'react-native';
 import AudioService from '../services/AudioService';
 import {Svg, Rect, Defs, RadialGradient, Stop} from 'react-native-svg';
 import {useEffect, useState} from 'react';
@@ -12,6 +12,8 @@ import Reanimated, {
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
+import {runOnJS} from 'react-native-worklets';
+import {GestureDetector, Gesture} from 'react-native-gesture-handler';
 
 interface PadProps {
   sound: string | null;
@@ -45,6 +47,7 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
   >(undefined);
   const latestPlayInstanceId = useRef<number | null>(null);
   const brighterColor = brightenColor(color, 0.9);
+  const activeTouches = useRef<Set<number>>(new Set());
 
   useEffect(() => {
     if (!sound) {
@@ -117,43 +120,69 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
     };
   }, [scale, progressAnim]);
 
-  const handlePressIn = async (): Promise<void> => {
+  const handleTouchStart = (touchId: number): void => {
     if (!sound) {
       return;
     }
 
-    scale.stopAnimation();
+    activeTouches.current.add(touchId);
 
-    Animated.parallel([
-      Animated.spring(scale, {
-        toValue: 0.95,
-        friction: 9,
-        useNativeDriver: true,
-      }),
-    ]).start();
-    innerShadowOpacity.value = withTiming(0.08, {duration: 90});
-    pressHighlightOpacity.value = withTiming(0.25, {duration: 90});
+    if (activeTouches.current.size === 1) {
+      scale.stopAnimation();
 
-    try {
-      await AudioService.playSound(soundPack, sound);
-    } catch (error) {
+      Animated.parallel([
+        Animated.spring(scale, {
+          toValue: 0.95,
+          friction: 9,
+          useNativeDriver: true,
+        }),
+      ]).start();
+      innerShadowOpacity.value = withTiming(0.08, {duration: 90});
+      pressHighlightOpacity.value = withTiming(0.25, {duration: 90});
+    }
+
+    AudioService.playSound(soundPack, sound).catch(error => {
       console.error('Error playing sound:', error);
+    });
+  };
+
+  const handleTouchEnd = (touchId: number): void => {
+    activeTouches.current.delete(touchId);
+
+    if (activeTouches.current.size === 0) {
+      scale.stopAnimation();
+
+      Animated.parallel([
+        Animated.spring(scale, {
+          toValue: 1,
+          friction: 9,
+          useNativeDriver: true,
+        }),
+      ]).start();
+      innerShadowOpacity.value = withTiming(0.18, {duration: 160});
+      pressHighlightOpacity.value = withTiming(0, {duration: 160});
     }
   };
 
-  const handlePressOut = (): void => {
-    scale.stopAnimation();
-
-    Animated.parallel([
-      Animated.spring(scale, {
-        toValue: 1,
-        friction: 9,
-        useNativeDriver: true,
-      }),
-    ]).start();
-    innerShadowOpacity.value = withTiming(0.18, {duration: 160});
-    pressHighlightOpacity.value = withTiming(0, {duration: 160});
-  };
+  const gesture = Gesture.Pan()
+    .onTouchesDown(event => {
+      event.allTouches.forEach(touch => {
+        runOnJS(handleTouchStart)(touch.id);
+      });
+    })
+    .onTouchesUp(event => {
+      event.allTouches.forEach(touch => {
+        runOnJS(handleTouchEnd)(touch.id);
+      });
+    })
+    .onTouchesCancelled(event => {
+      event.allTouches.forEach(touch => {
+        runOnJS(handleTouchEnd)(touch.id);
+      });
+    })
+    .enabled(sound !== null)
+    .shouldCancelWhenOutside(false)
+    .minDistance(0);
 
   const padColor = sound ? color : '#333';
   const IconComponent = icon && iconMap[icon] ? iconMap[icon] : null;
@@ -162,12 +191,7 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
   return (
     <Animated.View style={[styles.container, {transform: [{scale}]}]}>
       <View style={styles.padWrapper}>
-        <TouchableOpacity
-          style={styles.touchable}
-          onPressIn={handlePressIn}
-          onPressOut={handlePressOut}
-          activeOpacity={1}
-          disabled={!sound}>
+        <GestureDetector gesture={gesture}>
           <View
             style={[
               styles.pad,
@@ -176,7 +200,6 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
             ]}>
             {sound && (
               <>
-                {/* Inner shadow overlay (no glow) */}
                 <Reanimated.View
                   style={[styles.innerShadowOverlay, innerShadowStyle]}
                   pointerEvents="none">
@@ -282,7 +305,7 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
               </Animatable.View>
             )}
           </View>
-        </TouchableOpacity>
+        </GestureDetector>
       </View>
     </Animated.View>
   );
@@ -302,10 +325,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  touchable: {
-    flex: 1,
-    borderRadius: 15,
-  },
+
   pad: {
     flex: 1,
     borderRadius: 15,
