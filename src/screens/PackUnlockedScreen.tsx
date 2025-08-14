@@ -46,7 +46,9 @@ const PackUnlockedScreen: React.FC<PackUnlockedScreenProps> = () => {
       setIsLoadingAudio(true);
       setAudioLoadError(null);
 
-      await AudioService.recoverFromVideoAdAudioIssue();
+      if (AudioService.isAudioRecoveryNeeded()) {
+        await AudioService.recoverFromVideoAdAudioIssue();
+      }
 
       const success = await AudioService.setSoundPack(packId);
 

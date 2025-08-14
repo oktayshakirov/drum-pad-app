@@ -71,7 +71,6 @@ export async function showAppOpenAd(): Promise<void> {
     const handleAdClosed = () => {
       isShowingAd = false;
       isAppOpenAdLoaded = false;
-      AudioService.recoverFromVideoAdAudioIssue();
       loadAppOpenAd();
       resolve();
     };
@@ -88,6 +87,7 @@ export async function showAppOpenAd(): Promise<void> {
 
     try {
       isShowingAd = true;
+      AudioService.markVideoAdPlayed();
       appOpenAd!.show();
     } catch (error) {
       isShowingAd = false;

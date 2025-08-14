@@ -5,6 +5,7 @@ import {
 } from 'react-native-google-mobile-ads';
 import {getAdUnitId, isGoogleMobileAdsInitialized} from './adConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AudioService from '../../services/AudioService';
 
 let rewardedAd: RewardedAd | null = null;
 let isAdLoaded = false;
@@ -44,47 +45,30 @@ export async function initializeRewardedAd() {
     requestNonPersonalizedAdsOnly,
   });
 
-  // CRITICAL: Add all required event listeners per Google's specification
   rewardedAd.addAdEventListener(RewardedAdEventType.LOADED, () => {
-    console.log('RewardedAd: Ad loaded successfully');
     isAdLoaded = true;
   });
 
-  rewardedAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, reward => {
-    console.log(
-      `RewardedAd: User earned reward - ${reward.type}: ${reward.amount}`,
-    );
+  rewardedAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, _reward => {
     rewardEarned = true;
   });
 
-  // Full screen content delegate methods - CRITICAL for proper lifecycle
-  rewardedAd.addAdEventListener(AdEventType.OPENED, () => {
-    console.log('RewardedAd: Ad opened/presented');
-  });
+  rewardedAd.addAdEventListener(AdEventType.OPENED, () => {});
 
   rewardedAd.addAdEventListener(AdEventType.CLOSED, () => {
-    console.log('RewardedAd: Ad dismissed/closed');
-    console.log(`RewardedAd: Final state - rewardEarned: ${rewardEarned}`);
-
-    // Call completion callback when ad is dismissed
     if (adCompletionCallback) {
       adCompletionCallback(true, rewardEarned);
       adCompletionCallback = null;
     }
 
-    // Clear the rewarded ad as per Google's recommendation
     rewardedAd = null;
     isAdLoaded = false;
     rewardEarned = false;
 
-    // Initialize a new ad for next time
     initializeRewardedAd();
   });
 
-  rewardedAd.addAdEventListener(AdEventType.ERROR, error => {
-    console.error('RewardedAd: Ad failed to present:', error);
-
-    // Call completion callback on error
+  rewardedAd.addAdEventListener(AdEventType.ERROR, _error => {
     if (adCompletionCallback) {
       adCompletionCallback(false, false);
       adCompletionCallback = null;
@@ -106,22 +90,12 @@ export async function showRewardedAd(): Promise<{
   success: boolean;
   rewardEarned: boolean;
 }> {
-  console.log('RewardedAd: showRewardedAd called');
-  console.log(
-    `RewardedAd: isAdLoaded = ${isAdLoaded}, rewardedAd exists = ${!!rewardedAd}`,
-  );
-
   if (!rewardedAd || !isAdLoaded) {
-    console.error('RewardedAd: No ad available to show');
     throw new Error('No rewarded ad available');
   }
 
   return new Promise((resolve, reject) => {
-    // Set up completion callback
     adCompletionCallback = (success: boolean, rewardEarned: boolean) => {
-      console.log(
-        `RewardedAd: Completion callback - success: ${success}, rewardEarned: ${rewardEarned}`,
-      );
       if (success) {
         resolve({success: true, rewardEarned});
       } else {
@@ -130,11 +104,9 @@ export async function showRewardedAd(): Promise<{
     };
 
     try {
-      console.log('RewardedAd: Starting ad.show()');
+      AudioService.markVideoAdPlayed();
       rewardedAd!.show();
-      console.log('RewardedAd: Ad.show() call initiated');
     } catch (error) {
-      console.error('RewardedAd: Error calling ad.show():', error);
       adCompletionCallback = null;
       reject(error);
     }

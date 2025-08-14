@@ -18,6 +18,7 @@ class AudioService {
   private soundPackState: SoundPackState;
   private soundListeners: Set<(event: SoundEvent) => void> = new Set();
   private playInstanceCounter: number = 0;
+  private needsAudioRecovery: boolean = false;
 
   constructor() {
     this.audioContext = null;
@@ -54,6 +55,7 @@ class AudioService {
 
   setAudioContext(audioContext: AudioContext) {
     this.audioContext = audioContext;
+    this.needsAudioRecovery = false;
     this._initializeMetronomeGainNode();
   }
 
@@ -127,6 +129,14 @@ class AudioService {
     this.soundListeners.forEach(listener => listener(event));
   }
 
+  markVideoAdPlayed(): void {
+    this.needsAudioRecovery = true;
+  }
+
+  isAudioRecoveryNeeded(): boolean {
+    return this.needsAudioRecovery;
+  }
+
   async recoverFromVideoAdAudioIssue(): Promise<void> {
     if (!this.audioContext) {
       return;
@@ -147,6 +157,7 @@ class AudioService {
       this._initializeMetronomeGainNode();
 
       await oldContext.close();
+      this.needsAudioRecovery = false;
     } catch (error) {
       console.error(
         `${LOG_PREFIX} Failed to recover from video ad audio issue:`,
@@ -157,6 +168,10 @@ class AudioService {
 
   async playSound(soundPack: string, soundName: string): Promise<boolean> {
     await this._ensureInitialized();
+
+    if (this.needsAudioRecovery) {
+      await this.recoverFromVideoAdAudioIssue();
+    }
 
     if (this.soundPackState.currentPack !== soundPack) {
       const switched = await this.setSoundPack(soundPack);
@@ -419,11 +434,9 @@ class AudioService {
     this.soundPackState.activeSingleSources.clear();
   }
 
-  // Add method to clean up demo buffers
   clearDemoBuffers(): void {
     try {
       this.demoState.buffers.clear();
-      console.log(`${LOG_PREFIX} Demo buffers cleared`);
     } catch (e) {
       console.warn(`${LOG_PREFIX} Error clearing demo buffers:`, e);
     }
@@ -469,6 +482,10 @@ class AudioService {
       const arrayBuffer = await response.arrayBuffer();
       if (!this.audioContext || this.audioContext.state === 'closed') {
         throw new Error('AudioContextUnavailableForDecoding');
+      }
+
+      if (this.audioContext.state === 'suspended') {
+        await this.audioContext.resume();
       }
 
       return await this.audioContext.decodeAudioData(arrayBuffer);
@@ -545,7 +562,14 @@ class AudioService {
       this.metronomeState.nextBeatTime <
       this.audioContext!.currentTime + this.metronomeState.scheduleAheadTime
     ) {
-      this._scheduleMetronomeTick(this.metronomeState.nextBeatTime);
+      this._scheduleMetronomeTick(this.metronomeState.nextBeatTime).catch(
+        error => {
+          console.error(
+            `${LOG_PREFIX} Error in metronome tick scheduling:`,
+            error,
+          );
+        },
+      );
       this.metronomeState.nextBeatTime += 60.0 / this.metronomeState.bpm;
     }
 
@@ -555,10 +579,18 @@ class AudioService {
     );
   }
 
-  private _scheduleMetronomeTick(time: number): void {
-    const buffer = this.metronomeState.soundBuffers.get(
+  private async _scheduleMetronomeTick(time: number): Promise<void> {
+    let buffer = this.metronomeState.soundBuffers.get(
       this.metronomeState.currentSound,
     );
+
+    if (!buffer) {
+      const reloadedBuffer = await this._loadMetronomeSound(
+        this.metronomeState.currentSound,
+      );
+      buffer = reloadedBuffer || undefined;
+    }
+
     if (!buffer || !this.metronomeState.gainNode) {
       return;
     }
@@ -606,6 +638,11 @@ class AudioService {
       }
 
       const arrayBuffer = await response.arrayBuffer();
+
+      if (this.audioContext!.state === 'suspended') {
+        await this.audioContext!.resume();
+      }
+
       const buffer = await this.audioContext!.decodeAudioData(arrayBuffer);
       this.demoState.buffers.set(packId, buffer);
       return buffer;

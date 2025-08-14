@@ -65,7 +65,6 @@ export async function initializeInterstitial() {
   interstitial.addAdEventListener(AdEventType.CLOSED, () => {
     isShowingAd = false;
     isAdLoaded = false;
-    AudioService.recoverFromVideoAdAudioIssue();
     initializeInterstitial();
   });
 
@@ -85,6 +84,7 @@ export async function showInterstitial() {
 
   try {
     isShowingAd = true;
+    AudioService.markVideoAdPlayed();
     await interstitial.show();
     isAdLoaded = false;
     isShowingAd = false;
