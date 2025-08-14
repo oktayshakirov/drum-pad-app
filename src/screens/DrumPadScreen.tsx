@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect, useCallback} from 'react';
+import React, {useState, useRef, useEffect, useCallback, useMemo} from 'react';
 import {View, StyleSheet, ImageBackground} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Pad from '../components/Pad';
@@ -21,6 +21,11 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../../App';
 import {BlurView} from '@react-native-community/blur';
 import {useGlobalAds} from '../components/ads/adsManager';
+import Reanimated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
 
 const DrumPadScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -28,6 +33,8 @@ const DrumPadScreen: React.FC = () => {
   const [activeChannel, setActiveChannel] = useState<'A' | 'B'>('A');
   const [isMetronomePlaying, setIsMetronomePlaying] = useState<boolean>(false);
   const [padConfigs, setPadConfigs] = useState<any[]>([]);
+  const [padsLoaded, setPadsLoaded] = useState<boolean>(false);
+  const skeletonTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const channelRef = useRef<ChannelSwitchRef>(null);
   const customizeRef = useRef<CustomizeButtonRef>(null);
@@ -35,6 +42,14 @@ const DrumPadScreen: React.FC = () => {
   useGlobalAds();
 
   const loadPadConfigs = useCallback(async (): Promise<void> => {
+    const MIN_SKELETON_MS = 350;
+    if (skeletonTimeoutRef.current) {
+      clearTimeout(skeletonTimeoutRef.current);
+      skeletonTimeoutRef.current = null;
+    }
+    setPadsLoaded(false);
+    const start = Date.now();
+
     try {
       const configs = await getPadConfigs(currentSoundPack);
       setPadConfigs(configs);
@@ -42,6 +57,17 @@ const DrumPadScreen: React.FC = () => {
       console.error('Error loading pad configs:', error);
       const fallbackConfigs = getPadConfigsSync(currentSoundPack);
       setPadConfigs(fallbackConfigs);
+    } finally {
+      const elapsed = Date.now() - start;
+      const remaining = Math.max(0, MIN_SKELETON_MS - elapsed);
+      if (remaining > 0) {
+        skeletonTimeoutRef.current = setTimeout(() => {
+          setPadsLoaded(true);
+          skeletonTimeoutRef.current = null;
+        }, remaining);
+      } else {
+        setPadsLoaded(true);
+      }
     }
   }, [currentSoundPack]);
 
@@ -52,6 +78,12 @@ const DrumPadScreen: React.FC = () => {
   useFocusEffect(
     useCallback(() => {
       loadPadConfigs();
+      return () => {
+        if (skeletonTimeoutRef.current) {
+          clearTimeout(skeletonTimeoutRef.current);
+          skeletonTimeoutRef.current = null;
+        }
+      };
     }, [loadPadConfigs]),
   );
 
@@ -65,6 +97,27 @@ const DrumPadScreen: React.FC = () => {
   const {soundPacks} = require('../assets/sounds');
   const currentPack = soundPacks[currentSoundPack];
   const blurType = getPackTheme(currentSoundPack) === 'dark' ? 'dark' : 'light';
+
+  const gridOpacity = useSharedValue(0);
+  const gridTranslateY = useSharedValue(8);
+  useEffect(() => {
+    if (padsLoaded && visiblePads.length > 0) {
+      gridOpacity.value = withTiming(1, {duration: 220});
+      gridTranslateY.value = withTiming(0, {duration: 220});
+    } else {
+      gridOpacity.value = 0;
+      gridTranslateY.value = 8;
+    }
+  }, [padsLoaded, visiblePads.length, gridOpacity, gridTranslateY]);
+  const gridAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: gridOpacity.value,
+    transform: [{translateY: gridTranslateY.value}],
+  }));
+
+  const skeletonSlots = useMemo(
+    () => new Array(12).fill(0).map((_, i) => i),
+    [],
+  );
 
   const handleOpenPackLibrary = async (): Promise<void> => {
     setIsMetronomePlaying(false);
@@ -99,7 +152,9 @@ const DrumPadScreen: React.FC = () => {
       <SafeAreaView
         style={styles.safeArea}
         edges={['top', 'left', 'right', 'bottom']}>
-        <AdBanner />
+        <View style={styles.bannerContainer}>
+          <AdBanner />
+        </View>
         <View style={styles.container}>
           <CurrentPack onOpenPackLibrary={handleOpenPackLibrary} />
           <View style={styles.controlsRow}>
@@ -125,18 +180,33 @@ const DrumPadScreen: React.FC = () => {
               />
             </View>
           </View>
-          <View style={styles.grid}>
-            {visiblePads.map(pad => (
-              <Pad
-                key={pad.id}
-                sound={pad.sound}
-                soundPack={currentSoundPack}
-                color={pad.color}
-                icon={pad.icon}
-                title={pad.title}
-              />
-            ))}
-          </View>
+          {padsLoaded && visiblePads.length > 0 ? (
+            <Reanimated.View style={[styles.grid, gridAnimatedStyle]}>
+              {visiblePads.map(pad => (
+                <Pad
+                  key={pad.id}
+                  sound={pad.sound}
+                  soundPack={currentSoundPack}
+                  color={pad.color}
+                  icon={pad.icon}
+                  title={pad.title}
+                />
+              ))}
+            </Reanimated.View>
+          ) : (
+            <View style={styles.grid}>
+              {skeletonSlots.map(slot => (
+                <View key={slot} style={styles.skeletonPad}>
+                  <BlurView
+                    style={StyleSheet.absoluteFill}
+                    blurType="light"
+                    blurAmount={18}
+                  />
+                  <View style={styles.skeletonGlassTint} />
+                </View>
+              ))}
+            </View>
+          )}
         </View>
       </SafeAreaView>
     </View>
@@ -150,6 +220,12 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
+  bannerContainer: {
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -162,6 +238,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     maxWidth: 400,
+    minHeight: 80,
   },
   leftSection: {
     flex: 1,
@@ -187,6 +264,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     maxWidth: 400,
+  },
+  skeletonPad: {
+    width: '30%',
+    aspectRatio: 1,
+    margin: '1.5%',
+    borderRadius: 15,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    overflow: 'hidden',
+  },
+  skeletonGlassTint: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255,255,255,0.05)',
   },
 });
 

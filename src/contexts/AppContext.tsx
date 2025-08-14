@@ -30,7 +30,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
     bpm: 120,
     metronomeSound: 'tick',
     metronomeVolume: 1,
-    metronomeColor: 'green',
+    metronomeColor: 'white',
     audioContext: null,
   });
 
@@ -163,7 +163,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
         }
       };
 
-      // Initialize ads after a short delay to ensure app is fully loaded
       setTimeout(initializeAds, 1000);
     }
   }, [state.audioContext, state.isLoading]);
