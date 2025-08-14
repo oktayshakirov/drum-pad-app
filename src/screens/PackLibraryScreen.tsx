@@ -6,9 +6,11 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
+  ImageBackground,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {SOUND_PACKS} from '../utils/soundUtils';
+import {soundPacks} from '../assets/sounds';
 import AudioService from '../services/AudioService';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -16,6 +18,7 @@ import {RootStackParamList} from '../../App';
 import Equalizer from '../components/Equalizer';
 import ControlsButton from '../components/ControlsButton';
 import {UnlockService} from '../services/UnlockService';
+import {BlurView} from '@react-native-community/blur';
 
 interface PackItemProps {
   item: any;
@@ -57,19 +60,34 @@ const PackItem: React.FC<PackItemProps> = memo(
 
 interface ModalHeaderProps {
   onClose: () => void;
+  activeTab: 'all' | 'my';
+  setActiveTab: (tab: 'all' | 'my') => void;
 }
 
-const ModalHeader: React.FC<ModalHeaderProps> = memo(({onClose}) => (
-  <View style={styles.header}>
-    <Text style={styles.headerTitle}>Sound Packs</Text>
-    <TouchableOpacity
-      onPress={onClose}
-      style={styles.closeButton}
-      hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-      <Text style={styles.closeButtonText}>X</Text>
-    </TouchableOpacity>
-  </View>
-));
+const ModalHeader: React.FC<ModalHeaderProps> = memo(
+  ({onClose, activeTab, setActiveTab}) => (
+    <View style={styles.header}>
+      <View style={styles.tabContainer}>
+        <TabButton
+          title="All Packs"
+          isActive={activeTab === 'all'}
+          onPress={() => setActiveTab('all')}
+        />
+        <TabButton
+          title="My Packs"
+          isActive={activeTab === 'my'}
+          onPress={() => setActiveTab('my')}
+        />
+      </View>
+      <TouchableOpacity
+        onPress={onClose}
+        style={styles.closeButton}
+        hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+        <Text style={styles.closeButtonText}>X</Text>
+      </TouchableOpacity>
+    </View>
+  ),
+);
 
 interface TabButtonProps {
   title: string;
@@ -95,6 +113,7 @@ const PackLibraryScreen: React.FC = () => {
   const [playingPackId, setPlayingPackId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | 'my'>('all');
   const packs = Object.values(SOUND_PACKS);
+  const background = soundPacks.brabus;
 
   const filteredPacks =
     activeTab === 'all'
@@ -158,56 +177,55 @@ const PackLibraryScreen: React.FC = () => {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.modalContainer}>
-        <ModalHeader onClose={handleClose} />
-        <View style={styles.tabContainer}>
-          <TabButton
-            title="All Packs"
-            isActive={activeTab === 'all'}
-            onPress={() => setActiveTab('all')}
+    <View style={styles.absoluteFill}>
+      <ImageBackground
+        source={background.cover}
+        style={StyleSheet.absoluteFill}
+        resizeMode="cover"
+      />
+      <BlurView
+        style={StyleSheet.absoluteFill}
+        blurType="dark"
+        blurAmount={70}
+      />
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.modalContainer}>
+          <ModalHeader
+            onClose={handleClose}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
           />
-          <TabButton
-            title="My Packs"
-            isActive={activeTab === 'my'}
-            onPress={() => setActiveTab('my')}
+          <FlatList
+            data={filteredPacks}
+            renderItem={renderPackItem}
+            keyExtractor={(item: any) => item.id}
+            numColumns={2}
+            contentContainerStyle={styles.listContainer}
           />
         </View>
-        <FlatList
-          data={filteredPacks}
-          renderItem={renderPackItem}
-          keyExtractor={(item: any) => item.id}
-          numColumns={2}
-          contentContainerStyle={styles.listContainer}
-        />
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  absoluteFill: {
+    flex: 1,
+  },
   safeArea: {
     flex: 1,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: 'transparent',
   },
   modalContainer: {
     flex: 1,
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     padding: 15,
-    position: 'relative',
-  },
-  headerTitle: {
-    color: '#fff',
-    fontSize: 22,
-    fontWeight: 'bold',
   },
   closeButton: {
-    position: 'absolute',
-    right: 15,
     padding: 5,
   },
   closeButtonText: {
@@ -265,9 +283,7 @@ const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#333',
+    alignItems: 'center',
   },
   tabButton: {
     paddingHorizontal: 20,
