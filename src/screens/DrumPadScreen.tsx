@@ -36,6 +36,8 @@ const DrumPadScreen: React.FC = () => {
   const [padsLoaded, setPadsLoaded] = useState<boolean>(false);
   const skeletonTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [bannerState, setBannerState] = useState({hasBanner: false, height: 0});
+
   const channelRef = useRef<ChannelSwitchRef>(null);
   const customizeRef = useRef<CustomizeButtonRef>(null);
 
@@ -98,6 +100,47 @@ const DrumPadScreen: React.FC = () => {
   const currentPack = soundPacks[currentSoundPack];
   const blurType = getPackTheme(currentSoundPack) === 'dark' ? 'dark' : 'light';
 
+  const bannerContainerHeight = useSharedValue(0);
+  const bannerContainerOpacity = useSharedValue(0);
+
+  useEffect(() => {
+    if (bannerState.hasBanner && bannerState.height > 0) {
+      bannerContainerHeight.value = withTiming(bannerState.height, {
+        duration: 300,
+      });
+      bannerContainerOpacity.value = withTiming(1, {duration: 300});
+    } else {
+      bannerContainerHeight.value = withTiming(0, {duration: 300});
+      bannerContainerOpacity.value = withTiming(0, {duration: 300});
+    }
+  }, [
+    bannerState.hasBanner,
+    bannerState.height,
+    bannerContainerHeight,
+    bannerContainerOpacity,
+  ]);
+
+  const bannerContainerAnimatedStyle = useAnimatedStyle(() => ({
+    height: bannerContainerHeight.value,
+    opacity: bannerContainerOpacity.value,
+  }));
+
+  const bannerContainerStyle = useMemo(
+    () => [styles.bannerContainer, bannerContainerAnimatedStyle],
+    [bannerContainerAnimatedStyle],
+  );
+
+  const bannerContainerProps = useMemo(
+    () => ({
+      style: bannerContainerStyle,
+      pointerEvents:
+        bannerState.hasBanner && bannerState.height > 0
+          ? ('auto' as const)
+          : ('none' as const),
+    }),
+    [bannerContainerStyle, bannerState.hasBanner, bannerState.height],
+  );
+
   const gridOpacity = useSharedValue(0);
   const gridTranslateY = useSharedValue(8);
   useEffect(() => {
@@ -116,6 +159,13 @@ const DrumPadScreen: React.FC = () => {
 
   const skeletonSlots = useMemo(
     () => new Array(12).fill(0).map((_, i) => i),
+    [],
+  );
+
+  const handleBannerStateChange = useCallback(
+    (hasAd: boolean, height: number) => {
+      setBannerState({hasBanner: hasAd, height});
+    },
     [],
   );
 
@@ -152,9 +202,9 @@ const DrumPadScreen: React.FC = () => {
       <SafeAreaView
         style={styles.safeArea}
         edges={['top', 'left', 'right', 'bottom']}>
-        <View style={styles.bannerContainer}>
-          <AdBanner />
-        </View>
+        <Reanimated.View {...bannerContainerProps}>
+          <AdBanner onBannerStateChange={handleBannerStateChange} />
+        </Reanimated.View>
         <View style={styles.container}>
           <CurrentPack onOpenPackLibrary={handleOpenPackLibrary} />
           <View style={styles.controlsRow}>
@@ -221,10 +271,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bannerContainer: {
-    height: 60,
+    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%',
+    overflow: 'hidden',
   },
   container: {
     flex: 1,
