@@ -11,16 +11,13 @@ const BannerAdComponent = () => {
   const [adUnitId, setAdUnitId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Wait for SDK initialization before showing ads
     const checkInitialization = () => {
       if (isGoogleMobileAdsInitialized()) {
         setShouldShowAd(true);
 
-        // Get and set the ad unit ID
         const currentAdUnitId = getAdUnitId('banner');
         setAdUnitId(currentAdUnitId || null);
       } else {
-        // Retry after a short delay
         setTimeout(checkInitialization, 1000);
       }
     };
@@ -29,11 +26,10 @@ const BannerAdComponent = () => {
   }, [requestNonPersonalizedAdsOnly, retryCount]);
 
   const handleAdLoaded = () => {
-    setRetryCount(0); // Reset retry count on success
+    setRetryCount(0);
   };
 
   const handleAdFailedToLoad = (_error: any) => {
-    // Retry loading the ad (up to 3 times)
     if (retryCount < 3) {
       setTimeout(() => {
         setRetryCount(prev => prev + 1);
@@ -48,7 +44,7 @@ const BannerAdComponent = () => {
   return (
     <View style={styles.bannerContainer}>
       <BannerAd
-        key={retryCount} // Force re-render on retry
+        key={retryCount}
         unitId={adUnitId!}
         size={BannerAdSize.ADAPTIVE_BANNER}
         requestOptions={{
@@ -65,7 +61,7 @@ const styles = StyleSheet.create({
   bannerContainer: {
     width: '100%',
     alignItems: 'center',
-    minHeight: 50, // Ensure consistent height even when ad is loading
+    minHeight: 50,
   },
 });
 

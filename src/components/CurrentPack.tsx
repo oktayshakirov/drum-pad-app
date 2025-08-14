@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     width: '100%',
+    marginTop: 15,
   },
   glassCard: {
     position: 'relative',
