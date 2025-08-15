@@ -14,7 +14,7 @@ import Reanimated, {
 } from 'react-native-reanimated';
 import {runOnJS} from 'react-native-worklets';
 import {GestureDetector, Gesture} from 'react-native-gesture-handler';
-import {trigger} from 'react-native-haptic-feedback';
+import {triggerPlatformHaptic} from '../utils/haptics';
 
 interface PadProps {
   sound: string | null;
@@ -142,11 +142,7 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
       pressHighlightOpacity.value = withTiming(0.25, {duration: 90});
     }
 
-    if (Platform.OS === 'ios') {
-      trigger('selection');
-    } else {
-      trigger('soft');
-    }
+    triggerPlatformHaptic('selection');
 
     AudioService.playSound(soundPack, sound).catch(error => {
       console.error('Error playing sound:', error);

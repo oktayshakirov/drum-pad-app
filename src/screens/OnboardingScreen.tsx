@@ -18,11 +18,11 @@ import {UnlockService} from '../services/UnlockService';
 import {OnboardingService} from '../services/OnboardingService';
 import {useContext} from 'react';
 import {OnboardingContext} from '../../App';
-import {trigger} from 'react-native-haptic-feedback';
 import ControlsButton from '../components/ControlsButton';
 import Equalizer from '../components/Equalizer';
 import {ImageBackground} from 'react-native';
 import {BlurView} from '@react-native-community/blur';
+import {triggerPlatformHaptic} from '../utils/haptics';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -67,11 +67,7 @@ const PackCard: React.FC<PackCardProps> = ({
   );
 
   const handleCardPress = useCallback(() => {
-    if (Platform.OS === 'ios') {
-      trigger('selection');
-    } else {
-      trigger('soft');
-    }
+    triggerPlatformHaptic('selection');
     onSelect(packId);
   }, [packId, onSelect]);
 
@@ -132,7 +128,6 @@ const OnboardingScreen: React.FC = () => {
           setSelectedPack(allPackIds[0]);
         }
       } catch (error) {
-        // Handle error silently
       } finally {
         setIsLoading(false);
       }
@@ -142,11 +137,7 @@ const OnboardingScreen: React.FC = () => {
   }, []);
 
   const handlePackSelect = useCallback((packId: string) => {
-    if (Platform.OS === 'ios') {
-      trigger('impactLight');
-    } else {
-      trigger('soft');
-    }
+    triggerPlatformHaptic('impactLight');
     setSelectedPack(packId);
   }, []);
 
@@ -156,20 +147,14 @@ const OnboardingScreen: React.FC = () => {
     }
 
     try {
-      if (Platform.OS === 'ios') {
-        trigger('notificationSuccess');
-      } else {
-        trigger('soft');
-      }
+      triggerPlatformHaptic('notificationSuccess');
 
       await UnlockService.unlockPack(selectedPack);
       await setCurrentSoundPack(selectedPack);
       await OnboardingService.markOnboardingCompleted();
 
       completeOnboarding();
-    } catch (error) {
-      // Handle error silently
-    }
+    } catch (error) {}
   }, [selectedPack, setCurrentSoundPack, completeOnboarding]);
 
   if (isLoading) {
@@ -314,7 +299,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: '#ffffff',
-    fontSize: Platform.OS === 'ios' ? 30 : 28,
+    fontSize: 28,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 12,

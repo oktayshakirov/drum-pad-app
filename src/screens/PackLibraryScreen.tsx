@@ -7,7 +7,6 @@ import {
   Image,
   FlatList,
   ImageBackground,
-  Platform,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {SOUND_PACKS} from '../utils/soundUtils';
@@ -20,7 +19,7 @@ import Equalizer from '../components/Equalizer';
 import ControlsButton from '../components/ControlsButton';
 import {UnlockService} from '../services/UnlockService';
 import {BlurView} from '@react-native-community/blur';
-import {trigger} from 'react-native-haptic-feedback';
+import {triggerPlatformHaptic} from '../utils/haptics';
 
 interface PackItemProps {
   item: any;
@@ -35,11 +34,7 @@ const PackItem: React.FC<PackItemProps> = memo(
     <TouchableOpacity
       style={styles.packItem}
       onPress={() => {
-        if (Platform.OS === 'ios') {
-          trigger('selection');
-        } else {
-          trigger('soft');
-        }
+        triggerPlatformHaptic('selection');
         onSelect(item.id);
       }}>
       <View style={styles.imageContainer}>
@@ -60,11 +55,7 @@ const PackItem: React.FC<PackItemProps> = memo(
           variant="play"
           isPlaying={isPlaying}
           onPress={() => {
-            if (Platform.OS === 'ios') {
-              trigger('selection');
-            } else {
-              trigger('soft');
-            }
+            triggerPlatformHaptic('selection');
             onPlayStop(item.id);
           }}
           size={30}
@@ -116,11 +107,7 @@ const TabButton: React.FC<TabButtonProps> = memo(
     <TouchableOpacity
       style={[styles.tabButton, isActive && styles.activeTabButton]}
       onPress={() => {
-        if (Platform.OS === 'ios') {
-          trigger('selection');
-        } else {
-          trigger('soft');
-        }
+        triggerPlatformHaptic('selection');
         onPress();
       }}>
       <Text

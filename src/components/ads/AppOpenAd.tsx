@@ -2,6 +2,7 @@ import {AppOpenAd, AdEventType} from 'react-native-google-mobile-ads';
 import {getAdUnitId, isGoogleMobileAdsInitialized} from './adConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AudioService from '../../services/AudioService';
+import {Platform} from 'react-native';
 
 let appOpenAd: AppOpenAd | null = null;
 let isAppOpenAdLoaded = false;
@@ -37,11 +38,13 @@ export async function loadAppOpenAd() {
   });
 
   appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
+    console.log('AppOpenAd: Ad loaded successfully');
     isAppOpenAdLoaded = true;
     retryCount = 0;
   });
 
   appOpenAd.addAdEventListener(AdEventType.ERROR, (_error: Error) => {
+    console.log('AppOpenAd: Ad failed to load');
     isAppOpenAdLoaded = false;
 
     if (retryCount < MAX_RETRIES) {
@@ -61,12 +64,19 @@ export async function loadAppOpenAd() {
 }
 
 export async function showAppOpenAd(): Promise<void> {
+  console.log('AppOpenAd: showAppOpenAd called');
+  console.log('AppOpenAd: appOpenAd exists:', !!appOpenAd);
+  console.log('AppOpenAd: isAppOpenAdLoaded:', isAppOpenAdLoaded);
+  console.log('AppOpenAd: isShowingAd:', isShowingAd);
+
   if (!appOpenAd || !isAppOpenAdLoaded || isShowingAd) {
+    console.log('AppOpenAd: Cannot show - conditions not met');
     return;
   }
 
   return new Promise((resolve, reject) => {
     const handleAdClosed = () => {
+      console.log('AppOpenAd: Ad closed');
       isShowingAd = false;
       isAppOpenAdLoaded = false;
       loadAppOpenAd();
@@ -74,6 +84,7 @@ export async function showAppOpenAd(): Promise<void> {
     };
 
     const handleAdError = (error: Error) => {
+      console.log('AppOpenAd: Ad error:', error);
       isShowingAd = false;
       isAppOpenAdLoaded = false;
       reject(error);
@@ -84,9 +95,27 @@ export async function showAppOpenAd(): Promise<void> {
 
     try {
       isShowingAd = true;
-      AudioService.markVideoAdPlayed();
-      appOpenAd!.show();
+      console.log('AppOpenAd: Starting to show ad...');
+
+      setTimeout(
+        () => {
+          if (isShowingAd && appOpenAd) {
+            console.log('AppOpenAd: Showing ad after delay');
+            AudioService.markVideoAdPlayed();
+            appOpenAd.show();
+          } else {
+            console.log(
+              'AppOpenAd: Cannot show - isShowingAd:',
+              isShowingAd,
+              'appOpenAd:',
+              !!appOpenAd,
+            );
+          }
+        },
+        Platform.OS === 'android' ? 100 : 0,
+      );
     } catch (error) {
+      console.log('AppOpenAd: Error in showAppOpenAd:', error);
       isShowingAd = false;
       isAppOpenAdLoaded = false;
       reject(error);

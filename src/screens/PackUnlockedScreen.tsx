@@ -19,7 +19,7 @@ import {RootStackParamList} from '../../App';
 import {useAppContext} from '../contexts/AppContext';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {BlurView} from '@react-native-community/blur';
-import {trigger} from 'react-native-haptic-feedback';
+import {triggerPlatformHaptic} from '../utils/haptics';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -79,11 +79,7 @@ const PackUnlockedScreen: React.FC<PackUnlockedScreenProps> = () => {
       loadAndVerifyAudio();
     }, 500);
 
-    if (Platform.OS === 'ios') {
-      trigger('notificationSuccess');
-    } else {
-      trigger('soft');
-    }
+    triggerPlatformHaptic('notificationSuccess');
 
     return () => clearTimeout(timer);
   }, [loadAndVerifyAudio]);
@@ -124,7 +120,6 @@ const PackUnlockedScreen: React.FC<PackUnlockedScreenProps> = () => {
       />
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
-          {/* Header */}
           <View style={styles.header}>
             <Text style={styles.headerTitle}>🎉 Pack Unlocked!</Text>
             <Text style={styles.headerSubtitle}>
@@ -132,7 +127,6 @@ const PackUnlockedScreen: React.FC<PackUnlockedScreenProps> = () => {
             </Text>
           </View>
 
-          {/* Pack Info */}
           <View style={styles.packInfo}>
             <View style={styles.glassCard}>
               <BlurView

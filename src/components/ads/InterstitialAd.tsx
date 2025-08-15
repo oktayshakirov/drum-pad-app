@@ -10,6 +10,17 @@ let retryCount = 0;
 let isInitializing = false;
 const MAX_RETRIES = 3;
 
+async function updateInterstitialAdShownTime() {
+  try {
+    await AsyncStorage.setItem(
+      'lastAdShownTime_interstitial',
+      Date.now().toString(),
+    );
+  } catch (error) {
+    console.error('Failed to update interstitial ad shown time:', error);
+  }
+}
+
 export async function initializeInterstitial() {
   if (isInitializing) {
     return;
@@ -62,7 +73,9 @@ export async function initializeInterstitial() {
     }
   });
 
-  interstitial.addAdEventListener(AdEventType.CLOSED, () => {
+  interstitial.addAdEventListener(AdEventType.CLOSED, async () => {
+    await updateInterstitialAdShownTime();
+
     isShowingAd = false;
     isAdLoaded = false;
     initializeInterstitial();

@@ -26,7 +26,7 @@ import Equalizer from '../components/Equalizer';
 import ControlsButton from '../components/ControlsButton';
 import {UnlockService} from '../services/UnlockService';
 import {showGlobalInterstitial} from '../components/ads/adsManager';
-import {trigger} from 'react-native-haptic-feedback';
+import {triggerPlatformHaptic} from '../utils/haptics';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -40,11 +40,7 @@ const ModalHeader: React.FC<ModalHeaderProps> = memo(({onClose, packName}) => (
     <Text style={styles.headerTitle}>{packName}</Text>
     <TouchableOpacity
       onPress={() => {
-        if (Platform.OS === 'ios') {
-          trigger('selection');
-        } else {
-          trigger('soft');
-        }
+        triggerPlatformHaptic('selection');
         onClose();
       }}
       style={styles.closeButton}
@@ -311,11 +307,7 @@ const SoundPackDetailScreen: React.FC = () => {
                   <TouchableOpacity
                     style={styles.selectButton}
                     onPress={() => {
-                      if (Platform.OS === 'ios') {
-                        trigger('selection');
-                      } else {
-                        trigger('soft');
-                      }
+                      triggerPlatformHaptic('selection');
                       handleSelectPack();
                     }}>
                     <View style={styles.buttonContent}>
@@ -333,11 +325,7 @@ const SoundPackDetailScreen: React.FC = () => {
                     <TouchableOpacity
                       style={getUnlockButtonStyle()}
                       onPress={() => {
-                        if (Platform.OS === 'ios') {
-                          trigger('selection');
-                        } else {
-                          trigger('soft');
-                        }
+                        triggerPlatformHaptic('selection');
                         handleUnlockPack();
                       }}
                       disabled={isUnlockButtonDisabled()}>

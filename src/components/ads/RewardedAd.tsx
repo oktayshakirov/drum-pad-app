@@ -14,6 +14,17 @@ let adCompletionCallback:
   | ((success: boolean, rewardEarned: boolean) => void)
   | null = null;
 
+async function updateRewardedAdShownTime() {
+  try {
+    await AsyncStorage.setItem(
+      'lastAdShownTime_rewarded',
+      Date.now().toString(),
+    );
+  } catch (error) {
+    console.error('Failed to update rewarded ad shown time:', error);
+  }
+}
+
 export async function initializeRewardedAd() {
   if (!isGoogleMobileAdsInitialized()) {
     return new Promise<void>(resolve => {
@@ -54,7 +65,9 @@ export async function initializeRewardedAd() {
 
   rewardedAd.addAdEventListener(AdEventType.OPENED, () => {});
 
-  rewardedAd.addAdEventListener(AdEventType.CLOSED, () => {
+  rewardedAd.addAdEventListener(AdEventType.CLOSED, async () => {
+    await updateRewardedAdShownTime();
+
     if (adCompletionCallback) {
       adCompletionCallback(true, rewardEarned);
       adCompletionCallback = null;

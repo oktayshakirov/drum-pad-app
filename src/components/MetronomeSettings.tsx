@@ -14,7 +14,7 @@ import {METRONOME_SOUNDS, MetronomeSound} from '../assets/sounds/metronome';
 import {soundPacks} from '../assets/sounds';
 import {AppContext} from '../contexts/AppContext';
 import ControlsButton from './ControlsButton';
-import {trigger} from 'react-native-haptic-feedback';
+import {triggerPlatformHaptic} from '../utils/haptics';
 
 const BPM_MIN = 40;
 const BPM_MAX = 220;
@@ -184,11 +184,7 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
                     metronomeSound === sound && styles.activeSoundOption,
                   ]}
                   onPress={() => {
-                    if (Platform.OS === 'ios') {
-                      trigger('selection');
-                    } else {
-                      trigger('soft');
-                    }
+                    triggerPlatformHaptic('selection');
                     setMetronomeSound(sound);
                   }}>
                   <Text
@@ -252,11 +248,7 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
             <TouchableOpacity
               style={styles.doneButton}
               onPress={() => {
-                if (Platform.OS === 'ios') {
-                  trigger('selection');
-                } else {
-                  trigger('soft');
-                }
+                triggerPlatformHaptic('selection');
                 onClose();
               }}>
               <Text style={styles.doneButtonText}>Done</Text>

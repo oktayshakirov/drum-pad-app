@@ -21,7 +21,7 @@ import {iconMap} from '../assets/sounds/icons';
 import DraggableListIOS from '../components/DraggableListIOS';
 import DraggableListAndroid from '../components/DraggableListAndroid';
 import {brightenColor} from '../utils/colorUtils';
-import {trigger} from 'react-native-haptic-feedback';
+import {triggerPlatformHaptic} from '../utils/haptics';
 
 const CustomizeScreen: React.FC = () => {
   const route = useRoute<RouteProp<RootStackParamList, 'Customize'>>();
@@ -42,9 +42,7 @@ const CustomizeScreen: React.FC = () => {
         const configs = await getPadConfigs(packId);
         setCustomPads(configs);
       }
-    } catch (error) {
-      setCustomPads(originalPads);
-    }
+    } catch (error) {}
   }, [packId, originalPads]);
 
   useEffect(() => {
@@ -59,9 +57,7 @@ const CustomizeScreen: React.FC = () => {
           JSON.stringify(newOrder),
         );
         setHasChanges(false);
-      } catch (error) {
-        // Silent error handling
-      }
+      } catch (error) {}
     },
     [packId],
   );
@@ -120,11 +116,7 @@ const CustomizeScreen: React.FC = () => {
             <Text style={styles.headerTitle}>Customize {pack.name}</Text>
             <TouchableOpacity
               onPress={() => {
-                if (Platform.OS === 'ios') {
-                  trigger('selection');
-                } else {
-                  trigger('soft');
-                }
+                triggerPlatformHaptic('selection');
                 navigation.goBack();
               }}
               style={styles.closeButton}>
@@ -268,11 +260,7 @@ const CustomizeScreen: React.FC = () => {
             <TouchableOpacity
               style={styles.resetButton}
               onPress={() => {
-                if (Platform.OS === 'ios') {
-                  trigger('selection');
-                } else {
-                  trigger('soft');
-                }
+                triggerPlatformHaptic('selection');
                 handleResetOrder();
               }}>
               <Text style={styles.resetButtonText}>Reset to Original</Text>
@@ -283,11 +271,7 @@ const CustomizeScreen: React.FC = () => {
                 !hasChanges && styles.saveButtonDisabled,
               ]}
               onPress={() => {
-                if (Platform.OS === 'ios') {
-                  trigger('selection');
-                } else {
-                  trigger('soft');
-                }
+                triggerPlatformHaptic('selection');
                 handleSaveChanges();
               }}
               disabled={!hasChanges}>

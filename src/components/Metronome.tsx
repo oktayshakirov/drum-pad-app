@@ -5,7 +5,7 @@ import React, {
   useRef,
   useCallback,
 } from 'react';
-import {View, Text, StyleSheet, Animated, Platform} from 'react-native';
+import {View, Text, StyleSheet, Animated} from 'react-native';
 import {AppContext} from '../contexts/AppContext';
 import AudioService from '../services/AudioService';
 import MetronomeSettings from './MetronomeSettings';
@@ -13,7 +13,7 @@ import playIcon from '../assets/images/play.png';
 import pauseIcon from '../assets/images/pause.png';
 import settingsIcon from '../assets/images/settings.png';
 import ControlsButton from './ControlsButton';
-import {trigger} from 'react-native-haptic-feedback';
+import {triggerPlatformHaptic} from '../utils/haptics';
 
 interface MetronomeProps {
   isPlaying: boolean;
@@ -39,11 +39,7 @@ const Metronome: React.FC<MetronomeProps> = ({isPlaying, setIsPlaying}) => {
       }),
     ]).start();
 
-    if (Platform.OS === 'ios') {
-      trigger('selection');
-    } else {
-      trigger('soft');
-    }
+    triggerPlatformHaptic('selection');
   }, [beatAnim]);
 
   useEffect(() => {
