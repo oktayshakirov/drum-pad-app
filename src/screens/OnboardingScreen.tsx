@@ -229,9 +229,9 @@ const OnboardingScreen: React.FC = () => {
           <View style={styles.header}>
             <Text
               style={styles.title}
-              adjustsFontSizeToFit={true}
-              numberOfLines={1}
-              minimumFontScale={0.8}>
+              adjustsFontSizeToFit={Platform.OS === 'ios'}
+              numberOfLines={2}
+              minimumFontScale={0.9}>
               Welcome to Shape Beats!
             </Text>
             <Text style={styles.subtitle}>
@@ -314,10 +314,11 @@ const styles = StyleSheet.create({
   },
   title: {
     color: '#ffffff',
-    fontSize: 30,
+    fontSize: Platform.OS === 'ios' ? 30 : 28,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 12,
+    lineHeight: Platform.OS === 'ios' ? undefined : 36,
   },
   subtitle: {
     color: '#D9DEE4',
