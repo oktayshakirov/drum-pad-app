@@ -35,6 +35,8 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Shape Beats needs access to your microphone to enable audio recording and playback features for the drum pad experience.</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>This identifier will be used to deliver personalized ads to you, helping keep Shape Beats free while showing you relevant content.</string>
 	<key>SKAdNetworkItems</key>
