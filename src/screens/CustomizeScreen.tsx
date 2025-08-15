@@ -21,6 +21,7 @@ import {iconMap} from '../assets/sounds/icons';
 import DraggableListIOS from '../components/DraggableListIOS';
 import DraggableListAndroid from '../components/DraggableListAndroid';
 import {brightenColor} from '../utils/colorUtils';
+import {trigger} from 'react-native-haptic-feedback';
 
 const CustomizeScreen: React.FC = () => {
   const route = useRoute<RouteProp<RootStackParamList, 'Customize'>>();
@@ -118,7 +119,14 @@ const CustomizeScreen: React.FC = () => {
           <View style={styles.header}>
             <Text style={styles.headerTitle}>Customize {pack.name}</Text>
             <TouchableOpacity
-              onPress={() => navigation.goBack()}
+              onPress={() => {
+                if (Platform.OS === 'ios') {
+                  trigger('selection');
+                } else {
+                  trigger('soft');
+                }
+                navigation.goBack();
+              }}
               style={styles.closeButton}>
               <Text style={styles.closeButtonText}>Done</Text>
             </TouchableOpacity>
@@ -259,7 +267,14 @@ const CustomizeScreen: React.FC = () => {
           <View style={styles.footer}>
             <TouchableOpacity
               style={styles.resetButton}
-              onPress={handleResetOrder}>
+              onPress={() => {
+                if (Platform.OS === 'ios') {
+                  trigger('selection');
+                } else {
+                  trigger('soft');
+                }
+                handleResetOrder();
+              }}>
               <Text style={styles.resetButtonText}>Reset to Original</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -267,7 +282,14 @@ const CustomizeScreen: React.FC = () => {
                 styles.saveButton,
                 !hasChanges && styles.saveButtonDisabled,
               ]}
-              onPress={handleSaveChanges}
+              onPress={() => {
+                if (Platform.OS === 'ios') {
+                  trigger('selection');
+                } else {
+                  trigger('soft');
+                }
+                handleSaveChanges();
+              }}
               disabled={!hasChanges}>
               <Text style={styles.saveButtonText}>Save Changes</Text>
             </TouchableOpacity>

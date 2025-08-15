@@ -7,12 +7,14 @@ import {
   TouchableOpacity,
   Animated,
   ImageBackground,
+  Platform,
 } from 'react-native';
 import {BlurView} from '@react-native-community/blur';
 import {METRONOME_SOUNDS, MetronomeSound} from '../assets/sounds/metronome';
 import {soundPacks} from '../assets/sounds';
 import {AppContext} from '../contexts/AppContext';
 import ControlsButton from './ControlsButton';
+import {trigger} from 'react-native-haptic-feedback';
 
 const BPM_MIN = 40;
 const BPM_MAX = 220;
@@ -101,6 +103,14 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
     setMetronomeVolume(newVolume);
   };
 
+  const handleBpmPressIn = (amount: number): void => {
+    changeBpm(amount);
+  };
+
+  const handleVolumePressIn = (amount: number): void => {
+    changeVolume(amount);
+  };
+
   const isBpmMin = bpm <= BPM_MIN;
   const isBpmMax = bpm >= BPM_MAX;
   const isVolumeMin = metronomeVolume <= VOLUME_MIN;
@@ -150,9 +160,8 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
                 symbol="-"
                 size={60}
                 disabled={isBpmMin}
-                onPress={() => changeBpm(-1)}
-                onPressIn={() => changeBpm(-1)}
-                onPressOut={() => {}}
+                onPress={() => {}}
+                onPressIn={() => handleBpmPressIn(-1)}
               />
               <Text style={styles.bpmDisplay}>{bpm}</Text>
               <ControlsButton
@@ -160,9 +169,8 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
                 symbol="+"
                 size={60}
                 disabled={isBpmMax}
-                onPress={() => changeBpm(1)}
-                onPressIn={() => changeBpm(1)}
-                onPressOut={() => {}}
+                onPress={() => {}}
+                onPressIn={() => handleBpmPressIn(1)}
               />
             </View>
 
@@ -175,7 +183,14 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
                     styles.soundOption,
                     metronomeSound === sound && styles.activeSoundOption,
                   ]}
-                  onPress={() => setMetronomeSound(sound)}>
+                  onPress={() => {
+                    if (Platform.OS === 'ios') {
+                      trigger('selection');
+                    } else {
+                      trigger('soft');
+                    }
+                    setMetronomeSound(sound);
+                  }}>
                   <Text
                     style={[
                       styles.soundOptionText,
@@ -194,9 +209,8 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
                 symbol="-"
                 size={60}
                 disabled={isVolumeMin}
-                onPress={() => changeVolume(-0.1)}
-                onPressIn={() => changeVolume(-0.1)}
-                onPressOut={() => {}}
+                onPress={() => {}}
+                onPressIn={() => handleVolumePressIn(-0.1)}
               />
               <Text style={styles.valueText}>
                 {(metronomeVolume * 100).toFixed(0)}%
@@ -206,9 +220,8 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
                 symbol="+"
                 size={60}
                 disabled={isVolumeMax}
-                onPress={() => changeVolume(0.1)}
-                onPressIn={() => changeVolume(0.1)}
-                onPressOut={() => {}}
+                onPress={() => {}}
+                onPressIn={() => handleVolumePressIn(0.1)}
               />
             </View>
 
@@ -236,7 +249,16 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
               })}
             </View>
 
-            <TouchableOpacity style={styles.doneButton} onPress={onClose}>
+            <TouchableOpacity
+              style={styles.doneButton}
+              onPress={() => {
+                if (Platform.OS === 'ios') {
+                  trigger('selection');
+                } else {
+                  trigger('soft');
+                }
+                onClose();
+              }}>
               <Text style={styles.doneButtonText}>Done</Text>
             </TouchableOpacity>
           </View>

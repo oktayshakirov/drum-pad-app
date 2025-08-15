@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import {BlurView} from '@react-native-community/blur';
+import {trigger} from 'react-native-haptic-feedback';
 
 interface ControlsButtonProps {
   variant?: 'play' | 'default' | 'control';
@@ -76,6 +77,13 @@ const ControlsButton = forwardRef<ControlsButtonRef, ControlsButtonProps>(
 
     const handlePress = (event: GestureResponderEvent) => {
       triggerAnimation();
+
+      if (Platform.OS === 'ios') {
+        trigger('impactMedium');
+      } else {
+        trigger('soft');
+      }
+
       if (!disabled) {
         onPress(event);
       }
@@ -87,6 +95,13 @@ const ControlsButton = forwardRef<ControlsButtonRef, ControlsButtonProps>(
       }
 
       triggerAnimation();
+
+      if (Platform.OS === 'ios') {
+        trigger('impactMedium');
+      } else {
+        trigger('soft');
+      }
+
       if (onPressIn) {
         onPressIn();
       }

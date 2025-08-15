@@ -14,6 +14,7 @@ import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../../App';
 import AudioService from '../services/AudioService';
+import {trigger} from 'react-native-haptic-feedback';
 
 interface CurrentPackHeaderProps {
   onOpenPackLibrary?: () => void;
@@ -31,12 +32,24 @@ const CurrentPackHeader: React.FC<CurrentPackHeaderProps> = ({
   }
 
   const handleOpenModal = (): void => {
+    if (Platform.OS === 'ios') {
+      trigger('selection');
+    } else {
+      trigger('soft');
+    }
+
     if (onOpenPackLibrary) {
       onOpenPackLibrary();
     }
   };
 
   const handlePackPress = async (): Promise<void> => {
+    if (Platform.OS === 'ios') {
+      trigger('selection');
+    } else {
+      trigger('soft');
+    }
+
     await AudioService.stopMetronome();
     navigation.navigate('SoundPackDetail', {packId: currentSoundPack});
   };

@@ -7,6 +7,7 @@ import {
   Image,
   Dimensions,
   ImageBackground,
+  Platform,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {soundPacks} from '../assets/sounds';
@@ -25,6 +26,7 @@ import Equalizer from '../components/Equalizer';
 import ControlsButton from '../components/ControlsButton';
 import {UnlockService} from '../services/UnlockService';
 import {showGlobalInterstitial} from '../components/ads/adsManager';
+import {trigger} from 'react-native-haptic-feedback';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -37,7 +39,14 @@ const ModalHeader: React.FC<ModalHeaderProps> = memo(({onClose, packName}) => (
   <View style={styles.header}>
     <Text style={styles.headerTitle}>{packName}</Text>
     <TouchableOpacity
-      onPress={onClose}
+      onPress={() => {
+        if (Platform.OS === 'ios') {
+          trigger('selection');
+        } else {
+          trigger('soft');
+        }
+        onClose();
+      }}
       style={styles.closeButton}
       hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
       <Text style={styles.closeButtonText}>X</Text>
@@ -254,7 +263,7 @@ const SoundPackDetailScreen: React.FC = () => {
                 {isCurrentPack() && (
                   <View style={styles.currentPackIndicator}>
                     <Text style={styles.currentPackText}>
-                      ⭐ Currently Active Pack
+                      Currently Active Pack
                     </Text>
                   </View>
                 )}
@@ -301,7 +310,14 @@ const SoundPackDetailScreen: React.FC = () => {
                 {isUnlocked ? (
                   <TouchableOpacity
                     style={styles.selectButton}
-                    onPress={handleSelectPack}>
+                    onPress={() => {
+                      if (Platform.OS === 'ios') {
+                        trigger('selection');
+                      } else {
+                        trigger('soft');
+                      }
+                      handleSelectPack();
+                    }}>
                     <View style={styles.buttonContent}>
                       <Image
                         source={require('../assets/images/pack.png')}
@@ -316,7 +332,14 @@ const SoundPackDetailScreen: React.FC = () => {
                   <View style={styles.unlockContainer}>
                     <TouchableOpacity
                       style={getUnlockButtonStyle()}
-                      onPress={handleUnlockPack}
+                      onPress={() => {
+                        if (Platform.OS === 'ios') {
+                          trigger('selection');
+                        } else {
+                          trigger('soft');
+                        }
+                        handleUnlockPack();
+                      }}
                       disabled={isUnlockButtonDisabled()}>
                       <View style={styles.buttonContent}>
                         <Image

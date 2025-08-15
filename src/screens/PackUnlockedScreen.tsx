@@ -19,6 +19,7 @@ import {RootStackParamList} from '../../App';
 import {useAppContext} from '../contexts/AppContext';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {BlurView} from '@react-native-community/blur';
+import {trigger} from 'react-native-haptic-feedback';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -77,6 +78,12 @@ const PackUnlockedScreen: React.FC<PackUnlockedScreenProps> = () => {
     const timer = setTimeout(() => {
       loadAndVerifyAudio();
     }, 500);
+
+    if (Platform.OS === 'ios') {
+      trigger('notificationSuccess');
+    } else {
+      trigger('soft');
+    }
 
     return () => clearTimeout(timer);
   }, [loadAndVerifyAudio]);

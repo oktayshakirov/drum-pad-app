@@ -7,6 +7,7 @@ import {
   Image,
   FlatList,
   ImageBackground,
+  Platform,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {SOUND_PACKS} from '../utils/soundUtils';
@@ -19,6 +20,7 @@ import Equalizer from '../components/Equalizer';
 import ControlsButton from '../components/ControlsButton';
 import {UnlockService} from '../services/UnlockService';
 import {BlurView} from '@react-native-community/blur';
+import {trigger} from 'react-native-haptic-feedback';
 
 interface PackItemProps {
   item: any;
@@ -30,7 +32,16 @@ interface PackItemProps {
 
 const PackItem: React.FC<PackItemProps> = memo(
   ({item, isPlaying, onSelect, onPlayStop, isLocked}) => (
-    <TouchableOpacity style={styles.packItem} onPress={() => onSelect(item.id)}>
+    <TouchableOpacity
+      style={styles.packItem}
+      onPress={() => {
+        if (Platform.OS === 'ios') {
+          trigger('selection');
+        } else {
+          trigger('soft');
+        }
+        onSelect(item.id);
+      }}>
       <View style={styles.imageContainer}>
         <Image source={item.image} style={styles.packImage} />
         {isPlaying && <Equalizer />}
@@ -49,6 +60,11 @@ const PackItem: React.FC<PackItemProps> = memo(
           variant="play"
           isPlaying={isPlaying}
           onPress={() => {
+            if (Platform.OS === 'ios') {
+              trigger('selection');
+            } else {
+              trigger('soft');
+            }
             onPlayStop(item.id);
           }}
           size={30}
@@ -99,7 +115,14 @@ const TabButton: React.FC<TabButtonProps> = memo(
   ({title, isActive, onPress}) => (
     <TouchableOpacity
       style={[styles.tabButton, isActive && styles.activeTabButton]}
-      onPress={onPress}>
+      onPress={() => {
+        if (Platform.OS === 'ios') {
+          trigger('selection');
+        } else {
+          trigger('soft');
+        }
+        onPress();
+      }}>
       <Text
         style={[styles.tabButtonText, isActive && styles.activeTabButtonText]}>
         {title}

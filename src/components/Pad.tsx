@@ -1,5 +1,5 @@
 import React, {useRef} from 'react';
-import {StyleSheet, Animated, View, Text} from 'react-native';
+import {StyleSheet, Animated, View, Text, Platform} from 'react-native';
 import AudioService from '../services/AudioService';
 import {Svg, Rect, Defs, RadialGradient, Stop} from 'react-native-svg';
 import {useEffect, useState} from 'react';
@@ -14,6 +14,7 @@ import Reanimated, {
 } from 'react-native-reanimated';
 import {runOnJS} from 'react-native-worklets';
 import {GestureDetector, Gesture} from 'react-native-gesture-handler';
+import {trigger} from 'react-native-haptic-feedback';
 
 interface PadProps {
   sound: string | null;
@@ -139,6 +140,12 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
       ]).start();
       innerShadowOpacity.value = withTiming(0.08, {duration: 90});
       pressHighlightOpacity.value = withTiming(0.25, {duration: 90});
+    }
+
+    if (Platform.OS === 'ios') {
+      trigger('selection');
+    } else {
+      trigger('soft');
     }
 
     AudioService.playSound(soundPack, sound).catch(error => {
