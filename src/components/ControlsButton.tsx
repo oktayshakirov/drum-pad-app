@@ -79,7 +79,7 @@ const ControlsButton = forwardRef<ControlsButtonRef, ControlsButtonProps>(
       triggerAnimation();
 
       if (Platform.OS === 'ios') {
-        trigger('impactMedium');
+        trigger('impactLight');
       } else {
         trigger('soft');
       }
@@ -97,7 +97,7 @@ const ControlsButton = forwardRef<ControlsButtonRef, ControlsButtonProps>(
       triggerAnimation();
 
       if (Platform.OS === 'ios') {
-        trigger('impactMedium');
+        trigger('impactLight');
       } else {
         trigger('soft');
       }
