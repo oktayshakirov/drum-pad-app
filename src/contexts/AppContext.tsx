@@ -45,8 +45,13 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
 
         const unlockedPacks = UnlockService.getUnlockedPacks();
         if (unlockedPacks.size > 0) {
-          const firstUnlockedPack = Array.from(unlockedPacks)[0];
-          setState(prev => ({...prev, currentSoundPack: firstUnlockedPack}));
+          const soundPackIds = Object.keys(SOUND_PACKS);
+          const firstUnlockedPack = soundPackIds.find(id =>
+            unlockedPacks.has(id),
+          );
+          if (firstUnlockedPack) {
+            setState(prev => ({...prev, currentSoundPack: firstUnlockedPack}));
+          }
         }
       } catch (error) {
         // Handle error silently - don't set a fallback pack
