@@ -71,10 +71,8 @@ class AudioService {
 
     await this.stopAllSounds();
 
-    // Properly dispose of AudioBuffers to prevent memory leaks
     this.soundPackState.soundBuffers.forEach((buffer, key) => {
       try {
-        // AudioBuffer doesn't have explicit dispose, but clear references
         this.soundPackState.soundBuffers.delete(key);
       } catch (e) {
         console.warn(`${LOG_PREFIX} Error disposing buffer ${key}:`, e);
@@ -82,7 +80,6 @@ class AudioService {
     });
     this.soundPackState.soundBuffers.clear();
 
-    // Clear demo buffers to prevent accumulation
     this.clearDemoBuffers();
     this.soundPackState.currentPack = soundPack;
     this.soundPackState.soundGroups =

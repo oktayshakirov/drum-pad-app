@@ -32,7 +32,6 @@ export async function initializeRewardedAd() {
     rewardedAd.removeAllListeners();
   }
 
-  // Reset state
   isAdLoaded = false;
   rewardEarned = false;
 
@@ -95,7 +94,7 @@ export async function showRewardedAd(): Promise<{
   }
 
   return new Promise((resolve, reject) => {
-    adCompletionCallback = (success: boolean, rewardEarned: boolean) => {
+    adCompletionCallback = (success: boolean) => {
       if (success) {
         resolve({success: true, rewardEarned});
       } else {

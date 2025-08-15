@@ -25,7 +25,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
   const [state, setState] = useState<AppState>({
-    currentSoundPack: Object.keys(SOUND_PACKS)[0],
+    currentSoundPack: '',
     isLoading: true,
     bpm: 120,
     metronomeSound: 'tick',
@@ -42,11 +42,17 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
 
       try {
         await UnlockService.initialize();
+
+        const unlockedPacks = UnlockService.getUnlockedPacks();
+        if (unlockedPacks.size > 0) {
+          const firstUnlockedPack = Array.from(unlockedPacks)[0];
+          setState(prev => ({...prev, currentSoundPack: firstUnlockedPack}));
+        }
       } catch (error) {
-        console.error('AppContext: Error initializing UnlockService:', error);
+        // Handle error silently - don't set a fallback pack
       }
     } catch (error) {
-      console.error('AppContext: Error initializing AudioContext:', error);
+      // Handle error silently - don't set a fallback pack
     } finally {
       setState(prev => ({...prev, isLoading: false}));
     }

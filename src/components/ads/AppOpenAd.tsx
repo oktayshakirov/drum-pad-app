@@ -52,8 +52,6 @@ export async function loadAppOpenAd() {
     }
   });
 
-  // Note: CLOSED and ERROR events are now handled in showAppOpenAd Promise
-
   try {
     await appOpenAd.load();
   } catch (error) {
@@ -81,7 +79,6 @@ export async function showAppOpenAd(): Promise<void> {
       reject(error);
     };
 
-    // Add one-time listeners for this specific ad show
     appOpenAd!.addAdEventListener(AdEventType.CLOSED, handleAdClosed);
     appOpenAd!.addAdEventListener(AdEventType.ERROR, handleAdError);
 

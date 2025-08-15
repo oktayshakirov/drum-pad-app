@@ -1,23 +1,27 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, createContext, useCallback} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {
   createStackNavigator,
   CardStyleInterpolators,
 } from '@react-navigation/stack';
+import OnboardingScreen from './src/screens/OnboardingScreen';
 import DrumPadScreen from './src/screens/DrumPadScreen';
 import PackLibraryScreen from './src/screens/PackLibraryScreen';
 import SoundPackScreen from './src/screens/SoundPackScreen';
 import PackUnlockedScreen from './src/screens/PackUnlockedScreen';
 import CustomizeScreen from './src/screens/CustomizeScreen';
 import {AppProvider, useAppContext} from './src/contexts/AppContext';
-import {soundPacks} from './src/assets/sounds';
+
 import ConsentDialog from './src/components/ads/ConsentDialog';
 import CustomSplashScreen from './src/components/CustomSplashScreen';
 import {StyleSheet, View, ActivityIndicator, StatusBar} from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {OnboardingService} from './src/services/OnboardingService';
+import {UnlockService} from './src/services/UnlockService';
 
 export type RootStackParamList = {
+  Onboarding: undefined;
   DrumPad: undefined;
   PackLibrary: undefined;
   SoundPackDetail: {packId: string};
@@ -25,17 +29,64 @@ export type RootStackParamList = {
   Customize: {packId: string};
 };
 
+export const OnboardingContext = createContext<{
+  completeOnboarding: () => void;
+}>({
+  completeOnboarding: () => {},
+});
+
 const Stack = createStackNavigator<RootStackParamList>();
 
 const AppNavigatorContent: React.FC = () => {
-  const {currentSoundPack, isLoading} = useAppContext();
-  const currentPack = soundPacks[currentSoundPack];
+  const {isLoading} = useAppContext();
+  const [showOnboarding, setShowOnboarding] = useState(true);
+  const [onboardingChecked, setOnboardingChecked] = useState(false);
 
-  if (isLoading || !currentPack) {
+  const completeOnboarding = useCallback(() => {
+    setShowOnboarding(false);
+  }, []);
+
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      try {
+        await UnlockService.initialize();
+        const unlockedPacks = UnlockService.getUnlockedPacks();
+        const isCompleted = await OnboardingService.isOnboardingCompleted();
+
+        setShowOnboarding(!isCompleted || unlockedPacks.size === 0);
+      } catch (error) {
+        setShowOnboarding(true);
+      } finally {
+        setOnboardingChecked(true);
+      }
+    };
+
+    checkOnboardingStatus();
+  }, []);
+
+  if (isLoading || !onboardingChecked) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#fff" />
       </View>
+    );
+  }
+
+  if (showOnboarding) {
+    return (
+      <OnboardingContext.Provider value={{completeOnboarding}}>
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName="Onboarding"
+            screenOptions={{
+              headerShown: false,
+              cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
+              cardStyle: {backgroundColor: 'transparent'},
+            }}>
+            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </OnboardingContext.Provider>
     );
   }
 

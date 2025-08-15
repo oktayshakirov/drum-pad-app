@@ -4,7 +4,7 @@ import {showRewardedAd, isRewardedAdReady} from '../components/ads/RewardedAd';
 const UNLOCKED_PACKS_KEY = 'unlockedPacks';
 const FREE_UNLOCK_ATTEMPTS_KEY = 'freeUnlockAttempts';
 const FREE_UNLOCK_COOLDOWN_HOURS = 24;
-const DEFAULT_UNLOCKED_PACKS = ['brabus'];
+const DEFAULT_UNLOCKED_PACKS: string[] = [];
 
 export class UnlockService {
   private static unlockedPacks: Set<string> = new Set(DEFAULT_UNLOCKED_PACKS);
@@ -31,7 +31,9 @@ export class UnlockService {
         const attempts = JSON.parse(attemptsString);
         this.freeUnlockAttempts = new Map(Object.entries(attempts));
       }
-    } catch (error) {}
+    } catch (error) {
+      // Handle error silently
+    }
   }
 
   static async unlockPack(packId: string): Promise<void> {
@@ -46,7 +48,9 @@ export class UnlockService {
         UNLOCKED_PACKS_KEY,
         JSON.stringify(unlockedPacksArray),
       );
-    } catch (error) {}
+    } catch (error) {
+      // Handle error silently
+    }
   }
 
   static isPackUnlocked(packId: string): boolean {

@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 20,
     paddingBottom: 20,
-    paddingHorizontal: 0, // Remove horizontal padding to let draggable list handle it
+    paddingHorizontal: 0,
   },
   header: {
     flexDirection: 'row',
