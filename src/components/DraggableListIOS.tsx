@@ -18,6 +18,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import {getResponsiveSize} from '../utils/deviceUtils';
 
 const ITEM_MARGIN = 6;
 
@@ -74,7 +75,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
       'worklet';
       isActive.value = true;
       runOnJS(onDragStart)(index);
-      zIndex.value = 1000; // Use direct integer assignment instead of withTiming
+      zIndex.value = 1000;
       scale.value = withSpring(1.1, {
         damping: Platform.OS === 'android' ? 20 : 15,
         stiffness: Platform.OS === 'android' ? 200 : 150,
@@ -93,7 +94,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
       scale.value = withSpring(1, {
         damping: Platform.OS === 'android' ? 20 : 15,
       });
-      zIndex.value = 0; // Use direct integer assignment instead of withTiming
+      zIndex.value = 0;
     })
     .onTouchesDown(() => {
       'worklet';
@@ -104,7 +105,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
       translateX.value = withTiming(0);
       translateY.value = withTiming(0);
       scale.value = withSpring(1);
-      zIndex.value = 0; // Use direct integer assignment instead of withTiming
+      zIndex.value = 0;
     })
     .minDistance(Platform.OS === 'android' ? 8 : 2)
     .maxPointers(1);
@@ -168,12 +169,22 @@ const DraggableListIOS: React.FC<DraggableListProps> = ({
   }, []);
 
   const numItems = data.length;
+
   const columns = numItems === 24 ? 4 : 3;
 
-  const horizontalPadding = 20;
+  const horizontalPadding = getResponsiveSize(20, 140);
   const availableWidth = screenDimensions.width - horizontalPadding;
-  const totalMarginWidth = (columns - 1) * ITEM_MARGIN;
-  const itemSize = Math.floor((availableWidth - totalMarginWidth) / columns);
+
+  let itemSize;
+  if (numItems === 24) {
+    const totalMarginWidth = (4 - 1) * ITEM_MARGIN;
+    const baseItemSize = Math.floor((availableWidth - totalMarginWidth) / 4);
+    itemSize = getResponsiveSize(baseItemSize, Math.floor(baseItemSize * 0.8));
+  } else {
+    const totalMarginWidth = (3 - 1) * ITEM_MARGIN;
+    const baseItemSize = Math.floor((availableWidth - totalMarginWidth) / 3);
+    itemSize = getResponsiveSize(baseItemSize, Math.floor(baseItemSize * 0.8));
+  }
 
   const handleDragStart = useCallback((index: number) => {
     setDraggingIndex(index);
@@ -312,8 +323,8 @@ const styles = StyleSheet.create({
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   gridItemWithMargin: {
     marginRight: ITEM_MARGIN,

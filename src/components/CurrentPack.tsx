@@ -15,6 +15,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../../App';
 import AudioService from '../services/AudioService';
 import {triggerPlatformHaptic} from '../utils/haptics';
+import {getResponsiveSize, getResponsiveMaxWidth} from '../utils/deviceUtils';
 
 interface CurrentPackHeaderProps {
   onOpenPackLibrary?: () => void;
@@ -30,6 +31,15 @@ const CurrentPackHeader: React.FC<CurrentPackHeaderProps> = ({
   if (!activePack) {
     return null;
   }
+
+  const containerMaxWidth = getResponsiveMaxWidth(400, 800);
+  const packImageWidth = getResponsiveSize(100, 140);
+  const packImageHeight = getResponsiveSize(60, 84);
+  const packNameFontSize = getResponsiveSize(20, 28);
+  const packGenreFontSize = getResponsiveSize(16, 22);
+  const allPacksButtonPaddingH = getResponsiveSize(20, 28);
+  const allPacksButtonPaddingV = getResponsiveSize(12, 16);
+  const allPacksTextFontSize = getResponsiveSize(14, 18);
 
   const handleOpenModal = (): void => {
     triggerPlatformHaptic('selection');
@@ -49,7 +59,7 @@ const CurrentPackHeader: React.FC<CurrentPackHeaderProps> = ({
   const blurType = Platform.OS === 'ios' ? 'ultraThinMaterialDark' : 'dark';
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {maxWidth: containerMaxWidth}]}>
       <View style={styles.glassCard}>
         <BlurView
           style={StyleSheet.absoluteFill}
@@ -63,17 +73,39 @@ const CurrentPackHeader: React.FC<CurrentPackHeaderProps> = ({
             style={styles.packInfoTouchable}
             onPress={handlePackPress}
             activeOpacity={0.8}>
-            <Image source={activePack.image} style={styles.packImage} />
+            <Image
+              source={activePack.image}
+              style={[
+                styles.packImage,
+                {
+                  width: packImageWidth,
+                  height: packImageHeight,
+                },
+              ]}
+            />
             <View style={styles.packInfo}>
-              <Text style={styles.packName}>{activePack.name}</Text>
-              <Text style={styles.packGenre}>{activePack.genre}</Text>
+              <Text style={[styles.packName, {fontSize: packNameFontSize}]}>
+                {activePack.name}
+              </Text>
+              <Text style={[styles.packGenre, {fontSize: packGenreFontSize}]}>
+                {activePack.genre}
+              </Text>
             </View>
           </TouchableOpacity>
           <View style={styles.buttonsContainer}>
             <TouchableOpacity
-              style={styles.allPacksButton}
+              style={[
+                styles.allPacksButton,
+                {
+                  paddingHorizontal: allPacksButtonPaddingH,
+                  paddingVertical: allPacksButtonPaddingV,
+                },
+              ]}
               onPress={handleOpenModal}>
-              <Text style={styles.allPacksText}>ALL PACKS</Text>
+              <Text
+                style={[styles.allPacksText, {fontSize: allPacksTextFontSize}]}>
+                ALL PACKS
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -88,6 +120,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     width: '100%',
     marginTop: 15,
+    maxWidth: 400,
   },
   glassCard: {
     position: 'relative',

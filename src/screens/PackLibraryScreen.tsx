@@ -20,6 +20,7 @@ import ControlsButton from '../components/ControlsButton';
 import {UnlockService} from '../services/UnlockService';
 import {BlurView} from '@react-native-community/blur';
 import {triggerPlatformHaptic} from '../utils/haptics';
+import {getResponsiveSize} from '../utils/deviceUtils';
 
 interface PackItemProps {
   item: any;
@@ -30,39 +31,110 @@ interface PackItemProps {
 }
 
 const PackItem: React.FC<PackItemProps> = memo(
-  ({item, isPlaying, onSelect, onPlayStop, isLocked}) => (
-    <TouchableOpacity
-      style={styles.packItem}
-      onPress={() => {
-        triggerPlatformHaptic('selection');
-        onSelect(item.id);
-      }}>
-      <View style={styles.imageContainer}>
-        <Image source={item.image} style={styles.packImage} />
-        {isPlaying && <Equalizer />}
-        {isLocked && (
-          <View style={styles.lockIconContainer}>
-            <Text style={styles.lockIcon}>🔒</Text>
-          </View>
-        )}
-      </View>
-      <View style={styles.infoRow}>
-        <View style={styles.infoTextContainer}>
-          <Text style={styles.packName}>{item.name}</Text>
-          <Text style={styles.packGenre}>{item.genre}</Text>
+  ({item, isPlaying, onSelect, onPlayStop, isLocked}) => {
+    const packItemWidth = getResponsiveSize(170, 280);
+    const packItemMargin = getResponsiveSize(10, 20);
+    const packItemMarginTop = getResponsiveSize(20, 25);
+    const packImageHeight = getResponsiveSize(90, 150);
+    const packImageBorderRadius = getResponsiveSize(15, 25);
+    const packNameFontSize = getResponsiveSize(16, 24);
+    const packGenreFontSize = getResponsiveSize(14, 20);
+    const packNameMarginTop = getResponsiveSize(8, 16);
+    const infoRowMarginTop = getResponsiveSize(8, 16);
+    const lockIconSize = getResponsiveSize(18, 28);
+    const lockIconPadding = getResponsiveSize(4, 8);
+    const lockIconBorderRadius = getResponsiveSize(10, 16);
+    const playButtonSize = getResponsiveSize(30, 50);
+
+    return (
+      <TouchableOpacity
+        style={[
+          styles.packItem,
+          {
+            width: packItemWidth,
+            margin: packItemMargin,
+            marginTop: packItemMarginTop,
+          },
+        ]}
+        onPress={() => {
+          triggerPlatformHaptic('selection');
+          onSelect(item.id);
+        }}>
+        <View style={styles.imageContainer}>
+          <Image
+            source={item.image}
+            style={[
+              styles.packImage,
+              {
+                width: packItemWidth,
+                height: packImageHeight,
+                borderRadius: packImageBorderRadius,
+              },
+            ]}
+          />
+          {isPlaying && <Equalizer />}
+          {isLocked && (
+            <View
+              style={[
+                styles.lockIconContainer,
+                {
+                  padding: lockIconPadding,
+                  borderRadius: lockIconBorderRadius,
+                },
+              ]}>
+              <Text
+                style={[
+                  styles.lockIcon,
+                  {
+                    fontSize: lockIconSize,
+                  },
+                ]}>
+                🔒
+              </Text>
+            </View>
+          )}
         </View>
-        <ControlsButton
-          variant="play"
-          isPlaying={isPlaying}
-          onPress={() => {
-            triggerPlatformHaptic('selection');
-            onPlayStop(item.id);
-          }}
-          size={30}
-        />
-      </View>
-    </TouchableOpacity>
-  ),
+        <View
+          style={[
+            styles.infoRow,
+            {
+              marginTop: infoRowMarginTop,
+            },
+          ]}>
+          <View style={styles.infoTextContainer}>
+            <Text
+              style={[
+                styles.packName,
+                {
+                  fontSize: packNameFontSize,
+                  marginTop: packNameMarginTop,
+                },
+              ]}>
+              {item.name}
+            </Text>
+            <Text
+              style={[
+                styles.packGenre,
+                {
+                  fontSize: packGenreFontSize,
+                },
+              ]}>
+              {item.genre}
+            </Text>
+          </View>
+          <ControlsButton
+            variant="play"
+            isPlaying={isPlaying}
+            onPress={() => {
+              triggerPlatformHaptic('selection');
+              onPlayStop(item.id);
+            }}
+            size={playButtonSize}
+          />
+        </View>
+      </TouchableOpacity>
+    );
+  },
 );
 
 interface ModalHeaderProps {
@@ -72,28 +144,53 @@ interface ModalHeaderProps {
 }
 
 const ModalHeader: React.FC<ModalHeaderProps> = memo(
-  ({onClose, activeTab, setActiveTab}) => (
-    <View style={styles.header}>
-      <View style={styles.tabContainer}>
-        <TabButton
-          title="All Packs"
-          isActive={activeTab === 'all'}
-          onPress={() => setActiveTab('all')}
-        />
-        <TabButton
-          title="My Packs"
-          isActive={activeTab === 'my'}
-          onPress={() => setActiveTab('my')}
-        />
+  ({onClose, activeTab, setActiveTab}) => {
+    const headerPadding = getResponsiveSize(15, 20);
+    const closeButtonPadding = getResponsiveSize(5, 12);
+    const closeButtonFontSize = getResponsiveSize(24, 40);
+
+    return (
+      <View
+        style={[
+          styles.header,
+          {
+            padding: headerPadding,
+          },
+        ]}>
+        <View style={styles.tabContainer}>
+          <TabButton
+            title="All Packs"
+            isActive={activeTab === 'all'}
+            onPress={() => setActiveTab('all')}
+          />
+          <TabButton
+            title="My Packs"
+            isActive={activeTab === 'my'}
+            onPress={() => setActiveTab('my')}
+          />
+        </View>
+        <TouchableOpacity
+          onPress={onClose}
+          style={[
+            styles.closeButton,
+            {
+              padding: closeButtonPadding,
+            },
+          ]}
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+          <Text
+            style={[
+              styles.closeButtonText,
+              {
+                fontSize: closeButtonFontSize,
+              },
+            ]}>
+            X
+          </Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity
-        onPress={onClose}
-        style={styles.closeButton}
-        hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-        <Text style={styles.closeButtonText}>X</Text>
-      </TouchableOpacity>
-    </View>
-  ),
+    );
+  },
 );
 
 interface TabButtonProps {
@@ -103,19 +200,42 @@ interface TabButtonProps {
 }
 
 const TabButton: React.FC<TabButtonProps> = memo(
-  ({title, isActive, onPress}) => (
-    <TouchableOpacity
-      style={[styles.tabButton, isActive && styles.activeTabButton]}
-      onPress={() => {
-        triggerPlatformHaptic('selection');
-        onPress();
-      }}>
-      <Text
-        style={[styles.tabButtonText, isActive && styles.activeTabButtonText]}>
-        {title}
-      </Text>
-    </TouchableOpacity>
-  ),
+  ({title, isActive, onPress}) => {
+    const tabButtonPaddingH = getResponsiveSize(20, 36);
+    const tabButtonPaddingV = getResponsiveSize(8, 16);
+    const tabButtonMarginH = getResponsiveSize(5, 12);
+    const tabButtonBorderRadius = getResponsiveSize(20, 30);
+    const tabButtonFontSize = getResponsiveSize(16, 22);
+
+    return (
+      <TouchableOpacity
+        style={[
+          styles.tabButton,
+          {
+            paddingHorizontal: tabButtonPaddingH,
+            paddingVertical: tabButtonPaddingV,
+            marginHorizontal: tabButtonMarginH,
+            borderRadius: tabButtonBorderRadius,
+          },
+          isActive && styles.activeTabButton,
+        ]}
+        onPress={() => {
+          triggerPlatformHaptic('selection');
+          onPress();
+        }}>
+        <Text
+          style={[
+            styles.tabButtonText,
+            {
+              fontSize: tabButtonFontSize,
+            },
+            isActive && styles.activeTabButtonText,
+          ]}>
+          {title}
+        </Text>
+      </TouchableOpacity>
+    );
+  },
 );
 
 const PackLibraryScreen: React.FC = () => {
@@ -124,6 +244,9 @@ const PackLibraryScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'all' | 'my'>('all');
   const packs = Object.values(SOUND_PACKS);
   const background = soundPacks.brabus;
+
+  const modalMaxWidth = getResponsiveSize(400, 800);
+  const listContainerPaddingH = getResponsiveSize(10, 30);
 
   const filteredPacks =
     activeTab === 'all'
@@ -199,7 +322,13 @@ const PackLibraryScreen: React.FC = () => {
         blurAmount={70}
       />
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.modalContainer}>
+        <View
+          style={[
+            styles.modalContainer,
+            {
+              maxWidth: modalMaxWidth,
+            },
+          ]}>
           <ModalHeader
             onClose={handleClose}
             activeTab={activeTab}
@@ -210,7 +339,13 @@ const PackLibraryScreen: React.FC = () => {
             renderItem={renderPackItem}
             keyExtractor={(item: any) => item.id}
             numColumns={2}
-            contentContainerStyle={styles.listContainer}
+            contentContainerStyle={[
+              styles.listContainer,
+              {
+                paddingHorizontal: listContainerPaddingH,
+              },
+            ]}
+            showsVerticalScrollIndicator={false}
           />
         </View>
       </SafeAreaView>
@@ -228,53 +363,46 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
+    alignSelf: 'center',
+    width: '100%',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 15,
   },
   closeButton: {
     padding: 5,
   },
   closeButtonText: {
     color: '#fff',
-    fontSize: 24,
     fontWeight: 'bold',
   },
   listContainer: {
     paddingHorizontal: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   packItem: {
-    width: 170,
-    margin: 10,
     alignItems: 'flex-start',
     flexDirection: 'column',
-    marginTop: 20,
   },
   imageContainer: {
     position: 'relative',
   },
   packImage: {
-    width: 170,
-    height: 90,
     borderRadius: 15,
   },
   packName: {
     color: '#fff',
-    fontSize: 16,
     fontWeight: '600',
-    marginTop: 8,
   },
   packGenre: {
     color: '#aaa',
-    fontSize: 14,
   },
   infoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 8,
   },
   infoTextContainer: {
     flex: 1,
@@ -284,8 +412,6 @@ const styles = StyleSheet.create({
     top: 5,
     right: 5,
     backgroundColor: '#1a1a1a',
-    borderRadius: 10,
-    padding: 4,
   },
   lockIcon: {
     fontSize: 18,
@@ -296,10 +422,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tabButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    marginHorizontal: 5,
-    borderRadius: 20,
     backgroundColor: '#333',
   },
   activeTabButton: {
@@ -307,7 +429,6 @@ const styles = StyleSheet.create({
   },
   tabButtonText: {
     color: '#aaa',
-    fontSize: 16,
     fontWeight: '600',
   },
   activeTabButtonText: {

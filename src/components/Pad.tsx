@@ -1,5 +1,5 @@
 import React, {useRef} from 'react';
-import {StyleSheet, Animated, View, Text, Platform} from 'react-native';
+import {StyleSheet, Animated, View, Text} from 'react-native';
 import AudioService from '../services/AudioService';
 import {Svg, Rect, Defs, RadialGradient, Stop} from 'react-native-svg';
 import {useEffect, useState} from 'react';
@@ -7,6 +7,7 @@ import type {SoundEvent} from '../types/audioService';
 import * as Animatable from 'react-native-animatable';
 import {iconMap} from '../assets/sounds/icons';
 import {brightenColor} from '../utils/colorUtils';
+import {getResponsivePercentage, getResponsiveSize} from '../utils/deviceUtils';
 import Reanimated, {
   useSharedValue,
   useAnimatedStyle,
@@ -191,8 +192,21 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
   const IconComponent = icon && iconMap[icon] ? iconMap[icon] : null;
   const soundTitle = title || 'Unknown';
 
+  const iconSize = getResponsiveSize(40, 50);
+  const titleFontSize = getResponsiveSize(9, 18);
+  const containerWidth = getResponsivePercentage('30%', '25%');
+  const containerMargin = getResponsivePercentage('1.5%', '2%');
+
   return (
-    <Animated.View style={[styles.container, {transform: [{scale}]}]}>
+    <Animated.View
+      style={[
+        styles.container,
+        {
+          width: containerWidth,
+          margin: containerMargin,
+          transform: [{scale}],
+        },
+      ]}>
       <View style={styles.padWrapper}>
         <GestureDetector gesture={gesture}>
           <View
@@ -268,15 +282,25 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
                 <View style={styles.iconContainer}>
                   {IconComponent && (
                     <IconComponent
-                      width={40}
-                      height={40}
+                      width={iconSize}
+                      height={iconSize}
                       fill={brighterColor}
                       opacity={1}
                       style={iconStyle.icon}
                     />
                   )}
                 </View>
-                <Text style={[styles.soundTitle, {color: brighterColor}]}>
+                <Text
+                  style={[
+                    styles.soundTitle,
+                    {
+                      color: brighterColor,
+                      fontSize: titleFontSize,
+                    },
+                    titleFontSize === 14
+                      ? styles.titleBottomTablet
+                      : styles.titleBottomPhone,
+                  ]}>
                   {soundTitle}
                 </Text>
               </>
@@ -367,11 +391,16 @@ const styles = StyleSheet.create({
   },
   soundTitle: {
     position: 'absolute',
-    bottom: '20%',
     fontSize: 9,
     fontWeight: 'bold',
     textAlign: 'center',
     width: '100%',
+  },
+  titleBottomPhone: {
+    bottom: '20%',
+  },
+  titleBottomTablet: {
+    bottom: '25%',
   },
 });
 

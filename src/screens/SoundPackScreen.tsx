@@ -7,7 +7,6 @@ import {
   Image,
   Dimensions,
   ImageBackground,
-  Platform,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {soundPacks} from '../assets/sounds';
@@ -27,6 +26,7 @@ import ControlsButton from '../components/ControlsButton';
 import {UnlockService} from '../services/UnlockService';
 import {showGlobalInterstitial} from '../components/ads/adsManager';
 import {triggerPlatformHaptic} from '../utils/haptics';
+import {getResponsiveSize} from '../utils/deviceUtils';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -35,20 +35,59 @@ interface ModalHeaderProps {
   packName: string;
 }
 
-const ModalHeader: React.FC<ModalHeaderProps> = memo(({onClose, packName}) => (
-  <View style={styles.header}>
-    <Text style={styles.headerTitle}>{packName}</Text>
-    <TouchableOpacity
-      onPress={() => {
-        triggerPlatformHaptic('selection');
-        onClose();
-      }}
-      style={styles.closeButton}
-      hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-      <Text style={styles.closeButtonText}>X</Text>
-    </TouchableOpacity>
-  </View>
-));
+const ModalHeader: React.FC<ModalHeaderProps> = memo(({onClose, packName}) => {
+  const headerPaddingH = getResponsiveSize(20, 32);
+  const headerPaddingV = getResponsiveSize(15, 24);
+  const headerTitleFontSize = getResponsiveSize(18, 32);
+  const closeButtonSize = getResponsiveSize(30, 52);
+  const closeButtonRadius = getResponsiveSize(15, 26);
+  const closeButtonFontSize = getResponsiveSize(16, 26);
+
+  return (
+    <View
+      style={[
+        styles.header,
+        {
+          paddingHorizontal: headerPaddingH,
+          paddingVertical: headerPaddingV,
+        },
+      ]}>
+      <Text
+        style={[
+          styles.headerTitle,
+          {
+            fontSize: headerTitleFontSize,
+          },
+        ]}>
+        {packName}
+      </Text>
+      <TouchableOpacity
+        onPress={() => {
+          triggerPlatformHaptic('selection');
+          onClose();
+        }}
+        style={[
+          styles.closeButton,
+          {
+            width: closeButtonSize,
+            height: closeButtonSize,
+            borderRadius: closeButtonRadius,
+          },
+        ]}
+        hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+        <Text
+          style={[
+            styles.closeButtonText,
+            {
+              fontSize: closeButtonFontSize,
+            },
+          ]}>
+          X
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+});
 
 const SoundPackDetailScreen: React.FC = () => {
   const route = useRoute<RouteProp<RootStackParamList, 'SoundPackDetail'>>();
@@ -66,6 +105,38 @@ const SoundPackDetailScreen: React.FC = () => {
   const {setCurrentSoundPack, currentSoundPack} = useAppContext();
 
   const pack = packId ? soundPacks[packId] : undefined;
+
+  const contentPaddingH = getResponsiveSize(20, 32);
+  const contentPaddingTop = getResponsiveSize(20, 30);
+  const packNameFontSize = getResponsiveSize(28, 40);
+  const packGenreFontSize = getResponsiveSize(18, 24);
+  const packGenreMarginBottom = getResponsiveSize(20, 30);
+  const statsMarginTop = getResponsiveSize(20, 30);
+  const statsMarginBottom = getResponsiveSize(30, 40);
+  const statsPaddingH = getResponsiveSize(20, 32);
+  const statLabelFontSize = getResponsiveSize(14, 22);
+  const statValueFontSize = getResponsiveSize(20, 32);
+  const lockBadgeIconFontSize = getResponsiveSize(16, 26);
+  const playButtonSize = getResponsiveSize(60, 80);
+  const playButtonMarginTop = getResponsiveSize(20, 30);
+  const playButtonMarginBottom = getResponsiveSize(10, 15);
+  const bottomButtonPaddingBottom = getResponsiveSize(20, 30);
+  const bottomButtonPaddingH = getResponsiveSize(20, 32);
+  const selectButtonPaddingV = getResponsiveSize(15, 24);
+  const selectButtonPaddingH = getResponsiveSize(30, 48);
+  const selectButtonRadius = getResponsiveSize(25, 36);
+  const selectButtonMinWidth = getResponsiveSize(220, 360);
+  const selectButtonFontSize = getResponsiveSize(16, 22);
+  const preparingTextFontSize = getResponsiveSize(12, 16);
+  const buttonIconSize = getResponsiveSize(20, 30);
+  const currentPackPaddingH = getResponsiveSize(20, 28);
+  const currentPackPaddingV = getResponsiveSize(12, 16);
+  const currentPackRadius = getResponsiveSize(20, 26);
+  const currentPackMarginBottom = getResponsiveSize(20, 30);
+  const currentPackFontSize = getResponsiveSize(16, 20);
+  const coverMarginBottom = getResponsiveSize(25, 35);
+  const coverBorderRadius = getResponsiveSize(20, 28);
+  const coverWidthMultiplier = getResponsiveSize(0.95, 0.7125);
 
   const isCurrentPack = useCallback((): boolean => {
     return currentSoundPack === packId;
@@ -254,58 +325,164 @@ const SoundPackDetailScreen: React.FC = () => {
         <View style={styles.modalBackdrop}>
           <View style={styles.container}>
             <ModalHeader onClose={handleClose} packName={pack.name} />
-            <View style={styles.content}>
+            <View
+              style={[
+                styles.content,
+                {
+                  paddingHorizontal: contentPaddingH,
+                  paddingTop: contentPaddingTop,
+                },
+              ]}>
               <View style={styles.scrollableContent}>
                 {isCurrentPack() && (
-                  <View style={styles.currentPackIndicator}>
-                    <Text style={styles.currentPackText}>
+                  <View
+                    style={[
+                      styles.currentPackIndicator,
+                      {
+                        paddingHorizontal: currentPackPaddingH,
+                        paddingVertical: currentPackPaddingV,
+                        borderRadius: currentPackRadius,
+                        marginBottom: currentPackMarginBottom,
+                      },
+                    ]}>
+                    <Text
+                      style={[
+                        styles.currentPackText,
+                        {fontSize: currentPackFontSize},
+                      ]}>
                       Currently Active Pack
                     </Text>
                   </View>
                 )}
-                <View style={styles.coverContainer}>
-                  <Image source={pack.cover} style={styles.coverImage} />
+                <View
+                  style={[
+                    styles.coverContainer,
+                    {marginBottom: coverMarginBottom},
+                  ]}>
+                  <Image
+                    source={pack.cover}
+                    style={[
+                      styles.coverImage,
+                      {
+                        width: screenWidth * coverWidthMultiplier,
+                        height: (screenWidth * coverWidthMultiplier * 9) / 16,
+                        borderRadius: coverBorderRadius,
+                      },
+                    ]}
+                  />
                   {isPlaying && <Equalizer />}
                 </View>
                 <View style={styles.infoContainer}>
                   <View style={styles.packHeader}>
-                    <Text style={styles.packName}>{pack.name}</Text>
+                    <Text
+                      style={[styles.packName, {fontSize: packNameFontSize}]}>
+                      {pack.name}
+                    </Text>
                   </View>
-                  <Text style={styles.packGenre}>{pack.genre}</Text>
-                  <View style={styles.statsContainer}>
+                  <Text
+                    style={[
+                      styles.packGenre,
+                      {
+                        fontSize: packGenreFontSize,
+                        marginBottom: packGenreMarginBottom,
+                      },
+                    ]}>
+                    {pack.genre}
+                  </Text>
+                  <View
+                    style={[
+                      styles.statsContainer,
+                      {
+                        marginTop: statsMarginTop,
+                        marginBottom: statsMarginBottom,
+                        paddingHorizontal: statsPaddingH,
+                      },
+                    ]}>
                     <View style={styles.statItem}>
-                      <Text style={styles.statLabel}>Sounds</Text>
-                      <Text style={styles.statValue}>
+                      <Text
+                        style={[
+                          styles.statLabel,
+                          {fontSize: statLabelFontSize},
+                        ]}>
+                        Sounds
+                      </Text>
+                      <Text
+                        style={[
+                          styles.statValue,
+                          {fontSize: statValueFontSize},
+                        ]}>
                         {pack.sounds ? Object.keys(pack.sounds).length : 0}
                       </Text>
                     </View>
                     <View style={styles.statItem}>
-                      <Text style={styles.statLabel}>BPM</Text>
-                      <Text style={styles.statValue}>{pack.bpm}</Text>
+                      <Text
+                        style={[
+                          styles.statLabel,
+                          {fontSize: statLabelFontSize},
+                        ]}>
+                        BPM
+                      </Text>
+                      <Text
+                        style={[
+                          styles.statValue,
+                          {fontSize: statValueFontSize},
+                        ]}>
+                        {pack.bpm}
+                      </Text>
                     </View>
                     <View style={styles.statItem}>
-                      <Text style={styles.statLabel}>
+                      <Text
+                        style={[
+                          styles.statLabel,
+                          {fontSize: statLabelFontSize},
+                        ]}>
                         {isUnlocked ? 'UNLOCKED' : 'LOCKED'}
                       </Text>
-                      <Text style={styles.lockBadgeIcon}>
+                      <Text
+                        style={[
+                          styles.lockBadgeIcon,
+                          {fontSize: lockBadgeIconFontSize},
+                        ]}>
                         {isUnlocked ? '🔓' : '🔒'}
                       </Text>
                     </View>
                   </View>
-                  <View style={styles.playButtonContainer}>
+                  <View
+                    style={[
+                      styles.playButtonContainer,
+                      {
+                        marginTop: playButtonMarginTop,
+                        marginBottom: playButtonMarginBottom,
+                      },
+                    ]}>
                     <ControlsButton
                       variant="play"
                       isPlaying={isPlaying}
                       onPress={handlePlayStop}
-                      size={60}
+                      size={playButtonSize}
                     />
                   </View>
                 </View>
               </View>
-              <View style={styles.bottomButtonContainer}>
+              <View
+                style={[
+                  styles.bottomButtonContainer,
+                  {
+                    paddingBottom: bottomButtonPaddingBottom,
+                    paddingHorizontal: bottomButtonPaddingH,
+                  },
+                ]}>
                 {isUnlocked ? (
                   <TouchableOpacity
-                    style={styles.selectButton}
+                    style={[
+                      styles.selectButton,
+                      {
+                        paddingVertical: selectButtonPaddingV,
+                        paddingHorizontal: selectButtonPaddingH,
+                        borderRadius: selectButtonRadius,
+                        minWidth: selectButtonMinWidth,
+                      },
+                    ]}
                     onPress={() => {
                       triggerPlatformHaptic('selection');
                       handleSelectPack();
@@ -313,9 +490,16 @@ const SoundPackDetailScreen: React.FC = () => {
                     <View style={styles.buttonContent}>
                       <Image
                         source={require('../assets/images/pack.png')}
-                        style={styles.buttonIcon}
+                        style={[
+                          styles.buttonIcon,
+                          {width: buttonIconSize, height: buttonIconSize},
+                        ]}
                       />
-                      <Text style={styles.selectButtonText}>
+                      <Text
+                        style={[
+                          styles.selectButtonText,
+                          {fontSize: selectButtonFontSize},
+                        ]}>
                         {getSelectButtonText()}
                       </Text>
                     </View>
@@ -323,7 +507,15 @@ const SoundPackDetailScreen: React.FC = () => {
                 ) : (
                   <View style={styles.unlockContainer}>
                     <TouchableOpacity
-                      style={getUnlockButtonStyle()}
+                      style={[
+                        ...getUnlockButtonStyle(),
+                        {
+                          paddingVertical: selectButtonPaddingV,
+                          paddingHorizontal: selectButtonPaddingH,
+                          borderRadius: selectButtonRadius,
+                          minWidth: selectButtonMinWidth,
+                        },
+                      ]}
                       onPress={() => {
                         triggerPlatformHaptic('selection');
                         handleUnlockPack();
@@ -332,16 +524,27 @@ const SoundPackDetailScreen: React.FC = () => {
                       <View style={styles.buttonContent}>
                         <Image
                           source={getUnlockButtonIcon()}
-                          style={styles.buttonIcon}
+                          style={[
+                            styles.buttonIcon,
+                            {width: buttonIconSize, height: buttonIconSize},
+                          ]}
                         />
-                        <Text style={styles.selectButtonText}>
+                        <Text
+                          style={[
+                            styles.selectButtonText,
+                            {fontSize: selectButtonFontSize},
+                          ]}>
                           {getUnlockButtonText()}
                         </Text>
                       </View>
                     </TouchableOpacity>
 
                     {getStatusMessage() && (
-                      <Text style={styles.preparingText}>
+                      <Text
+                        style={[
+                          styles.preparingText,
+                          {fontSize: preparingTextFontSize},
+                        ]}>
                         {getStatusMessage()}
                       </Text>
                     )}
@@ -395,35 +598,23 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
   },
   scrollableContent: {
     flex: 1,
   },
   coverContainer: {
     alignItems: 'center',
-    marginBottom: 25,
     position: 'relative',
   },
-  coverImage: {
-    width: screenWidth * 0.95,
-    height: (screenWidth * 0.95 * 9) / 16,
-    borderRadius: 20,
-  },
+  coverImage: {},
   currentPackIndicator: {
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.3)',
-    borderRadius: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    marginBottom: 20,
     alignSelf: 'center',
   },
   currentPackText: {
     color: '#ffffff',
-    fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
   },
@@ -440,7 +631,6 @@ const styles = StyleSheet.create({
   },
   packName: {
     color: '#fff',
-    fontSize: 28,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 5,
@@ -459,17 +649,12 @@ const styles = StyleSheet.create({
   },
   packGenre: {
     color: '#fff',
-    fontSize: 18,
     textAlign: 'center',
-    marginBottom: 20,
   },
 
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 20,
-    marginBottom: 30,
-    paddingHorizontal: 20,
   },
   statItem: {
     alignItems: 'center',
@@ -477,12 +662,10 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     color: '#aaa',
-    fontSize: 14,
     marginBottom: 4,
   },
   statValue: {
     color: '#fff',
-    fontSize: 20,
     fontWeight: 'bold',
   },
   lockBadge: {
@@ -495,25 +678,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 2,
   },
-  lockBadgeIcon: {
-    fontSize: 16,
-  },
+  lockBadgeIcon: {},
   playButtonContainer: {
     alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 10,
   },
   bottomButtonContainer: {
-    paddingBottom: 20,
-    paddingHorizontal: 20,
     alignItems: 'center',
   },
   selectButton: {
     backgroundColor: '#ffffff',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 25,
-    minWidth: 220,
     alignItems: 'center',
   },
   unlockButton: {
@@ -534,14 +707,12 @@ const styles = StyleSheet.create({
   },
   preparingText: {
     color: '#aaa',
-    fontSize: 12,
     marginTop: 8,
     fontStyle: 'italic',
     textAlign: 'center',
   },
   selectButtonText: {
     color: '#000',
-    fontSize: 16,
     fontWeight: '600',
   },
   buttonContent: {
@@ -549,10 +720,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  buttonIcon: {
-    width: 20,
-    height: 20,
-  },
+  buttonIcon: {},
   absoluteFill: {
     flex: 1,
   },

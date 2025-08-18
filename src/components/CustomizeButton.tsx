@@ -1,5 +1,6 @@
 import React, {useRef, forwardRef, useImperativeHandle} from 'react';
 import ControlsButton, {ControlsButtonRef} from './ControlsButton';
+import {getResponsiveSize} from '../utils/deviceUtils';
 
 interface CustomizeButtonProps {
   onPress: () => void;
@@ -20,12 +21,14 @@ const CustomizeButton = forwardRef<CustomizeButtonRef, CustomizeButtonProps>(
       },
     }));
 
+    const buttonSize = getResponsiveSize(46, 70);
+
     return (
       <ControlsButton
         ref={buttonRef}
         variant="default"
         iconSrc={require('../assets/images/pad-settings.png')}
-        size={46}
+        size={buttonSize}
         onPress={onPress}
         disabled={disabled}
       />

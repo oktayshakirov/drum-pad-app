@@ -21,6 +21,11 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../../App';
 import {BlurView} from '@react-native-community/blur';
 import {useGlobalAds} from '../components/ads/adsManager';
+import {
+  getResponsiveMaxWidth,
+  getResponsiveSize,
+  getResponsivePercentage,
+} from '../utils/deviceUtils';
 import Reanimated, {
   useSharedValue,
   useAnimatedStyle,
@@ -100,6 +105,12 @@ const DrumPadScreen: React.FC = () => {
   const currentPack = soundPacks[currentSoundPack];
   const blurType = getPackTheme(currentSoundPack) === 'dark' ? 'dark' : 'light';
 
+  const controlsMaxWidth = getResponsiveMaxWidth(400, 800);
+  const gridMaxWidth = getResponsiveMaxWidth(400, 700);
+  const controlsMinHeight = getResponsiveSize(80, 120);
+
+  const skeletonPadBorderRadius = getResponsiveSize(15, 20);
+
   const bannerContainerHeight = useSharedValue(0);
   const bannerContainerOpacity = useSharedValue(0);
 
@@ -162,6 +173,9 @@ const DrumPadScreen: React.FC = () => {
     [],
   );
 
+  const skeletonPadWidth = getResponsivePercentage('30%', '28%');
+  const skeletonPadMargin = getResponsivePercentage('1.5%', '2%');
+
   const handleBannerStateChange = useCallback(
     (hasAd: boolean, height: number) => {
       setBannerState({hasBanner: hasAd, height});
@@ -207,31 +221,37 @@ const DrumPadScreen: React.FC = () => {
         </Reanimated.View>
         <View style={styles.container}>
           <CurrentPack onOpenPackLibrary={handleOpenPackLibrary} />
-          <View style={styles.controlsRow}>
-            <View style={styles.leftSection}>
-              <ChannelSwitch
-                ref={channelRef}
-                onChannelSelect={setActiveChannel}
-                disabled={!hasTwoChannels}
-                onButtonPress={handleChannelPress}
-              />
-            </View>
-            <View style={styles.centerSection}>
-              <Metronome
-                isPlaying={isMetronomePlaying}
-                setIsPlaying={setIsMetronomePlaying}
-              />
-            </View>
-            <View style={styles.rightSection}>
-              <CustomizeButton
-                ref={customizeRef}
-                onPress={handleOpenCustomize}
-                disabled={false}
-              />
-            </View>
+          <View
+            style={[
+              styles.controlsRow,
+              {
+                maxWidth: controlsMaxWidth,
+                minHeight: controlsMinHeight,
+              },
+            ]}>
+            <ChannelSwitch
+              ref={channelRef}
+              onChannelSelect={setActiveChannel}
+              disabled={!hasTwoChannels}
+              onButtonPress={handleChannelPress}
+            />
+            <Metronome
+              isPlaying={isMetronomePlaying}
+              setIsPlaying={setIsMetronomePlaying}
+            />
+            <CustomizeButton
+              ref={customizeRef}
+              onPress={handleOpenCustomize}
+              disabled={false}
+            />
           </View>
           {padsLoaded && visiblePads.length > 0 ? (
-            <Reanimated.View style={[styles.grid, gridAnimatedStyle]}>
+            <Reanimated.View
+              style={[
+                styles.grid,
+                gridAnimatedStyle,
+                {maxWidth: gridMaxWidth},
+              ]}>
               {visiblePads.map(pad => (
                 <Pad
                   key={pad.id}
@@ -244,9 +264,18 @@ const DrumPadScreen: React.FC = () => {
               ))}
             </Reanimated.View>
           ) : (
-            <View style={styles.grid}>
+            <View style={[styles.grid, {maxWidth: gridMaxWidth}]}>
               {skeletonSlots.map(slot => (
-                <View key={slot} style={styles.skeletonPad}>
+                <View
+                  key={slot}
+                  style={[
+                    styles.skeletonPad,
+                    {
+                      width: skeletonPadWidth,
+                      margin: skeletonPadMargin,
+                      borderRadius: skeletonPadBorderRadius,
+                    },
+                  ]}>
                   <BlurView
                     style={StyleSheet.absoluteFill}
                     blurType="light"
@@ -285,28 +314,12 @@ const styles = StyleSheet.create({
   controlsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     width: '100%',
     maxWidth: 400,
     minHeight: 80,
   },
-  leftSection: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    paddingLeft: 40,
-  },
-  centerSection: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  rightSection: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-    paddingRight: 40,
-  },
+
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -319,7 +332,6 @@ const styles = StyleSheet.create({
     width: '30%',
     aspectRatio: 1,
     margin: '1.5%',
-    borderRadius: 15,
     backgroundColor: 'rgba(255,255,255,0.04)',
     overflow: 'hidden',
   },

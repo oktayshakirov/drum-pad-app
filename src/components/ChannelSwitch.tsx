@@ -1,6 +1,7 @@
 import React, {useRef, forwardRef, useImperativeHandle, useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import ControlsButton, {ControlsButtonRef} from './ControlsButton';
+import {getResponsiveSize} from '../utils/deviceUtils';
 
 interface ChannelSwitchProps {
   onChannelSelect: (channel: 'A' | 'B') => void;
@@ -16,6 +17,10 @@ const ChannelSwitch = forwardRef<ChannelSwitchRef, ChannelSwitchProps>(
   ({onChannelSelect, disabled, onButtonPress}, ref) => {
     const buttonRef = useRef<ControlsButtonRef>(null);
     const [currentChannel, setCurrentChannel] = useState<'A' | 'B'>('A');
+
+    const buttonSize = getResponsiveSize(46, 70);
+    const diagonalLineWidth = getResponsiveSize(32, 40);
+    const diagonalLineHeight = getResponsiveSize(1.5, 2);
 
     useImperativeHandle(ref, () => ({
       triggerFlash: () => {
@@ -39,13 +44,21 @@ const ChannelSwitch = forwardRef<ChannelSwitchRef, ChannelSwitchProps>(
           ref={buttonRef}
           variant="control"
           label={currentChannel}
-          size={46}
+          size={buttonSize}
           onPress={handlePress}
           disabled={disabled}
         />
         {disabled && (
           <View style={styles.disabledOverlay} pointerEvents="none">
-            <View style={styles.diagonalLine} />
+            <View
+              style={[
+                styles.diagonalLine,
+                {
+                  width: diagonalLineWidth,
+                  height: diagonalLineHeight,
+                },
+              ]}
+            />
           </View>
         )}
       </View>

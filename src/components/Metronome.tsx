@@ -14,6 +14,7 @@ import pauseIcon from '../assets/images/pause.png';
 import settingsIcon from '../assets/images/settings.png';
 import ControlsButton from './ControlsButton';
 import {triggerPlatformHaptic} from '../utils/haptics';
+import {getResponsiveSize} from '../utils/deviceUtils';
 
 interface MetronomeProps {
   isPlaying: boolean;
@@ -24,6 +25,13 @@ const Metronome: React.FC<MetronomeProps> = ({isPlaying, setIsPlaying}) => {
   const context = useContext(AppContext);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const beatAnim = useRef(new Animated.Value(1)).current;
+
+  const buttonSize = getResponsiveSize(46, 70);
+  const bpmDisplaySize = getResponsiveSize(65, 80);
+  const bpmValueFontSize = getResponsiveSize(20, 26);
+  const bpmLabelFontSize = getResponsiveSize(12, 16);
+  const wrapperPaddingH = getResponsiveSize(20, 30);
+  const wrapperGap = getResponsiveSize(15, 20);
 
   const triggerBeatAnimation = useCallback((): void => {
     Animated.sequence([
@@ -94,17 +102,31 @@ const Metronome: React.FC<MetronomeProps> = ({isPlaying, setIsPlaying}) => {
 
   return (
     <>
-      <View style={styles.wrapper}>
+      <View
+        style={[
+          styles.wrapper,
+          {
+            paddingHorizontal: wrapperPaddingH,
+            gap: wrapperGap,
+          },
+        ]}>
         <ControlsButton
           variant="play"
           isPlaying={isPlaying}
           onPress={handleToggleMetronome}
-          size={46}
+          size={buttonSize}
           playIconSrc={playIcon}
           pauseIconSrc={pauseIcon}
         />
 
-        <View style={styles.bpmDisplay}>
+        <View
+          style={[
+            styles.bpmDisplay,
+            {
+              width: bpmDisplaySize,
+              height: bpmDisplaySize,
+            },
+          ]}>
           <Animated.View
             style={[
               styles.bpmCircle,
@@ -113,8 +135,12 @@ const Metronome: React.FC<MetronomeProps> = ({isPlaying, setIsPlaying}) => {
             ]}
           />
           <View style={styles.bpmTextContainer}>
-            <Text style={styles.bpmValue}>{bpm}</Text>
-            <Text style={styles.bpmLabel}>BPM</Text>
+            <Text style={[styles.bpmValue, {fontSize: bpmValueFontSize}]}>
+              {bpm}
+            </Text>
+            <Text style={[styles.bpmLabel, {fontSize: bpmLabelFontSize}]}>
+              BPM
+            </Text>
           </View>
         </View>
 
@@ -122,7 +148,7 @@ const Metronome: React.FC<MetronomeProps> = ({isPlaying, setIsPlaying}) => {
           variant="default"
           iconSrc={settingsIcon}
           onPress={handleSettingsPress}
-          size={46}
+          size={buttonSize}
         />
       </View>
 
@@ -147,7 +173,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 20,
     gap: 15,
-    width: '100%',
   },
   bpmDisplay: {
     width: 65,

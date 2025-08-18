@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Animated,
   ImageBackground,
-  Platform,
 } from 'react-native';
 import {BlurView} from '@react-native-community/blur';
 import {METRONOME_SOUNDS, MetronomeSound} from '../assets/sounds/metronome';
@@ -15,6 +14,7 @@ import {soundPacks} from '../assets/sounds';
 import {AppContext} from '../contexts/AppContext';
 import ControlsButton from './ControlsButton';
 import {triggerPlatformHaptic} from '../utils/haptics';
+import {getResponsiveSize} from '../utils/deviceUtils';
 
 const BPM_MIN = 40;
 const BPM_MAX = 220;
@@ -48,6 +48,21 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
 
   const currentBpmRef = useRef(bpm);
   const currentVolumeRef = useRef(metronomeVolume);
+
+  const modalMaxWidth = getResponsiveSize(350, 500);
+  const modalPadding = getResponsiveSize(25, 40);
+  const titleFontSize = getResponsiveSize(20, 28);
+  const sectionTitleFontSize = getResponsiveSize(16, 20);
+  const bpmFontSize = getResponsiveSize(64, 80);
+  const valueFontSize = getResponsiveSize(24, 28);
+  const doneButtonFontSize = getResponsiveSize(16, 20);
+  const doneButtonPadding = getResponsiveSize(15, 20);
+  const doneButtonRadius = getResponsiveSize(30, 40);
+
+  const soundButtonPaddingV = getResponsiveSize(10, 16);
+  const soundButtonPaddingH = getResponsiveSize(20, 32);
+  const soundButtonRadius = getResponsiveSize(15, 20);
+  const soundButtonFontSize = getResponsiveSize(14, 18);
 
   useEffect(() => {
     currentBpmRef.current = bpm;
@@ -131,6 +146,7 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
           style={[
             styles.modalContainer,
             {
+              maxWidth: modalMaxWidth,
               transform: [{scale: scaleAnim}],
               opacity: opacityAnim,
             },
@@ -150,37 +166,59 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
               />
             </>
           )}
-          <View style={styles.contentContainer}>
-            <Text style={styles.title}>Metronome Settings</Text>
+          <View style={[styles.contentContainer, {padding: modalPadding}]}>
+            <Text style={[styles.title, {fontSize: titleFontSize}]}>
+              Metronome Settings
+            </Text>
 
-            <Text style={styles.sectionTitle}>BPM</Text>
+            <Text
+              style={[styles.sectionTitle, {fontSize: sectionTitleFontSize}]}>
+              BPM
+            </Text>
             <View style={styles.buttonControlContainer}>
               <ControlsButton
                 variant="control"
                 symbol="-"
-                size={60}
+                size={getResponsiveSize(60, 90)}
                 disabled={isBpmMin}
                 onPress={() => {}}
                 onPressIn={() => handleBpmPressIn(-1)}
               />
-              <Text style={styles.bpmDisplay}>{bpm}</Text>
+              <Text
+                style={[
+                  styles.bpmDisplay,
+                  {
+                    fontSize: bpmFontSize,
+                    marginHorizontal: getResponsiveSize(20, 30),
+                  },
+                ]}>
+                {bpm}
+              </Text>
               <ControlsButton
                 variant="control"
                 symbol="+"
-                size={60}
+                size={getResponsiveSize(60, 90)}
                 disabled={isBpmMax}
                 onPress={() => {}}
                 onPressIn={() => handleBpmPressIn(1)}
               />
             </View>
 
-            <Text style={styles.sectionTitle}>Sound</Text>
+            <Text
+              style={[styles.sectionTitle, {fontSize: sectionTitleFontSize}]}>
+              Sound
+            </Text>
             <View style={styles.soundOptionsContainer}>
               {METRONOME_SOUNDS.map(sound => (
                 <TouchableOpacity
                   key={sound}
                   style={[
                     styles.soundOption,
+                    {
+                      paddingVertical: soundButtonPaddingV,
+                      paddingHorizontal: soundButtonPaddingH,
+                      borderRadius: soundButtonRadius,
+                    },
                     metronomeSound === sound && styles.activeSoundOption,
                   ]}
                   onPress={() => {
@@ -190,6 +228,7 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
                   <Text
                     style={[
                       styles.soundOptionText,
+                      {fontSize: soundButtonFontSize},
                       metronomeSound === sound && styles.activeSoundOptionText,
                     ]}>
                     {sound.charAt(0).toUpperCase() + sound.slice(1)}
@@ -198,30 +237,40 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
               ))}
             </View>
 
-            <Text style={styles.sectionTitle}>Volume</Text>
+            <Text
+              style={[styles.sectionTitle, {fontSize: sectionTitleFontSize}]}>
+              Volume
+            </Text>
             <View style={styles.buttonControlContainer}>
               <ControlsButton
                 variant="control"
                 symbol="-"
-                size={60}
+                size={getResponsiveSize(60, 90)}
                 disabled={isVolumeMin}
                 onPress={() => {}}
                 onPressIn={() => handleVolumePressIn(-0.1)}
               />
-              <Text style={styles.valueText}>
+              <Text
+                style={[
+                  styles.valueText,
+                  {fontSize: valueFontSize, width: getResponsiveSize(80, 120)},
+                ]}>
                 {(metronomeVolume * 100).toFixed(0)}%
               </Text>
               <ControlsButton
                 variant="control"
                 symbol="+"
-                size={60}
+                size={getResponsiveSize(60, 90)}
                 disabled={isVolumeMax}
                 onPress={() => {}}
                 onPressIn={() => handleVolumePressIn(0.1)}
               />
             </View>
 
-            <Text style={styles.sectionTitle}>Color</Text>
+            <Text
+              style={[styles.sectionTitle, {fontSize: sectionTitleFontSize}]}>
+              Color
+            </Text>
             <View style={styles.colorOptionsContainer}>
               {[
                 {key: 'white', color: '#ffffff'},
@@ -235,7 +284,11 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
                   <ControlsButton
                     key={option.key}
                     variant="default"
-                    size={isSelected ? 44 : 36}
+                    size={
+                      isSelected
+                        ? getResponsiveSize(44, 64)
+                        : getResponsiveSize(36, 56)
+                    }
                     onPress={() => setColor && setColor(option.key as any)}
                     onPressIn={() => {}}
                     onPressOut={() => {}}
@@ -246,12 +299,21 @@ const MetronomeSettings: React.FC<MetronomeSettingsProps> = ({
             </View>
 
             <TouchableOpacity
-              style={styles.doneButton}
+              style={[
+                styles.doneButton,
+                {
+                  paddingVertical: doneButtonPadding,
+                  borderRadius: doneButtonRadius,
+                },
+              ]}
               onPress={() => {
                 triggerPlatformHaptic('selection');
                 onClose();
               }}>
-              <Text style={styles.doneButtonText}>Done</Text>
+              <Text
+                style={[styles.doneButtonText, {fontSize: doneButtonFontSize}]}>
+                Done
+              </Text>
             </TouchableOpacity>
           </View>
         </Animated.View>
@@ -269,7 +331,6 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     width: '85%',
-    maxWidth: 350,
     backgroundColor: '#2c2c2e',
     borderRadius: 20,
     alignItems: 'center',
@@ -285,18 +346,15 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     width: '100%',
-    padding: 25,
     alignItems: 'center',
   },
   title: {
     color: '#fff',
-    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
   },
   sectionTitle: {
     color: '#a0a0a0',
-    fontSize: 16,
     fontWeight: '600',
     marginTop: 20,
     marginBottom: 10,
@@ -312,9 +370,7 @@ const styles = StyleSheet.create({
   },
   bpmDisplay: {
     color: '#fff',
-    fontSize: 64,
     fontWeight: 'bold',
-    marginHorizontal: 20,
   },
   buttonControlContainer: {
     flexDirection: 'row',
@@ -325,9 +381,7 @@ const styles = StyleSheet.create({
   },
   valueText: {
     color: '#fff',
-    fontSize: 24,
     fontWeight: '600',
-    width: 80,
     textAlign: 'center',
   },
   soundOptionsContainer: {
@@ -338,9 +392,6 @@ const styles = StyleSheet.create({
   },
   soundOption: {
     backgroundColor: '#444',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 15,
   },
   activeSoundOption: {
     backgroundColor: '#ffffff',
@@ -354,15 +405,12 @@ const styles = StyleSheet.create({
   },
   doneButton: {
     backgroundColor: '#ffffff',
-    paddingVertical: 15,
-    borderRadius: 30,
     width: '100%',
     alignItems: 'center',
     marginTop: 30,
   },
   doneButtonText: {
     color: '#000',
-    fontSize: 16,
     fontWeight: 'bold',
   },
 });

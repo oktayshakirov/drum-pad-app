@@ -1,4 +1,10 @@
-import React, {useRef, forwardRef, useImperativeHandle} from 'react';
+import React, {
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  useMemo,
+  useCallback,
+} from 'react';
 import {
   TouchableOpacity,
   View,
@@ -11,6 +17,7 @@ import {
 import * as Animatable from 'react-native-animatable';
 import {BlurView} from '@react-native-community/blur';
 import {triggerPlatformHaptic} from '../utils/haptics';
+import {getResponsiveSize} from '../utils/deviceUtils';
 
 interface ControlsButtonProps {
   variant?: 'play' | 'default' | 'control';
@@ -33,6 +40,16 @@ export interface ControlsButtonRef {
   triggerAnimation: (animationType?: string) => void;
 }
 
+const ICON_SCALE = 0.5;
+const STOP_ICON_SCALE = 0.33;
+const PLAY_ICON_BORDER_SCALE = 0.17;
+const PLAY_ICON_LEFT_SCALE = 0.3;
+const PLAY_ICON_MARGIN_SCALE = 0.03;
+const TEXT_SCALE = 0.6;
+const ANIMATION_DURATION = 400;
+const PRESS_DELAY = 200;
+const PRESS_INTERVAL = 100;
+
 const ControlsButton = forwardRef<ControlsButtonRef, ControlsButtonProps>(
   (
     {
@@ -41,7 +58,7 @@ const ControlsButton = forwardRef<ControlsButtonRef, ControlsButtonProps>(
       onPress,
       onPressIn,
       onPressOut,
-      size = 30,
+      size,
       playIconSrc,
       pauseIconSrc,
       iconSrc,
@@ -53,72 +70,77 @@ const ControlsButton = forwardRef<ControlsButtonRef, ControlsButtonProps>(
     },
     ref,
   ) => {
+    const defaultSize = getResponsiveSize(46, 70);
+    const buttonSize = size || defaultSize;
     const animRef = useRef<any>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-    const getDefaultAnimation = (): string => {
+    const buttonStyle = useMemo(
+      () => ({
+        width: buttonSize,
+        height: buttonSize,
+        borderRadius: buttonSize / 2,
+      }),
+      [buttonSize],
+    );
+
+    const iconStyle = useMemo(
+      () => ({
+        width: buttonSize * ICON_SCALE,
+        height: buttonSize * ICON_SCALE,
+      }),
+      [buttonSize],
+    );
+
+    const stopIconStyle = useMemo(
+      () => ({
+        width: buttonSize * STOP_ICON_SCALE,
+        height: buttonSize * STOP_ICON_SCALE,
+        borderRadius: buttonSize * (STOP_ICON_SCALE / 2),
+      }),
+      [buttonSize],
+    );
+
+    const playIconStyle = useMemo(
+      () => ({
+        borderTopWidth: buttonSize * PLAY_ICON_BORDER_SCALE,
+        borderBottomWidth: buttonSize * PLAY_ICON_BORDER_SCALE,
+        borderLeftWidth: buttonSize * PLAY_ICON_LEFT_SCALE,
+        marginLeft: buttonSize * PLAY_ICON_MARGIN_SCALE,
+      }),
+      [buttonSize],
+    );
+
+    const textStyle = useMemo(
+      () => ({
+        fontSize: buttonSize * TEXT_SCALE,
+      }),
+      [buttonSize],
+    );
+
+    const getDefaultAnimation = useCallback((): string => {
       if (variant === 'control' && disabled) {
         return 'flash';
       }
       return 'pulse';
-    };
+    }, [variant, disabled]);
 
-    const triggerAnimation = (animationType?: string): void => {
-      if (animRef.current) {
-        const animType = animationType || animation || getDefaultAnimation();
-        animRef.current[animType](400);
-      }
-    };
+    const triggerAnimation = useCallback(
+      (animationType?: string): void => {
+        if (animRef.current) {
+          const animType = animationType || animation || getDefaultAnimation();
+          animRef.current[animType](ANIMATION_DURATION);
+        }
+      },
+      [animation, getDefaultAnimation],
+    );
 
     useImperativeHandle(ref, () => ({
       triggerAnimation,
     }));
 
-    const handlePress = (event: GestureResponderEvent) => {
-      triggerAnimation();
-
-      triggerPlatformHaptic('impactLight');
-
-      if (!disabled) {
-        onPress(event);
-      }
-    };
-
-    const handlePressIn = (): void => {
-      if (disabled) {
-        return;
-      }
-
-      triggerAnimation();
-
-      triggerPlatformHaptic('impactLight');
-
-      if (onPressIn) {
-        onPressIn();
-      }
-
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-
-      timeoutRef.current = setTimeout(() => {
-        intervalRef.current = setInterval(() => {
-          if (onPressIn) {
-            onPressIn();
-          }
-        }, 100);
-      }, 200);
-    };
-
-    const handlePressOut = (): void => {
-      if (onPressOut) {
-        onPressOut();
-      }
-
+    const clearTimers = useCallback(() => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
@@ -127,86 +149,108 @@ const ControlsButton = forwardRef<ControlsButtonRef, ControlsButtonProps>(
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
-    };
-
-    React.useEffect(() => {
-      return () => {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-        }
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-        }
-      };
     }, []);
 
-    let content = null;
-    if (variant === 'play') {
-      if (playIconSrc && pauseIconSrc) {
-        content = (
-          <Image
-            source={isPlaying ? pauseIconSrc : playIconSrc}
-            style={[styles.iconImage, {width: size * 0.5, height: size * 0.5}]}
-          />
-        );
-      } else if (isPlaying) {
-        content = (
-          <View
+    const handlePress = useCallback(
+      (event: GestureResponderEvent) => {
+        triggerAnimation();
+        triggerPlatformHaptic('impactLight');
+
+        if (!disabled) {
+          onPress(event);
+        }
+      },
+      [triggerAnimation, onPress, disabled],
+    );
+
+    const handlePressIn = useCallback((): void => {
+      if (disabled) {
+        return;
+      }
+
+      triggerAnimation();
+      triggerPlatformHaptic('impactLight');
+
+      if (onPressIn) {
+        onPressIn();
+      }
+
+      clearTimers();
+
+      timeoutRef.current = setTimeout(() => {
+        intervalRef.current = setInterval(() => {
+          if (onPressIn) {
+            onPressIn();
+          }
+        }, PRESS_INTERVAL);
+      }, PRESS_DELAY);
+    }, [disabled, triggerAnimation, onPressIn, clearTimers]);
+
+    const handlePressOut = useCallback((): void => {
+      if (onPressOut) {
+        onPressOut();
+      }
+      clearTimers();
+    }, [onPressOut, clearTimers]);
+
+    const content = useMemo(() => {
+      if (variant === 'play') {
+        if (playIconSrc && pauseIconSrc) {
+          return (
+            <Image
+              source={isPlaying ? pauseIconSrc : playIconSrc}
+              style={[styles.iconImage, iconStyle]}
+            />
+          );
+        } else if (isPlaying) {
+          return <View style={[styles.stopIcon, stopIconStyle]} />;
+        } else {
+          return <View style={[styles.playIcon, playIconStyle]} />;
+        }
+      } else if (variant === 'default' && iconSrc) {
+        return <Image source={iconSrc} style={[styles.iconImage, iconStyle]} />;
+      } else if (variant === 'control' && (label || symbol)) {
+        return (
+          <Text
             style={[
-              styles.stopIcon,
-              {
-                width: size * 0.33,
-                height: size * 0.33,
-                borderRadius: size * 0.07,
-              },
-            ]}
-          />
-        );
-      } else {
-        content = (
-          <View
-            style={[
-              styles.playIcon,
-              {
-                borderTopWidth: size * 0.17,
-                borderBottomWidth: size * 0.17,
-                borderLeftWidth: size * 0.3,
-                marginLeft: size * 0.03,
-              },
-            ]}
-          />
+              styles.controlText,
+              textStyle,
+              disabled && styles.disabledText,
+            ]}>
+            {symbol || label}
+          </Text>
         );
       }
-    } else if (variant === 'default' && iconSrc) {
-      content = (
-        <Image
-          source={iconSrc}
-          style={[styles.iconImage, {width: size * 0.5, height: size * 0.5}]}
-        />
-      );
-    } else if (variant === 'control' && (label || symbol)) {
-      content = (
-        <Text
-          style={[
-            styles.controlText,
-            {fontSize: size * 0.6},
-            disabled && styles.disabledText,
-          ]}>
-          {symbol || label}
-        </Text>
-      );
-    }
+      return null;
+    }, [
+      variant,
+      isPlaying,
+      playIconSrc,
+      pauseIconSrc,
+      iconSrc,
+      label,
+      symbol,
+      disabled,
+      iconStyle,
+      stopIconStyle,
+      playIconStyle,
+      textStyle,
+    ]);
 
     const blurType = Platform.OS === 'ios' ? 'ultraThinMaterialDark' : 'dark';
+
+    React.useEffect(() => {
+      return clearTimers;
+    }, [clearTimers]);
 
     return (
       <Animatable.View
         ref={animRef}
-        duration={400}
+        duration={ANIMATION_DURATION}
         useNativeDriver
         style={[
           styles.button,
-          {width: size, height: size, borderRadius: size / 2},
+          buttonStyle,
           disabled && styles.disabledButton,
           accentColor && {borderColor: accentColor},
         ]}>

@@ -23,6 +23,7 @@ import Equalizer from '../components/Equalizer';
 import {ImageBackground} from 'react-native';
 import {BlurView} from '@react-native-community/blur';
 import {triggerPlatformHaptic} from '../utils/haptics';
+import {getResponsiveSize} from '../utils/deviceUtils';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -40,6 +41,16 @@ const PackCard: React.FC<PackCardProps> = ({
   isSelected,
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
+
+  const packNameFontSize = getResponsiveSize(24, 32);
+  const packGenreFontSize = getResponsiveSize(16, 22);
+  const packBpmFontSize = getResponsiveSize(14, 18);
+  const packCardPadding = getResponsiveSize(20, 28);
+  const packCardMarginBottom = getResponsiveSize(20, 30);
+  const packCardBorderRadius = getResponsiveSize(20, 28);
+  const coverWidthMultiplier = getResponsiveSize(0.8, 0.7);
+  const coverBorderRadius = getResponsiveSize(16, 24);
+  const selectionIndicatorFontSize = getResponsiveSize(14, 18);
 
   const handlePlayStop = useCallback(
     async (event: any) => {
@@ -73,19 +84,42 @@ const PackCard: React.FC<PackCardProps> = ({
 
   return (
     <TouchableOpacity
-      style={[styles.packCard, isSelected && styles.selectedPackCard]}
+      style={[
+        styles.packCard,
+        isSelected && styles.selectedPackCard,
+        {
+          padding: packCardPadding,
+          marginBottom: packCardMarginBottom,
+          borderRadius: packCardBorderRadius,
+        },
+      ]}
       onPress={handleCardPress}
       activeOpacity={0.8}>
       <View style={styles.coverContainer}>
-        <Image source={pack.cover} style={styles.coverImage} />
+        <Image
+          source={pack.cover}
+          style={[
+            styles.coverImage,
+            {
+              width: screenWidth * coverWidthMultiplier,
+              borderRadius: coverBorderRadius,
+            },
+          ]}
+        />
         {isPlaying && <Equalizer />}
       </View>
 
       <View style={styles.cardContent}>
         <View style={styles.packInfo}>
-          <Text style={styles.packName}>{pack.name}</Text>
-          <Text style={styles.packGenre}>{pack.genre}</Text>
-          <Text style={styles.packBpm}>{pack.bpm} BPM</Text>
+          <Text style={[styles.packName, {fontSize: packNameFontSize}]}>
+            {pack.name}
+          </Text>
+          <Text style={[styles.packGenre, {fontSize: packGenreFontSize}]}>
+            {pack.genre}
+          </Text>
+          <Text style={[styles.packBpm, {fontSize: packBpmFontSize}]}>
+            {pack.bpm} BPM
+          </Text>
         </View>
 
         <TouchableOpacity
@@ -96,13 +130,17 @@ const PackCard: React.FC<PackCardProps> = ({
             variant="play"
             isPlaying={isPlaying}
             onPress={handlePlayStop}
-            size={40}
+            size={getResponsiveSize(40, 56)}
           />
         </TouchableOpacity>
       </View>
 
       <View style={styles.selectionIndicator}>
-        <Text style={styles.selectionIndicatorText}>
+        <Text
+          style={[
+            styles.selectionIndicatorText,
+            {fontSize: selectionIndicatorFontSize},
+          ]}>
           {isSelected ? '✓ SELECTED' : 'TAP TO SELECT'}
         </Text>
       </View>
@@ -116,6 +154,17 @@ const OnboardingScreen: React.FC = () => {
   const [availablePacks, setAvailablePacks] = useState<string[]>([]);
   const [selectedPack, setSelectedPack] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const titleFontSize = getResponsiveSize(28, 36);
+  const subtitleFontSize = getResponsiveSize(16, 20);
+  const continueButtonFontSize = getResponsiveSize(18, 24);
+  const headerPaddingTop = getResponsiveSize(40, 60);
+  const headerPaddingBottom = getResponsiveSize(30, 45);
+  const headerPaddingH = getResponsiveSize(20, 32);
+  const continueButtonPaddingV = getResponsiveSize(16, 24);
+  const continueButtonPaddingH = getResponsiveSize(30, 48);
+  const continueButtonRadius = getResponsiveSize(25, 35);
+  const scrollContentPaddingH = getResponsiveSize(20, 100);
 
   useEffect(() => {
     const loadAllPacks = async () => {
@@ -211,15 +260,23 @@ const OnboardingScreen: React.FC = () => {
       />
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.modalContainer}>
-          <View style={styles.header}>
+          <View
+            style={[
+              styles.header,
+              {
+                paddingTop: headerPaddingTop,
+                paddingBottom: headerPaddingBottom,
+                paddingHorizontal: headerPaddingH,
+              },
+            ]}>
             <Text
-              style={styles.title}
+              style={[styles.title, {fontSize: titleFontSize}]}
               adjustsFontSizeToFit={Platform.OS === 'ios'}
               numberOfLines={2}
               minimumFontScale={0.9}>
               Welcome to Shape Beats!
             </Text>
-            <Text style={styles.subtitle}>
+            <Text style={[styles.subtitle, {fontSize: subtitleFontSize}]}>
               Choose your first sound pack to start creating beats and begin
               your musical journey
             </Text>
@@ -227,7 +284,10 @@ const OnboardingScreen: React.FC = () => {
 
           <ScrollView
             style={styles.scrollContainer}
-            contentContainerStyle={styles.scrollContent}
+            contentContainerStyle={[
+              styles.scrollContent,
+              {paddingHorizontal: scrollContentPaddingH},
+            ]}
             showsVerticalScrollIndicator={false}>
             {availablePacks.map((packId: string) => {
               const pack = soundPacks[packId];
@@ -252,10 +312,21 @@ const OnboardingScreen: React.FC = () => {
               style={[
                 styles.continueButton,
                 !selectedPack && styles.disabledButton,
+                {
+                  paddingVertical: continueButtonPaddingV,
+                  paddingHorizontal: continueButtonPaddingH,
+                  borderRadius: continueButtonRadius,
+                },
               ]}
               onPress={handleContinue}
               disabled={!selectedPack}>
-              <Text style={styles.continueButtonText}>START MAKING BEATS!</Text>
+              <Text
+                style={[
+                  styles.continueButtonText,
+                  {fontSize: continueButtonFontSize},
+                ]}>
+                START MAKING BEATS!
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -293,13 +364,9 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    paddingTop: 40,
-    paddingBottom: 30,
-    paddingHorizontal: 20,
   },
   title: {
     color: '#ffffff',
-    fontSize: 28,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 12,
@@ -307,7 +374,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: '#D9DEE4',
-    fontSize: 16,
     textAlign: 'center',
     opacity: 0.8,
     lineHeight: 22,
@@ -316,14 +382,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
   },
   packCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 20,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
@@ -337,9 +398,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   coverImage: {
-    width: screenWidth * 0.8,
     height: (screenWidth * 0.8 * 9) / 16,
-    borderRadius: 16,
   },
   cardContent: {
     flexDirection: 'row',
@@ -353,20 +412,17 @@ const styles = StyleSheet.create({
   },
   packName: {
     color: '#ffffff',
-    fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'left',
     marginBottom: 8,
   },
   packGenre: {
     color: '#D9DEE4',
-    fontSize: 16,
     textAlign: 'left',
     marginBottom: 4,
   },
   packBpm: {
     color: '#aaa',
-    fontSize: 14,
     textAlign: 'left',
   },
 
@@ -382,9 +438,6 @@ const styles = StyleSheet.create({
   },
   continueButton: {
     backgroundColor: '#00B8E6',
-    paddingVertical: 16,
-    paddingHorizontal: 30,
-    borderRadius: 25,
     alignItems: 'center',
   },
   disabledButton: {
@@ -392,7 +445,6 @@ const styles = StyleSheet.create({
   },
   continueButtonText: {
     color: '#ffffff',
-    fontSize: 18,
     fontWeight: 'bold',
   },
   selectionIndicator: {
@@ -401,7 +453,6 @@ const styles = StyleSheet.create({
   },
   selectionIndicatorText: {
     color: '#D9DEE4',
-    fontSize: 14,
     textAlign: 'center',
     opacity: 0.8,
   },

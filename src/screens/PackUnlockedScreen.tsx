@@ -20,6 +20,7 @@ import {useAppContext} from '../contexts/AppContext';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {BlurView} from '@react-native-community/blur';
 import {triggerPlatformHaptic} from '../utils/haptics';
+import {getResponsiveSize} from '../utils/deviceUtils';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -36,6 +37,45 @@ const PackUnlockedScreen: React.FC<PackUnlockedScreenProps> = () => {
   const [canNavigate, setCanNavigate] = useState<boolean>(false);
 
   const pack = packId ? soundPacks[packId] : undefined;
+
+  const containerPaddingH = getResponsiveSize(20, 32);
+  const headerPaddingTop = getResponsiveSize(40, 60);
+  const headerPaddingBottom = getResponsiveSize(20, 30);
+  const headerTitleFontSize = getResponsiveSize(32, 48);
+  const headerSubtitleFontSize = getResponsiveSize(18, 24);
+  const headerTitleMarginBottom = getResponsiveSize(8, 12);
+  const glassCardPaddingH = getResponsiveSize(20, 32);
+  const glassCardPaddingV = getResponsiveSize(20, 30);
+  const glassCardBorderRadius = getResponsiveSize(18, 26);
+  const coverMarginBottom = getResponsiveSize(20, 30);
+  const coverWidthMultiplier = getResponsiveSize(0.6, 0.5);
+  const coverBorderRadius = getResponsiveSize(16, 24);
+  const packNameFontSize = getResponsiveSize(28, 36);
+  const packGenreFontSize = getResponsiveSize(18, 24);
+  const packNameMarginBottom = getResponsiveSize(8, 12);
+  const statusContainerPaddingV = getResponsiveSize(20, 30);
+  const statusContainerMinHeight = getResponsiveSize(100, 140);
+  const loadingTextFontSize = getResponsiveSize(16, 20);
+  const loadingTextMarginTop = getResponsiveSize(12, 16);
+  const errorTextFontSize = getResponsiveSize(18, 24);
+  const errorDetailsFontSize = getResponsiveSize(14, 18);
+  const errorDetailsMarginTop = getResponsiveSize(8, 12);
+  const errorDetailsMarginBottom = getResponsiveSize(16, 24);
+  const retryButtonPaddingV = getResponsiveSize(8, 12);
+  const retryButtonPaddingH = getResponsiveSize(16, 24);
+  const retryButtonRadius = getResponsiveSize(8, 12);
+  const retryButtonFontSize = getResponsiveSize(14, 18);
+  const successTextFontSize = getResponsiveSize(18, 24);
+  const successDetailsFontSize = getResponsiveSize(14, 18);
+  const successDetailsMarginTop = getResponsiveSize(8, 12);
+  const buttonContainerPaddingBottom = getResponsiveSize(20, 30);
+  const actionButtonPaddingV = getResponsiveSize(15, 20);
+  const actionButtonPaddingH = getResponsiveSize(30, 40);
+  const actionButtonRadius = getResponsiveSize(25, 32);
+  const actionButtonMinWidth = getResponsiveSize(250, 320);
+  const actionButtonFontSize = getResponsiveSize(16, 20);
+  const buttonIconSize = getResponsiveSize(20, 26);
+  const buttonContentGap = getResponsiveSize(8, 12);
 
   const loadAndVerifyAudio = useCallback(async (): Promise<void> => {
     if (!packId || !pack) {
@@ -119,16 +159,45 @@ const PackUnlockedScreen: React.FC<PackUnlockedScreenProps> = () => {
         blurAmount={50}
       />
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>🎉 Pack Unlocked!</Text>
-            <Text style={styles.headerSubtitle}>
+        <View
+          style={[styles.container, {paddingHorizontal: containerPaddingH}]}>
+          <View
+            style={[
+              styles.header,
+              {
+                paddingTop: headerPaddingTop,
+                paddingBottom: headerPaddingBottom,
+              },
+            ]}>
+            <Text
+              style={[
+                styles.headerTitle,
+                {
+                  fontSize: headerTitleFontSize,
+                  marginBottom: headerTitleMarginBottom,
+                },
+              ]}>
+              🎉 Pack Unlocked!
+            </Text>
+            <Text
+              style={[
+                styles.headerSubtitle,
+                {fontSize: headerSubtitleFontSize},
+              ]}>
               You've successfully unlocked
             </Text>
           </View>
 
           <View style={styles.packInfo}>
-            <View style={styles.glassCard}>
+            <View
+              style={[
+                styles.glassCard,
+                {
+                  paddingHorizontal: glassCardPaddingH,
+                  paddingVertical: glassCardPaddingV,
+                  borderRadius: glassCardBorderRadius,
+                },
+              ]}>
               <BlurView
                 style={StyleSheet.absoluteFill}
                 blurType={
@@ -139,31 +208,95 @@ const PackUnlockedScreen: React.FC<PackUnlockedScreenProps> = () => {
               />
               <View style={styles.glassTint} />
               <View style={styles.packInfoContent}>
-                <View style={styles.coverContainer}>
-                  <Image source={pack.cover} style={styles.coverImage} />
+                <View
+                  style={[
+                    styles.coverContainer,
+                    {marginBottom: coverMarginBottom},
+                  ]}>
+                  <Image
+                    source={pack.cover}
+                    style={[
+                      styles.coverImage,
+                      {
+                        width: screenWidth * coverWidthMultiplier,
+                        height: (screenWidth * coverWidthMultiplier * 9) / 16,
+                        borderRadius: coverBorderRadius,
+                      },
+                    ]}
+                  />
                 </View>
-                <Text style={styles.packName}>{pack.name}</Text>
-                <Text style={styles.packGenre}>{pack.genre}</Text>
+                <Text
+                  style={[
+                    styles.packName,
+                    {
+                      fontSize: packNameFontSize,
+                      marginBottom: packNameMarginBottom,
+                    },
+                  ]}>
+                  {pack.name}
+                </Text>
+                <Text style={[styles.packGenre, {fontSize: packGenreFontSize}]}>
+                  {pack.genre}
+                </Text>
               </View>
             </View>
           </View>
 
-          <View style={styles.statusContainer}>
+          <View
+            style={[
+              styles.statusContainer,
+              {
+                paddingVertical: statusContainerPaddingV,
+                minHeight: statusContainerMinHeight,
+              },
+            ]}>
             {isLoadingAudio && (
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#ffffff" />
-                <Text style={styles.loadingText}>Preparing your sounds...</Text>
+                <Text
+                  style={[
+                    styles.loadingText,
+                    {
+                      fontSize: loadingTextFontSize,
+                      marginTop: loadingTextMarginTop,
+                    },
+                  ]}>
+                  Preparing your sounds...
+                </Text>
               </View>
             )}
 
             {audioLoadError && (
               <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>⚠️ Audio Loading Failed</Text>
-                <Text style={styles.errorDetails}>{audioLoadError}</Text>
+                <Text style={[styles.errorText, {fontSize: errorTextFontSize}]}>
+                  ⚠️ Audio Loading Failed
+                </Text>
+                <Text
+                  style={[
+                    styles.errorDetails,
+                    {
+                      fontSize: errorDetailsFontSize,
+                      marginTop: errorDetailsMarginTop,
+                      marginBottom: errorDetailsMarginBottom,
+                    },
+                  ]}>
+                  {audioLoadError}
+                </Text>
                 <TouchableOpacity
-                  style={styles.retryButton}
+                  style={[
+                    styles.retryButton,
+                    {
+                      paddingVertical: retryButtonPaddingV,
+                      paddingHorizontal: retryButtonPaddingH,
+                      borderRadius: retryButtonRadius,
+                    },
+                  ]}
                   onPress={handleRetryAudio}>
-                  <Text style={styles.retryButtonText}>
+                  <Text
+                    style={[
+                      styles.retryButtonText,
+                      {fontSize: retryButtonFontSize},
+                    ]}>
                     Retry Audio Loading
                   </Text>
                 </TouchableOpacity>
@@ -172,28 +305,55 @@ const PackUnlockedScreen: React.FC<PackUnlockedScreenProps> = () => {
 
             {canNavigate && (
               <View style={styles.successContainer}>
-                <Text style={styles.successText}>✅ Audio Ready!</Text>
-                <Text style={styles.successDetails}>
+                <Text
+                  style={[styles.successText, {fontSize: successTextFontSize}]}>
+                  ✅ Audio Ready!
+                </Text>
+                <Text
+                  style={[
+                    styles.successDetails,
+                    {
+                      fontSize: successDetailsFontSize,
+                      marginTop: successDetailsMarginTop,
+                    },
+                  ]}>
                   Your sounds are loaded and ready to play
                 </Text>
               </View>
             )}
           </View>
 
-          <View style={styles.buttonContainer}>
+          <View
+            style={[
+              styles.buttonContainer,
+              {paddingBottom: buttonContainerPaddingBottom},
+            ]}>
             <TouchableOpacity
               style={[
                 styles.actionButton,
                 canNavigate ? styles.enabledButton : styles.disabledButton,
+                {
+                  paddingVertical: actionButtonPaddingV,
+                  paddingHorizontal: actionButtonPaddingH,
+                  borderRadius: actionButtonRadius,
+                  minWidth: actionButtonMinWidth,
+                },
               ]}
               onPress={handleGoToDrumPads}
               disabled={!canNavigate}>
-              <View style={styles.buttonContent}>
+              <View style={[styles.buttonContent, {gap: buttonContentGap}]}>
                 <Image
                   source={require('../assets/images/pack.png')}
-                  style={styles.buttonIcon}
+                  style={[
+                    styles.buttonIcon,
+                    {width: buttonIconSize, height: buttonIconSize},
+                  ]}
                 />
-                <Text style={styles.actionButtonText}>
+                <Text
+                  style={[
+                    styles.actionButtonText,
+                    {fontSize: actionButtonFontSize},
+                  ]}>
                   {isLoadingAudio
                     ? 'LOADING SOUNDS...'
                     : canNavigate
@@ -218,24 +378,18 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: 20,
     justifyContent: 'space-between',
   },
   header: {
     alignItems: 'center',
-    paddingTop: 40,
-    paddingBottom: 20,
   },
   headerTitle: {
     color: '#ffffff',
-    fontSize: 32,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 8,
   },
   headerSubtitle: {
     color: '#fff',
-    fontSize: 18,
     textAlign: 'center',
     opacity: 0.8,
   },
@@ -246,7 +400,6 @@ const styles = StyleSheet.create({
   },
   glassCard: {
     position: 'relative',
-    borderRadius: 18,
     overflow: 'hidden',
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'rgba(255,255,255,0.25)',
@@ -256,17 +409,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 2,
-    paddingHorizontal: 20,
-    paddingVertical: 20,
   },
   coverContainer: {
     alignItems: 'center',
-    marginBottom: 20,
   },
   coverImage: {
-    width: screenWidth * 0.6,
-    height: (screenWidth * 0.6 * 9) / 16,
-    borderRadius: 16,
   },
   glassTint: {
     ...StyleSheet.absoluteFillObject,
@@ -277,21 +424,16 @@ const styles = StyleSheet.create({
   },
   packName: {
     color: '#fff',
-    fontSize: 28,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 8,
   },
   packGenre: {
     color: '#D9DEE4',
-    fontSize: 18,
     textAlign: 'center',
     opacity: 0.9,
   },
   statusContainer: {
     alignItems: 'center',
-    paddingVertical: 20,
-    minHeight: 100,
     justifyContent: 'center',
   },
   loadingContainer: {
@@ -299,8 +441,6 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     color: '#ffffff',
-    fontSize: 16,
-    marginTop: 12,
     textAlign: 'center',
   },
   errorContainer: {
@@ -308,26 +448,18 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: '#FF6B6B',
-    fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   errorDetails: {
     color: '#FF6B6B',
-    fontSize: 14,
     textAlign: 'center',
-    marginTop: 8,
-    marginBottom: 16,
   },
   retryButton: {
     backgroundColor: '#FF6B6B',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
   },
   retryButtonText: {
     color: '#fff',
-    fontSize: 14,
     fontWeight: 'bold',
   },
   successContainer: {
@@ -335,25 +467,17 @@ const styles = StyleSheet.create({
   },
   successText: {
     color: '#4CAF50',
-    fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   successDetails: {
     color: '#4CAF50',
-    fontSize: 14,
     textAlign: 'center',
-    marginTop: 8,
   },
   buttonContainer: {
-    paddingBottom: 20,
     alignItems: 'center',
   },
   actionButton: {
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 25,
-    minWidth: 250,
     alignItems: 'center',
   },
   enabledButton: {
@@ -368,12 +492,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   buttonIcon: {
-    width: 20,
-    height: 20,
   },
   actionButtonText: {
     color: '#000',
-    fontSize: 16,
     fontWeight: '600',
   },
 });

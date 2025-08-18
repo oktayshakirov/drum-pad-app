@@ -22,6 +22,7 @@ import DraggableListIOS from '../components/DraggableListIOS';
 import DraggableListAndroid from '../components/DraggableListAndroid';
 import {brightenColor} from '../utils/colorUtils';
 import {triggerPlatformHaptic} from '../utils/haptics';
+import {getResponsiveSize} from '../utils/deviceUtils';
 
 const CustomizeScreen: React.FC = () => {
   const route = useRoute<RouteProp<RootStackParamList, 'Customize'>>();
@@ -31,7 +32,46 @@ const CustomizeScreen: React.FC = () => {
   const [hasChanges, setHasChanges] = useState(false);
 
   const pack = soundPacks[packId];
-  const originalPads = getPadConfigsSync(packId);
+
+  const containerPaddingTop = getResponsiveSize(20, 20);
+  const containerPaddingBottom = getResponsiveSize(20, 10);
+  const headerMarginBottom = getResponsiveSize(20, 20);
+  const headerPaddingH = getResponsiveSize(20, 32);
+  const headerTitleFontSize = getResponsiveSize(24, 36);
+  const closeButtonPaddingH = getResponsiveSize(20, 32);
+  const closeButtonPaddingV = getResponsiveSize(10, 16);
+  const closeButtonRadius = getResponsiveSize(20, 28);
+  const closeButtonFontSize = getResponsiveSize(16, 20);
+  const instructionsPaddingH = getResponsiveSize(20, 32);
+  const instructionsTextFontSize = getResponsiveSize(14, 18);
+  const instructionsLargeMarginBottom = getResponsiveSize(30, 40);
+  const instructionsSmallMarginBottom = getResponsiveSize(50, 70);
+  const padItemBorderRadius = getResponsiveSize(10, 16);
+  const padItemPadding = getResponsiveSize(8, 12);
+  const iconSize = getResponsiveSize(32, 44);
+  const iconMarginBottom = getResponsiveSize(4, 8);
+  const padTitleFontSize = getResponsiveSize(11, 16);
+  const positionIndicatorSize = getResponsiveSize(20, 28);
+  const positionIndicatorRadius = getResponsiveSize(10, 14);
+  const positionTextFontSize = getResponsiveSize(10, 14);
+  const dragDotSize = getResponsiveSize(3, 4);
+  const dragDotRadius = getResponsiveSize(1.5, 2);
+  const dragDotMarginV = getResponsiveSize(0.5, 1);
+  const footerMarginTop = getResponsiveSize(15, 25);
+  const footerGap = getResponsiveSize(10, 15);
+  const footerPaddingH = getResponsiveSize(20, 32);
+  const resetButtonPaddingV = getResponsiveSize(12, 20);
+  const resetButtonPaddingH = getResponsiveSize(20, 36);
+  const resetButtonRadius = getResponsiveSize(20, 30);
+  const resetButtonFontSize = getResponsiveSize(16, 22);
+  const saveButtonPaddingV = getResponsiveSize(12, 20);
+  const saveButtonPaddingH = getResponsiveSize(20, 36);
+  const saveButtonRadius = getResponsiveSize(20, 30);
+  const saveButtonFontSize = getResponsiveSize(16, 22);
+  const channelIndicatorSize = getResponsiveSize(20, 28);
+  const channelIndicatorRadius = getResponsiveSize(10, 14);
+  const channelTextFontSize = getResponsiveSize(10, 14);
+  const channelIndicatorMarginLeft = getResponsiveSize(5, 8);
 
   const loadCustomOrder = useCallback(async (): Promise<void> => {
     try {
@@ -43,7 +83,7 @@ const CustomizeScreen: React.FC = () => {
         setCustomPads(configs);
       }
     } catch (error) {}
-  }, [packId, originalPads]);
+  }, [packId]);
 
   useEffect(() => {
     loadCustomOrder();
@@ -111,27 +151,63 @@ const CustomizeScreen: React.FC = () => {
         blurAmount={50}
       />
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>Customize {pack.name}</Text>
+        <View
+          style={[
+            styles.container,
+            {
+              paddingTop: containerPaddingTop,
+              paddingBottom: containerPaddingBottom,
+            },
+          ]}>
+          <View
+            style={[
+              styles.header,
+              {
+                marginBottom: headerMarginBottom,
+                paddingHorizontal: headerPaddingH,
+              },
+            ]}>
+            <Text style={[styles.headerTitle, {fontSize: headerTitleFontSize}]}>
+              Customize {pack.name}
+            </Text>
             <TouchableOpacity
               onPress={() => {
                 triggerPlatformHaptic('selection');
                 navigation.goBack();
               }}
-              style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>Done</Text>
+              style={[
+                styles.closeButton,
+                {
+                  paddingHorizontal: closeButtonPaddingH,
+                  paddingVertical: closeButtonPaddingV,
+                  borderRadius: closeButtonRadius,
+                },
+              ]}>
+              <Text
+                style={[
+                  styles.closeButtonText,
+                  {fontSize: closeButtonFontSize},
+                ]}>
+                Done
+              </Text>
             </TouchableOpacity>
           </View>
 
           <View
             style={[
               styles.instructions,
+              {
+                paddingHorizontal: instructionsPaddingH,
+              },
               customPads.length === 24
-                ? styles.instructionsLarge
-                : styles.instructionsSmall,
+                ? {marginBottom: instructionsLargeMarginBottom}
+                : {marginBottom: instructionsSmallMarginBottom},
             ]}>
-            <Text style={styles.instructionsText}>
+            <Text
+              style={[
+                styles.instructionsText,
+                {fontSize: instructionsTextFontSize},
+              ]}>
               Drag and drop to reorder sounds
             </Text>
           </View>
@@ -151,38 +227,108 @@ const CustomizeScreen: React.FC = () => {
                       styles.padItem,
                       {
                         backgroundColor: item.color,
+                        borderRadius: padItemBorderRadius,
                       },
                     ]}>
-                    <View style={styles.padContent}>
+                    <View
+                      style={[styles.padContent, {padding: padItemPadding}]}>
                       <View style={styles.padHeader}>
                         <View style={styles.badgeContainer}>
-                          <View style={styles.positionIndicator}>
-                            <Text style={styles.positionText}>{index + 1}</Text>
+                          <View
+                            style={[
+                              styles.positionIndicator,
+                              {
+                                width: positionIndicatorSize,
+                                height: positionIndicatorSize,
+                                borderRadius: positionIndicatorRadius,
+                              },
+                            ]}>
+                            <Text
+                              style={[
+                                styles.positionText,
+                                {fontSize: positionTextFontSize},
+                              ]}>
+                              {index + 1}
+                            </Text>
                           </View>
                           {channel && (
-                            <View style={styles.channelIndicator}>
-                              <Text style={styles.channelText}>{channel}</Text>
+                            <View
+                              style={[
+                                styles.channelIndicator,
+                                {
+                                  width: channelIndicatorSize,
+                                  height: channelIndicatorSize,
+                                  borderRadius: channelIndicatorRadius,
+                                  marginLeft: channelIndicatorMarginLeft,
+                                },
+                              ]}>
+                              <Text
+                                style={[
+                                  styles.channelText,
+                                  {fontSize: channelTextFontSize},
+                                ]}>
+                                {channel}
+                              </Text>
                             </View>
                           )}
                         </View>
                         <View style={styles.dragHandle}>
-                          <View style={styles.dragDot} />
-                          <View style={styles.dragDot} />
-                          <View style={styles.dragDot} />
+                          <View
+                            style={[
+                              styles.dragDot,
+                              {
+                                width: dragDotSize,
+                                height: dragDotSize,
+                                borderRadius: dragDotRadius,
+                                marginVertical: dragDotMarginV,
+                              },
+                            ]}
+                          />
+                          <View
+                            style={[
+                              styles.dragDot,
+                              {
+                                width: dragDotSize,
+                                height: dragDotSize,
+                                borderRadius: dragDotRadius,
+                                marginVertical: dragDotMarginV,
+                              },
+                            ]}
+                          />
+                          <View
+                            style={[
+                              styles.dragDot,
+                              {
+                                width: dragDotSize,
+                                height: dragDotSize,
+                                borderRadius: dragDotRadius,
+                                marginVertical: dragDotMarginV,
+                              },
+                            ]}
+                          />
                         </View>
                       </View>
 
                       <View style={styles.padCenter}>
                         {IconComponent && (
                           <IconComponent
-                            width={32}
-                            height={32}
+                            width={iconSize}
+                            height={iconSize}
                             fill={brighterColor}
-                            style={styles.icon}
+                            style={[
+                              styles.icon,
+                              {marginBottom: iconMarginBottom},
+                            ]}
                           />
                         )}
                         <Text
-                          style={[styles.padTitle, {color: brighterColor}]}
+                          style={[
+                            styles.padTitle,
+                            {
+                              color: brighterColor,
+                              fontSize: padTitleFontSize,
+                            },
+                          ]}
                           numberOfLines={2}>
                           {item.title}
                         </Text>
@@ -210,38 +356,108 @@ const CustomizeScreen: React.FC = () => {
                       styles.padItem,
                       {
                         backgroundColor: item.color,
+                        borderRadius: padItemBorderRadius,
                       },
                     ]}>
-                    <View style={styles.padContent}>
+                    <View
+                      style={[styles.padContent, {padding: padItemPadding}]}>
                       <View style={styles.padHeader}>
                         <View style={styles.badgeContainer}>
-                          <View style={styles.positionIndicator}>
-                            <Text style={styles.positionText}>{index + 1}</Text>
+                          <View
+                            style={[
+                              styles.positionIndicator,
+                              {
+                                width: positionIndicatorSize,
+                                height: positionIndicatorSize,
+                                borderRadius: positionIndicatorRadius,
+                              },
+                            ]}>
+                            <Text
+                              style={[
+                                styles.positionText,
+                                {fontSize: positionTextFontSize},
+                              ]}>
+                              {index + 1}
+                            </Text>
                           </View>
                           {channel && (
-                            <View style={styles.channelIndicator}>
-                              <Text style={styles.channelText}>{channel}</Text>
+                            <View
+                              style={[
+                                styles.channelIndicator,
+                                {
+                                  width: channelIndicatorSize,
+                                  height: channelIndicatorSize,
+                                  borderRadius: channelIndicatorRadius,
+                                  marginLeft: channelIndicatorMarginLeft,
+                                },
+                              ]}>
+                              <Text
+                                style={[
+                                  styles.channelText,
+                                  {fontSize: channelTextFontSize},
+                                ]}>
+                                {channel}
+                              </Text>
                             </View>
                           )}
                         </View>
                         <View style={styles.dragHandle}>
-                          <View style={styles.dragDot} />
-                          <View style={styles.dragDot} />
-                          <View style={styles.dragDot} />
+                          <View
+                            style={[
+                              styles.dragDot,
+                              {
+                                width: dragDotSize,
+                                height: dragDotSize,
+                                borderRadius: dragDotRadius,
+                                marginVertical: dragDotMarginV,
+                              },
+                            ]}
+                          />
+                          <View
+                            style={[
+                              styles.dragDot,
+                              {
+                                width: dragDotSize,
+                                height: dragDotSize,
+                                borderRadius: dragDotRadius,
+                                marginVertical: dragDotMarginV,
+                              },
+                            ]}
+                          />
+                          <View
+                            style={[
+                              styles.dragDot,
+                              {
+                                width: dragDotSize,
+                                height: dragDotSize,
+                                borderRadius: dragDotRadius,
+                                marginVertical: dragDotMarginV,
+                              },
+                            ]}
+                          />
                         </View>
                       </View>
 
                       <View style={styles.padCenter}>
                         {IconComponent && (
                           <IconComponent
-                            width={32}
-                            height={32}
+                            width={iconSize}
+                            height={iconSize}
                             fill={brighterColor}
-                            style={styles.icon}
+                            style={[
+                              styles.icon,
+                              {marginBottom: iconMarginBottom},
+                            ]}
                           />
                         )}
                         <Text
-                          style={[styles.padTitle, {color: brighterColor}]}
+                          style={[
+                            styles.padTitle,
+                            {
+                              color: brighterColor,
+                              fontSize: padTitleFontSize,
+                            },
+                          ]}
                           numberOfLines={2}>
                           {item.title}
                         </Text>
@@ -256,18 +472,44 @@ const CustomizeScreen: React.FC = () => {
             />
           )}
 
-          <View style={styles.footer}>
+          <View
+            style={[
+              styles.footer,
+              {
+                marginTop: footerMarginTop,
+                gap: footerGap,
+                paddingHorizontal: footerPaddingH,
+              },
+            ]}>
             <TouchableOpacity
-              style={styles.resetButton}
+              style={[
+                styles.resetButton,
+                {
+                  paddingVertical: resetButtonPaddingV,
+                  paddingHorizontal: resetButtonPaddingH,
+                  borderRadius: resetButtonRadius,
+                },
+              ]}
               onPress={() => {
                 triggerPlatformHaptic('selection');
                 handleResetOrder();
               }}>
-              <Text style={styles.resetButtonText}>Reset to Original</Text>
+              <Text
+                style={[
+                  styles.resetButtonText,
+                  {fontSize: resetButtonFontSize},
+                ]}>
+                Reset to Original
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
                 styles.saveButton,
+                {
+                  paddingVertical: saveButtonPaddingV,
+                  paddingHorizontal: saveButtonPaddingH,
+                  borderRadius: saveButtonRadius,
+                },
                 !hasChanges && styles.saveButtonDisabled,
               ]}
               onPress={() => {
@@ -275,7 +517,9 @@ const CustomizeScreen: React.FC = () => {
                 handleSaveChanges();
               }}
               disabled={!hasChanges}>
-              <Text style={styles.saveButtonText}>Save Changes</Text>
+              <Text style={[styles.saveButtonText, {fontSize: saveButtonFontSize}]}>
+                Save Changes
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -293,46 +537,34 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingTop: 20,
-    paddingBottom: 20,
     paddingHorizontal: 0,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
-    paddingHorizontal: 20,
   },
   headerTitle: {
     color: '#fff',
-    fontSize: 24,
     fontWeight: 'bold',
   },
   closeButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
   },
   closeButtonText: {
     color: '#fff',
-    fontSize: 16,
     fontWeight: '600',
   },
   instructions: {
-    paddingHorizontal: 20,
   },
   instructionsText: {
     color: '#aaa',
-    fontSize: 14,
     textAlign: 'center',
   },
   content: {
     flex: 1,
   },
   padItem: {
-    borderRadius: 10,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
     flex: 1,
@@ -340,7 +572,6 @@ const styles = StyleSheet.create({
   padContent: {
     flex: 1,
     flexDirection: 'column',
-    padding: 8,
   },
   padHeader: {
     flexDirection: 'row',
@@ -353,24 +584,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   icon: {
-    marginBottom: 4,
   },
   padTitle: {
-    fontSize: 11,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   positionIndicator: {
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderRadius: 10,
-    width: 20,
-    height: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
   positionText: {
     color: '#fff',
-    fontSize: 10,
     fontWeight: 'bold',
   },
   dragHandle: {
@@ -379,37 +604,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   dragDot: {
-    width: 3,
-    height: 3,
-    borderRadius: 1.5,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    marginVertical: 0.5,
   },
   footer: {
-    marginTop: 15,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 10,
-    paddingHorizontal: 20,
   },
   resetButton: {
     backgroundColor: 'rgba(255, 107, 107, 0.8)',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 20,
     alignItems: 'center',
     flex: 1,
   },
   resetButtonText: {
     color: '#fff',
-    fontSize: 16,
     fontWeight: '600',
   },
   saveButton: {
     backgroundColor: 'rgba(76, 175, 80, 0.8)',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 20,
     alignItems: 'center',
     flex: 1,
   },
@@ -418,7 +629,6 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: '#fff',
-    fontSize: 16,
     fontWeight: '600',
   },
   badgeContainer: {
@@ -427,23 +637,16 @@ const styles = StyleSheet.create({
   },
   channelIndicator: {
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderRadius: 10,
-    width: 20,
-    height: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: 5,
   },
   channelText: {
     color: '#fff',
-    fontSize: 10,
     fontWeight: 'bold',
   },
   instructionsLarge: {
-    marginBottom: 30,
   },
   instructionsSmall: {
-    marginBottom: 50,
   },
 });
 
