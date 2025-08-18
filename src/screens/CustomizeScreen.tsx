@@ -43,7 +43,7 @@ const CustomizeScreen: React.FC = () => {
   const closeButtonRadius = getResponsiveSize(20, 28);
   const closeButtonFontSize = getResponsiveSize(16, 20);
   const instructionsPaddingH = getResponsiveSize(20, 32);
-  const instructionsTextFontSize = getResponsiveSize(14, 18);
+  const instructionsTextFontSize = getResponsiveSize(14, 22); // Increased tablet size from 18 to 22
   const instructionsLargeMarginBottom = getResponsiveSize(30, 40);
   const instructionsSmallMarginBottom = getResponsiveSize(50, 70);
   const padItemBorderRadius = getResponsiveSize(10, 16);
@@ -151,376 +151,380 @@ const CustomizeScreen: React.FC = () => {
         blurAmount={50}
       />
       <SafeAreaView style={styles.safeArea}>
-        <View
-          style={[
-            styles.container,
-            {
-              paddingTop: containerPaddingTop,
-              paddingBottom: containerPaddingBottom,
-            },
-          ]}>
-          <View
-            style={[
-              styles.header,
-              {
-                marginBottom: headerMarginBottom,
-                paddingHorizontal: headerPaddingH,
-              },
-            ]}>
-            <Text style={[styles.headerTitle, {fontSize: headerTitleFontSize}]}>
-              Customize {pack.name}
-            </Text>
-            <TouchableOpacity
-              onPress={() => {
-                triggerPlatformHaptic('selection');
-                navigation.goBack();
-              }}
+        <View style={styles.mainContainer}>
+          <View style={styles.headerSection}>
+            <View
               style={[
-                styles.closeButton,
+                styles.header,
                 {
-                  paddingHorizontal: closeButtonPaddingH,
-                  paddingVertical: closeButtonPaddingV,
-                  borderRadius: closeButtonRadius,
+                  marginBottom: headerMarginBottom,
+                  paddingHorizontal: headerPaddingH,
                 },
               ]}>
               <Text
-                style={[
-                  styles.closeButtonText,
-                  {fontSize: closeButtonFontSize},
-                ]}>
-                Done
+                style={[styles.headerTitle, {fontSize: headerTitleFontSize}]}>
+                Customize {pack.name}
               </Text>
-            </TouchableOpacity>
-          </View>
+              <TouchableOpacity
+                onPress={() => {
+                  triggerPlatformHaptic('selection');
+                  navigation.goBack();
+                }}
+                style={[
+                  styles.closeButton,
+                  {
+                    paddingHorizontal: closeButtonPaddingH,
+                    paddingVertical: closeButtonPaddingV,
+                    borderRadius: closeButtonRadius,
+                  },
+                ]}>
+                <Text
+                  style={[
+                    styles.closeButtonText,
+                    {fontSize: closeButtonFontSize},
+                  ]}>
+                  Done
+                </Text>
+              </TouchableOpacity>
+            </View>
 
-          <View
-            style={[
-              styles.instructions,
-              {
-                paddingHorizontal: instructionsPaddingH,
-              },
-              customPads.length === 24
-                ? {marginBottom: instructionsLargeMarginBottom}
-                : {marginBottom: instructionsSmallMarginBottom},
-            ]}>
-            <Text
+            <View
               style={[
-                styles.instructionsText,
-                {fontSize: instructionsTextFontSize},
+                styles.instructions,
+                {
+                  paddingHorizontal: instructionsPaddingH,
+                },
+                customPads.length === 24
+                  ? {marginBottom: instructionsLargeMarginBottom}
+                  : {marginBottom: instructionsSmallMarginBottom},
               ]}>
-              Drag and drop to reorder sounds
-            </Text>
+              <Text
+                style={[
+                  styles.instructionsText,
+                  {fontSize: instructionsTextFontSize},
+                ]}>
+                Drag and drop to reorder sounds
+              </Text>
+            </View>
           </View>
 
-          {Platform.OS === 'android' ? (
-            <DraggableListAndroid
-              data={customPads}
-              renderItem={(item, index) => {
-                const IconComponent = iconMap[item.icon];
-                const isLargePack = customPads.length === 24;
-                const channel = isLargePack ? (index < 12 ? 'A' : 'B') : null;
-                const brighterColor = brightenColor(item.color, 0.9);
+          <View style={styles.draggableListContainer}>
+            {Platform.OS === 'android' ? (
+              <DraggableListAndroid
+                data={customPads}
+                renderItem={(item, index) => {
+                  const IconComponent = iconMap[item.icon];
+                  const isLargePack = customPads.length === 24;
+                  const channel = isLargePack ? (index < 12 ? 'A' : 'B') : null;
+                  const brighterColor = brightenColor(item.color, 0.9);
 
-                return (
-                  <View
-                    style={[
-                      styles.padItem,
-                      {
-                        backgroundColor: item.color,
-                        borderRadius: padItemBorderRadius,
-                      },
-                    ]}>
+                  return (
                     <View
-                      style={[styles.padContent, {padding: padItemPadding}]}>
-                      <View style={styles.padHeader}>
-                        <View style={styles.badgeContainer}>
-                          <View
-                            style={[
-                              styles.positionIndicator,
-                              {
-                                width: positionIndicatorSize,
-                                height: positionIndicatorSize,
-                                borderRadius: positionIndicatorRadius,
-                              },
-                            ]}>
-                            <Text
-                              style={[
-                                styles.positionText,
-                                {fontSize: positionTextFontSize},
-                              ]}>
-                              {index + 1}
-                            </Text>
-                          </View>
-                          {channel && (
+                      style={[
+                        styles.padItem,
+                        {
+                          backgroundColor: item.color,
+                          borderRadius: padItemBorderRadius,
+                        },
+                      ]}>
+                      <View
+                        style={[styles.padContent, {padding: padItemPadding}]}>
+                        <View style={styles.padHeader}>
+                          <View style={styles.badgeContainer}>
                             <View
                               style={[
-                                styles.channelIndicator,
+                                styles.positionIndicator,
                                 {
-                                  width: channelIndicatorSize,
-                                  height: channelIndicatorSize,
-                                  borderRadius: channelIndicatorRadius,
-                                  marginLeft: channelIndicatorMarginLeft,
+                                  width: positionIndicatorSize,
+                                  height: positionIndicatorSize,
+                                  borderRadius: positionIndicatorRadius,
                                 },
                               ]}>
                               <Text
                                 style={[
-                                  styles.channelText,
-                                  {fontSize: channelTextFontSize},
+                                  styles.positionText,
+                                  {fontSize: positionTextFontSize},
                                 ]}>
-                                {channel}
+                                {index + 1}
                               </Text>
                             </View>
-                          )}
-                        </View>
-                        <View style={styles.dragHandle}>
-                          <View
-                            style={[
-                              styles.dragDot,
-                              {
-                                width: dragDotSize,
-                                height: dragDotSize,
-                                borderRadius: dragDotRadius,
-                                marginVertical: dragDotMarginV,
-                              },
-                            ]}
-                          />
-                          <View
-                            style={[
-                              styles.dragDot,
-                              {
-                                width: dragDotSize,
-                                height: dragDotSize,
-                                borderRadius: dragDotRadius,
-                                marginVertical: dragDotMarginV,
-                              },
-                            ]}
-                          />
-                          <View
-                            style={[
-                              styles.dragDot,
-                              {
-                                width: dragDotSize,
-                                height: dragDotSize,
-                                borderRadius: dragDotRadius,
-                                marginVertical: dragDotMarginV,
-                              },
-                            ]}
-                          />
-                        </View>
-                      </View>
-
-                      <View style={styles.padCenter}>
-                        {IconComponent && (
-                          <IconComponent
-                            width={iconSize}
-                            height={iconSize}
-                            fill={brighterColor}
-                            style={[
-                              styles.icon,
-                              {marginBottom: iconMarginBottom},
-                            ]}
-                          />
-                        )}
-                        <Text
-                          style={[
-                            styles.padTitle,
-                            {
-                              color: brighterColor,
-                              fontSize: padTitleFontSize,
-                            },
-                          ]}
-                          numberOfLines={2}>
-                          {item.title}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                );
-              }}
-              onReorder={handleReorder}
-              keyExtractor={item => item.id}
-              style={styles.content}
-            />
-          ) : (
-            <DraggableListIOS
-              data={customPads}
-              renderItem={(item, index) => {
-                const IconComponent = iconMap[item.icon];
-                const isLargePack = customPads.length === 24;
-                const channel = isLargePack ? (index < 12 ? 'A' : 'B') : null;
-                const brighterColor = brightenColor(item.color, 0.9);
-
-                return (
-                  <View
-                    style={[
-                      styles.padItem,
-                      {
-                        backgroundColor: item.color,
-                        borderRadius: padItemBorderRadius,
-                      },
-                    ]}>
-                    <View
-                      style={[styles.padContent, {padding: padItemPadding}]}>
-                      <View style={styles.padHeader}>
-                        <View style={styles.badgeContainer}>
-                          <View
-                            style={[
-                              styles.positionIndicator,
-                              {
-                                width: positionIndicatorSize,
-                                height: positionIndicatorSize,
-                                borderRadius: positionIndicatorRadius,
-                              },
-                            ]}>
-                            <Text
-                              style={[
-                                styles.positionText,
-                                {fontSize: positionTextFontSize},
-                              ]}>
-                              {index + 1}
-                            </Text>
+                            {channel && (
+                              <View
+                                style={[
+                                  styles.channelIndicator,
+                                  {
+                                    width: channelIndicatorSize,
+                                    height: channelIndicatorSize,
+                                    borderRadius: channelIndicatorRadius,
+                                    marginLeft: channelIndicatorMarginLeft,
+                                  },
+                                ]}>
+                                <Text
+                                  style={[
+                                    styles.channelText,
+                                    {fontSize: channelTextFontSize},
+                                  ]}>
+                                  {channel}
+                                </Text>
+                              </View>
+                            )}
                           </View>
-                          {channel && (
+                          <View style={styles.dragHandle}>
                             <View
                               style={[
-                                styles.channelIndicator,
+                                styles.dragDot,
                                 {
-                                  width: channelIndicatorSize,
-                                  height: channelIndicatorSize,
-                                  borderRadius: channelIndicatorRadius,
-                                  marginLeft: channelIndicatorMarginLeft,
+                                  width: dragDotSize,
+                                  height: dragDotSize,
+                                  borderRadius: dragDotRadius,
+                                  marginVertical: dragDotMarginV,
+                                },
+                              ]}
+                            />
+                            <View
+                              style={[
+                                styles.dragDot,
+                                {
+                                  width: dragDotSize,
+                                  height: dragDotSize,
+                                  borderRadius: dragDotRadius,
+                                  marginVertical: dragDotMarginV,
+                                },
+                              ]}
+                            />
+                            <View
+                              style={[
+                                styles.dragDot,
+                                {
+                                  width: dragDotSize,
+                                  height: dragDotSize,
+                                  borderRadius: dragDotRadius,
+                                  marginVertical: dragDotMarginV,
+                                },
+                              ]}
+                            />
+                          </View>
+                        </View>
+
+                        <View style={styles.padCenter}>
+                          {IconComponent && (
+                            <IconComponent
+                              width={iconSize}
+                              height={iconSize}
+                              fill={brighterColor}
+                              style={[
+                                styles.icon,
+                                {marginBottom: iconMarginBottom},
+                              ]}
+                            />
+                          )}
+                          <Text
+                            style={[
+                              styles.padTitle,
+                              {
+                                color: brighterColor,
+                                fontSize: padTitleFontSize,
+                              },
+                            ]}
+                            numberOfLines={2}>
+                            {item.title}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                  );
+                }}
+                onReorder={handleReorder}
+                keyExtractor={item => item.id}
+                style={styles.content}
+              />
+            ) : (
+              <DraggableListIOS
+                data={customPads}
+                renderItem={(item, index) => {
+                  const IconComponent = iconMap[item.icon];
+                  const isLargePack = customPads.length === 24;
+                  const channel = isLargePack ? (index < 12 ? 'A' : 'B') : null;
+                  const brighterColor = brightenColor(item.color, 0.9);
+
+                  return (
+                    <View
+                      style={[
+                        styles.padItem,
+                        {
+                          backgroundColor: item.color,
+                          borderRadius: padItemBorderRadius,
+                        },
+                      ]}>
+                      <View
+                        style={[styles.padContent, {padding: padItemPadding}]}>
+                        <View style={styles.padHeader}>
+                          <View style={styles.badgeContainer}>
+                            <View
+                              style={[
+                                styles.positionIndicator,
+                                {
+                                  width: positionIndicatorSize,
+                                  height: positionIndicatorSize,
+                                  borderRadius: positionIndicatorRadius,
                                 },
                               ]}>
                               <Text
                                 style={[
-                                  styles.channelText,
-                                  {fontSize: channelTextFontSize},
+                                  styles.positionText,
+                                  {fontSize: positionTextFontSize},
                                 ]}>
-                                {channel}
+                                {index + 1}
                               </Text>
                             </View>
-                          )}
+                            {channel && (
+                              <View
+                                style={[
+                                  styles.channelIndicator,
+                                  {
+                                    width: channelIndicatorSize,
+                                    height: channelIndicatorSize,
+                                    borderRadius: channelIndicatorRadius,
+                                    marginLeft: channelIndicatorMarginLeft,
+                                  },
+                                ]}>
+                                <Text
+                                  style={[
+                                    styles.channelText,
+                                    {fontSize: channelTextFontSize},
+                                  ]}>
+                                  {channel}
+                                </Text>
+                              </View>
+                            )}
+                          </View>
+                          <View style={styles.dragHandle}>
+                            <View
+                              style={[
+                                styles.dragDot,
+                                {
+                                  width: dragDotSize,
+                                  height: dragDotSize,
+                                  borderRadius: dragDotRadius,
+                                  marginVertical: dragDotMarginV,
+                                },
+                              ]}
+                            />
+                            <View
+                              style={[
+                                styles.dragDot,
+                                {
+                                  width: dragDotSize,
+                                  height: dragDotSize,
+                                  borderRadius: dragDotRadius,
+                                  marginVertical: dragDotMarginV,
+                                },
+                              ]}
+                            />
+                            <View
+                              style={[
+                                styles.dragDot,
+                                {
+                                  width: dragDotSize,
+                                  height: dragDotSize,
+                                  borderRadius: dragDotRadius,
+                                  marginVertical: dragDotMarginV,
+                                },
+                              ]}
+                            />
+                          </View>
                         </View>
-                        <View style={styles.dragHandle}>
-                          <View
-                            style={[
-                              styles.dragDot,
-                              {
-                                width: dragDotSize,
-                                height: dragDotSize,
-                                borderRadius: dragDotRadius,
-                                marginVertical: dragDotMarginV,
-                              },
-                            ]}
-                          />
-                          <View
-                            style={[
-                              styles.dragDot,
-                              {
-                                width: dragDotSize,
-                                height: dragDotSize,
-                                borderRadius: dragDotRadius,
-                                marginVertical: dragDotMarginV,
-                              },
-                            ]}
-                          />
-                          <View
-                            style={[
-                              styles.dragDot,
-                              {
-                                width: dragDotSize,
-                                height: dragDotSize,
-                                borderRadius: dragDotRadius,
-                                marginVertical: dragDotMarginV,
-                              },
-                            ]}
-                          />
-                        </View>
-                      </View>
 
-                      <View style={styles.padCenter}>
-                        {IconComponent && (
-                          <IconComponent
-                            width={iconSize}
-                            height={iconSize}
-                            fill={brighterColor}
+                        <View style={styles.padCenter}>
+                          {IconComponent && (
+                            <IconComponent
+                              width={iconSize}
+                              height={iconSize}
+                              fill={brighterColor}
+                              style={[
+                                styles.icon,
+                                {marginBottom: iconMarginBottom},
+                              ]}
+                            />
+                          )}
+                          <Text
                             style={[
-                              styles.icon,
-                              {marginBottom: iconMarginBottom},
+                              styles.padTitle,
+                              {
+                                color: brighterColor,
+                                fontSize: padTitleFontSize,
+                              },
                             ]}
-                          />
-                        )}
-                        <Text
-                          style={[
-                            styles.padTitle,
-                            {
-                              color: brighterColor,
-                              fontSize: padTitleFontSize,
-                            },
-                          ]}
-                          numberOfLines={2}>
-                          {item.title}
-                        </Text>
+                            numberOfLines={2}>
+                            {item.title}
+                          </Text>
+                        </View>
                       </View>
                     </View>
-                  </View>
-                );
-              }}
-              onReorder={handleReorder}
-              keyExtractor={item => item.id}
-              style={styles.content}
-            />
-          )}
+                  );
+                }}
+                onReorder={handleReorder}
+                keyExtractor={item => item.id}
+                style={styles.content}
+              />
+            )}
+          </View>
 
-          <View
-            style={[
-              styles.footer,
-              {
-                marginTop: footerMarginTop,
-                gap: footerGap,
-                paddingHorizontal: footerPaddingH,
-              },
-            ]}>
-            <TouchableOpacity
+          <View style={styles.footerSection}>
+            <View
               style={[
-                styles.resetButton,
+                styles.footer,
                 {
-                  paddingVertical: resetButtonPaddingV,
-                  paddingHorizontal: resetButtonPaddingH,
-                  borderRadius: resetButtonRadius,
+                  marginTop: footerMarginTop,
+                  gap: footerGap,
+                  paddingHorizontal: footerPaddingH,
                 },
-              ]}
-              onPress={() => {
-                triggerPlatformHaptic('selection');
-                handleResetOrder();
-              }}>
-              <Text
+              ]}>
+              <TouchableOpacity
                 style={[
-                  styles.resetButtonText,
-                  {fontSize: resetButtonFontSize},
-                ]}>
-                Reset to Original
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.saveButton,
-                {
-                  paddingVertical: saveButtonPaddingV,
-                  paddingHorizontal: saveButtonPaddingH,
-                  borderRadius: saveButtonRadius,
-                },
-                !hasChanges && styles.saveButtonDisabled,
-              ]}
-              onPress={() => {
-                triggerPlatformHaptic('selection');
-                handleSaveChanges();
-              }}
-              disabled={!hasChanges}>
-              <Text style={[styles.saveButtonText, {fontSize: saveButtonFontSize}]}>
-                Save Changes
-              </Text>
-            </TouchableOpacity>
+                  styles.resetButton,
+                  {
+                    paddingVertical: resetButtonPaddingV,
+                    paddingHorizontal: resetButtonPaddingH,
+                    borderRadius: resetButtonRadius,
+                  },
+                ]}
+                onPress={() => {
+                  triggerPlatformHaptic('selection');
+                  handleResetOrder();
+                }}>
+                <Text
+                  style={[
+                    styles.resetButtonText,
+                    {fontSize: resetButtonFontSize},
+                  ]}>
+                  Reset to Original
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.saveButton,
+                  {
+                    paddingVertical: saveButtonPaddingV,
+                    paddingHorizontal: saveButtonPaddingH,
+                    borderRadius: saveButtonRadius,
+                  },
+                  !hasChanges && styles.saveButtonDisabled,
+                ]}
+                onPress={() => {
+                  triggerPlatformHaptic('selection');
+                  handleSaveChanges();
+                }}
+                disabled={!hasChanges}>
+                <Text
+                  style={[
+                    styles.saveButtonText,
+                    {fontSize: saveButtonFontSize},
+                  ]}>
+                  Save Changes
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </SafeAreaView>
@@ -535,6 +539,31 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
+
+  mainContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    paddingTop: 20,
+    paddingBottom: 20,
+  },
+
+  headerSection: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  draggableListContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+
+  footerSection: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
   container: {
     flex: 1,
     paddingHorizontal: 0,
@@ -543,20 +572,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    width: '100%',
   },
   headerTitle: {
     color: '#fff',
     fontWeight: 'bold',
+    flex: 1,
+    textAlign: 'left',
   },
   closeButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    marginLeft: 'auto',
   },
   closeButtonText: {
     color: '#fff',
     fontWeight: '600',
   },
-  instructions: {
-  },
+  instructions: {},
   instructionsText: {
     color: '#aaa',
     textAlign: 'center',
@@ -564,6 +596,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
+
   padItem: {
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
@@ -583,8 +616,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  icon: {
-  },
+  icon: {},
   padTitle: {
     fontWeight: 'bold',
     textAlign: 'center',
@@ -644,10 +676,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
-  instructionsLarge: {
-  },
-  instructionsSmall: {
-  },
+  instructionsLarge: {},
+  instructionsSmall: {},
 });
 
 export default CustomizeScreen;

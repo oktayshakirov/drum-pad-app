@@ -50,7 +50,6 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
   const isActive = useSharedValue(false);
 
   const animatedStyle = useAnimatedStyle(() => {
-    'worklet';
     return {
       transform: [
         {translateX: translateX.value},
@@ -64,7 +63,6 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
 
   const panGesture = Gesture.Pan()
     .onUpdate(event => {
-      'worklet';
       if (isActive.value) {
         translateX.value = event.translationX;
         translateY.value = event.translationY;
@@ -72,7 +70,6 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
       }
     })
     .onStart(() => {
-      'worklet';
       isActive.value = true;
       runOnJS(onDragStart)(index);
       zIndex.value = 1000;
@@ -82,7 +79,6 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
       });
     })
     .onEnd(() => {
-      'worklet';
       isActive.value = false;
       runOnJS(onDragEnd)(index);
       translateX.value = withTiming(0, {
@@ -97,10 +93,8 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
       zIndex.value = 0;
     })
     .onTouchesDown(() => {
-      'worklet';
     })
     .onTouchesCancelled(() => {
-      'worklet';
       isActive.value = false;
       translateX.value = withTiming(0);
       translateY.value = withTiming(0);
@@ -297,19 +291,21 @@ const DraggableListIOS: React.FC<DraggableListProps> = ({
   return (
     <View style={[styles.container, style]}>
       <GestureHandlerRootView style={styles.gestureRootView}>
-        <View
-          style={[
-            styles.gridContainer,
-            {
-              width: screenDimensions.width,
-              paddingHorizontal: horizontalPadding / 2,
-            },
-          ]}>
-          {data &&
-            data.length > 0 &&
-            data.map((item, index) =>
-              item ? renderGridItem(item, index) : null,
-            )}
+        <View style={styles.mainGridContainer}>
+          <View
+            style={[
+              styles.gridContainer,
+              {
+                width: screenDimensions.width,
+                paddingHorizontal: horizontalPadding / 2,
+              },
+            ]}>
+            {data &&
+              data.length > 0 &&
+              data.map((item, index) =>
+                item ? renderGridItem(item, index) : null,
+              )}
+          </View>
         </View>
       </GestureHandlerRootView>
     </View>
@@ -320,12 +316,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+
+  mainGridContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   gridItemWithMargin: {
     marginRight: ITEM_MARGIN,
   },

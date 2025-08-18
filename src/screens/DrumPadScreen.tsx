@@ -219,73 +219,79 @@ const DrumPadScreen: React.FC = () => {
         <Reanimated.View {...bannerContainerProps}>
           <AdBanner onBannerStateChange={handleBannerStateChange} />
         </Reanimated.View>
-        <View style={styles.container}>
-          <CurrentPack onOpenPackLibrary={handleOpenPackLibrary} />
-          <View
-            style={[
-              styles.controlsRow,
-              {
-                maxWidth: controlsMaxWidth,
-                minHeight: controlsMinHeight,
-              },
-            ]}>
-            <ChannelSwitch
-              ref={channelRef}
-              onChannelSelect={setActiveChannel}
-              disabled={!hasTwoChannels}
-              onButtonPress={handleChannelPress}
-            />
-            <Metronome
-              isPlaying={isMetronomePlaying}
-              setIsPlaying={setIsMetronomePlaying}
-            />
-            <CustomizeButton
-              ref={customizeRef}
-              onPress={handleOpenCustomize}
-              disabled={false}
-            />
-          </View>
-          {padsLoaded && visiblePads.length > 0 ? (
-            <Reanimated.View
+
+        <View style={styles.mainContainer}>
+          <View style={styles.headerSection}>
+            <CurrentPack onOpenPackLibrary={handleOpenPackLibrary} />
+            <View
               style={[
-                styles.grid,
-                gridAnimatedStyle,
-                {maxWidth: gridMaxWidth},
+                styles.controlsRow,
+                {
+                  maxWidth: controlsMaxWidth,
+                  minHeight: controlsMinHeight,
+                },
               ]}>
-              {visiblePads.map(pad => (
-                <Pad
-                  key={pad.id}
-                  sound={pad.sound}
-                  soundPack={currentSoundPack}
-                  color={pad.color}
-                  icon={pad.icon}
-                  title={pad.title}
-                />
-              ))}
-            </Reanimated.View>
-          ) : (
-            <View style={[styles.grid, {maxWidth: gridMaxWidth}]}>
-              {skeletonSlots.map(slot => (
-                <View
-                  key={slot}
-                  style={[
-                    styles.skeletonPad,
-                    {
-                      width: skeletonPadWidth,
-                      margin: skeletonPadMargin,
-                      borderRadius: skeletonPadBorderRadius,
-                    },
-                  ]}>
-                  <BlurView
-                    style={StyleSheet.absoluteFill}
-                    blurType="light"
-                    blurAmount={18}
-                  />
-                  <View style={styles.skeletonGlassTint} />
-                </View>
-              ))}
+              <ChannelSwitch
+                ref={channelRef}
+                onChannelSelect={setActiveChannel}
+                disabled={!hasTwoChannels}
+                onButtonPress={handleChannelPress}
+              />
+              <Metronome
+                isPlaying={isMetronomePlaying}
+                setIsPlaying={setIsMetronomePlaying}
+              />
+              <CustomizeButton
+                ref={customizeRef}
+                onPress={handleOpenCustomize}
+                disabled={false}
+              />
             </View>
-          )}
+          </View>
+
+          <View style={styles.padGridContainer}>
+            {padsLoaded && visiblePads.length > 0 ? (
+              <Reanimated.View
+                style={[
+                  styles.grid,
+                  gridAnimatedStyle,
+                  {maxWidth: gridMaxWidth},
+                ]}>
+                {visiblePads.map(pad => (
+                  <Pad
+                    key={pad.id}
+                    sound={pad.sound}
+                    soundPack={currentSoundPack}
+                    color={pad.color}
+                    icon={pad.icon}
+                    title={pad.title}
+                  />
+                ))}
+              </Reanimated.View>
+            ) : (
+              <View style={[styles.grid, {maxWidth: gridMaxWidth}]}>
+                {skeletonSlots.map(slot => (
+                  <View
+                    key={slot}
+                    style={[
+                      styles.skeletonPad,
+                      {
+                        width: skeletonPadWidth,
+                        margin: skeletonPadMargin,
+                        borderRadius: skeletonPadBorderRadius,
+                      },
+                    ]}>
+                    <BlurView
+                      style={StyleSheet.absoluteFill}
+                      blurType="light"
+                      blurAmount={18}
+                    />
+                    <View style={styles.skeletonGlassTint} />
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
         </View>
       </SafeAreaView>
     </View>
@@ -305,12 +311,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     overflow: 'hidden',
   },
-  container: {
+
+  mainContainer: {
     flex: 1,
+    flexDirection: 'column',
+  },
+
+  headerSection: {
     justifyContent: 'center',
     alignItems: 'center',
     gap: 7,
+    paddingVertical: 10,
   },
+
+  padGridContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+
   controlsRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -328,6 +348,7 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 400,
   },
+
   skeletonPad: {
     width: '30%',
     aspectRatio: 1,

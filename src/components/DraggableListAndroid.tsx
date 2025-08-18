@@ -265,19 +265,21 @@ const DraggableListAndroid: React.FC<DraggableListProps> = ({
 
   return (
     <View style={[styles.container, style]}>
-      <View
-        style={[
-          styles.gridContainer,
-          {
-            width: screenDimensions.width,
-            paddingHorizontal: horizontalPadding / 2,
-          },
-        ]}>
-        {data &&
-          data.length > 0 &&
-          data.map((item, index) =>
-            item ? renderGridItem(item, index) : null,
-          )}
+      <View style={styles.mainGridContainer}>
+        <View
+          style={[
+            styles.gridContainer,
+            {
+              width: screenDimensions.width,
+              paddingHorizontal: horizontalPadding / 2,
+            },
+          ]}>
+          {data &&
+            data.length > 0 &&
+            data.map((item, index) =>
+              item ? renderGridItem(item, index) : null,
+            )}
+        </View>
       </View>
     </View>
   );
@@ -287,12 +289,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+
+  mainGridContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   gridItemWithMargin: {
     marginRight: ITEM_MARGIN,
   },
