@@ -11,7 +11,7 @@ export const isTablet = (): boolean => {
     const {width, height} = Dimensions.get('window');
     const screenDiagonal = Math.sqrt(width * width + height * height);
 
-    return screenDiagonal >= 1000 || (width >= 600 && height >= 960);
+    return screenDiagonal >= 1200 || (width >= 800 && height >= 1200);
   }
 
   return false;

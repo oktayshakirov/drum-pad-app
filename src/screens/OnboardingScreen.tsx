@@ -381,8 +381,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flex: 1,
   },
-  scrollContent: {
-  },
+  scrollContent: {},
   packCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
