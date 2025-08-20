@@ -6,7 +6,7 @@ const PAD_COLORS: PadColors = {
   BASS_MAIN: '#E6F3FF',
   MELODY_MAIN: '#FFE1FF',
   MELODY_SECONDARY: '#FFEBFF',
-  SFX_MAIN: '#FFB6FF',
+  SFX_MAIN: '#D4F1F4',
   PERC_MAIN: '#E1F5FE',
   PERC_SECONDARY: '#F1F8FF',
   BRASS_MAIN: '#E8F4FD',
@@ -131,7 +131,7 @@ const soundPack: SoundPack = {
       sound: 'chant_shyah',
       color: PAD_COLORS.SFX_MAIN,
       icon: 'chant',
-      title: 'Shyah Chant',
+      title: 'Chant',
     },
   ],
 };

@@ -1,10 +1,10 @@
 import {PadColors, SoundPack} from '../../../../types/soundPacks';
 
 const PAD_COLORS: PadColors = {
-  DRUMS_MAIN: '#E8E8E8',
-  DRUMS_SECONDARY: '#F5F5F5',
-  MELODY_MAIN: '#AADD66',
-  MELODY_SECONDARY: '#8AAA44',
+  DRUMS_MAIN: '#F5F5F5',
+  DRUMS_SECONDARY: '#E8E8E8',
+  MELODY_MAIN: '#E8F5E8',
+  MELODY_SECONDARY: '#D4E6D4',
 };
 
 const soundPack: SoundPack = {
@@ -36,66 +36,66 @@ const soundPack: SoundPack = {
   padConfig: [
     {
       id: 1,
-      sound: 'kick',
-      color: PAD_COLORS.DRUMS_MAIN,
-      icon: 'kick',
-      title: 'Kick',
-    },
-    {
-      id: 2,
-      sound: 'clap',
-      color: PAD_COLORS.DRUMS_MAIN,
-      icon: 'clap',
-      title: 'Clap',
-    },
-    {
-      id: 3,
-      sound: 'snap',
-      color: PAD_COLORS.DRUMS_MAIN,
-      icon: 'snap',
-      title: 'Snap',
-    },
-    {
-      id: 4,
-      sound: 'open_hat',
-      color: PAD_COLORS.DRUMS_SECONDARY,
-      icon: 'open_hat',
-      title: 'Open Hat',
-    },
-    {
-      id: 5,
-      sound: 'crash',
-      color: PAD_COLORS.DRUMS_SECONDARY,
-      icon: 'open_hat',
-      title: 'Crash',
-    },
-    {
-      id: 6,
       sound: 'melody_1',
       color: PAD_COLORS.MELODY_MAIN,
       icon: 'melody',
       title: 'Melody I',
     },
     {
-      id: 7,
+      id: 2,
       sound: 'melody_2',
       color: PAD_COLORS.MELODY_MAIN,
       icon: 'melody',
       title: 'Melody II',
     },
     {
-      id: 8,
+      id: 3,
       sound: 'melody_3',
       color: PAD_COLORS.MELODY_MAIN,
       icon: 'melody',
       title: 'Melody III',
     },
     {
-      id: 9,
+      id: 4,
       sound: 'melody_4',
       color: PAD_COLORS.MELODY_MAIN,
       icon: 'melody',
       title: 'Melody IV',
+    },
+    {
+      id: 5,
+      sound: 'kick',
+      color: PAD_COLORS.DRUMS_MAIN,
+      icon: 'kick',
+      title: 'Kick',
+    },
+    {
+      id: 6,
+      sound: 'clap',
+      color: PAD_COLORS.DRUMS_MAIN,
+      icon: 'clap',
+      title: 'Clap',
+    },
+    {
+      id: 7,
+      sound: 'snap',
+      color: PAD_COLORS.DRUMS_MAIN,
+      icon: 'snap',
+      title: 'Snap',
+    },
+    {
+      id: 8,
+      sound: 'open_hat',
+      color: PAD_COLORS.DRUMS_SECONDARY,
+      icon: 'open_hat',
+      title: 'Open Hat',
+    },
+    {
+      id: 9,
+      sound: 'crash',
+      color: PAD_COLORS.DRUMS_SECONDARY,
+      icon: 'open_hat',
+      title: 'Crash',
     },
     {
       id: 10,

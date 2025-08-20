@@ -1,14 +1,14 @@
 import {PadColors, SoundPack} from '../../../../types/soundPacks';
 
 const PAD_COLORS: PadColors = {
-  DRUMS_MAIN: '#C0C0C0',
+  DRUMS_MAIN: '#F8F8F8',
   DRUMS_SECONDARY: '#F0F0F0',
-  BASS_MAIN: '#D0D0D0',
-  BASS_SECONDARY: '#E8E8E8',
-  MELODY_MAIN: '#C8E6C8',
-  MELODY_SECONDARY: '#E8F5E8',
-  SFX_MAIN: '#B0E0B0',
-  SFX_SECONDARY: '#D8F0D8',
+  BASS_MAIN: '#F5F5F5',
+  BASS_SECONDARY: '#EEEEEE',
+  MELODY_MAIN: '#E8F4FD',
+  MELODY_SECONDARY: '#F0F8FF',
+  SFX_MAIN: '#E6E6FA',
+  SFX_SECONDARY: '#F0F0FF',
 };
 
 const soundPack: SoundPack = {
