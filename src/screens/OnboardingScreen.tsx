@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback, useContext} from 'react';
 import {
   View,
   Text,
@@ -11,21 +11,36 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {useNavigation} from '@react-navigation/native';
+import type {StackNavigationProp} from '@react-navigation/stack';
 import {soundPacks} from '../assets/sounds';
 import AudioService from '../services/AudioService';
 import {useAppContext} from '../contexts/AppContext';
 import {UnlockService} from '../services/UnlockService';
 import {OnboardingService} from '../services/OnboardingService';
-import {useContext} from 'react';
-import {OnboardingContext} from '../../App';
 import ControlsButton from '../components/ControlsButton';
 import Equalizer from '../components/Equalizer';
 import {ImageBackground} from 'react-native';
 import {BlurView} from '@react-native-community/blur';
 import {triggerPlatformHaptic} from '../utils/haptics';
 import {getResponsiveSize} from '../utils/deviceUtils';
+import {OnboardingContext} from '../../App';
 
 const {width: screenWidth} = Dimensions.get('window');
+
+type RootStackParamList = {
+  Onboarding: undefined;
+  DrumPad: undefined;
+  PackLibrary: undefined;
+  SoundPackDetail: {packId: string};
+  PackUnlocked: {packId: string};
+  Customize: {packId: string};
+};
+
+type OnboardingNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'Onboarding'
+>;
 
 interface PackCardProps {
   pack: any;
@@ -150,6 +165,7 @@ const PackCard: React.FC<PackCardProps> = ({
 
 const OnboardingScreen: React.FC = () => {
   const {setCurrentSoundPack} = useAppContext();
+  const navigation = useNavigation<OnboardingNavigationProp>();
   const {completeOnboarding} = useContext(OnboardingContext);
   const [availablePacks, setAvailablePacks] = useState<string[]>([]);
   const [selectedPack, setSelectedPack] = useState<string | null>(null);
@@ -203,8 +219,12 @@ const OnboardingScreen: React.FC = () => {
       await OnboardingService.markOnboardingCompleted();
 
       completeOnboarding();
-    } catch (error) {}
-  }, [selectedPack, setCurrentSoundPack, completeOnboarding]);
+
+      navigation.navigate('DrumPad');
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+    }
+  }, [selectedPack, setCurrentSoundPack, navigation, completeOnboarding]);
 
   if (isLoading) {
     return (

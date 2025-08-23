@@ -1,6 +1,6 @@
 import {AudioContext, AudioBuffer} from 'react-native-audio-api';
-import {Image} from 'react-native';
-import {getSoundModuleId, getAvailableSoundNames} from '../utils/soundUtils.ts';
+import {Image, Platform} from 'react-native';
+import {getSoundModuleId, getAvailableSoundNames} from '../utils/soundUtils';
 import {soundPacks} from '../assets/sounds';
 import type {
   MetronomeState,
@@ -57,6 +57,34 @@ class AudioService {
     this.audioContext = audioContext;
     this.needsAudioRecovery = false;
     this._initializeMetronomeGainNode();
+
+    if (Platform.OS === 'android') {
+      this._ensureAndroidAudioContextReady();
+    }
+  }
+
+  private async _ensureAndroidAudioContextReady(): Promise<void> {
+    if (!this.audioContext) {
+      return;
+    }
+
+    try {
+      if (this.audioContext.state === 'suspended') {
+        await this.audioContext.resume();
+      }
+
+      const silentBuffer = this.audioContext.createBuffer(1, 1, 22050);
+      const silentSource = this.audioContext.createBufferSource();
+      silentSource.buffer = silentBuffer;
+      silentSource.connect(this.audioContext.destination);
+      silentSource.start();
+      silentSource.stop();
+    } catch (error) {
+      console.warn(
+        `${LOG_PREFIX} Android audio context preparation warning:`,
+        error,
+      );
+    }
   }
 
   async setSoundPack(soundPack: string): Promise<boolean> {
@@ -216,7 +244,7 @@ class AudioService {
 
       if (groupName) {
         this.soundPackState.activeGroupSources.set(groupName, source);
-        source.onended = () => {
+        source.onEnded = () => {
           if (
             this.soundPackState.activeGroupSources.get(groupName) === source
           ) {
@@ -231,7 +259,7 @@ class AudioService {
         };
       } else {
         this.soundPackState.activeSingleSources.set(soundName, source);
-        source.onended = () => {
+        source.onEnded = () => {
           if (
             this.soundPackState.activeSingleSources.get(soundName) === source
           ) {
@@ -371,7 +399,7 @@ class AudioService {
       source.connect(this.audioContext!.destination);
 
       const playPromise = new Promise<boolean>(resolve => {
-        source.onended = () => {
+        source.onEnded = () => {
           if (this.demoState.activeSource === source) {
             this.demoState.activeSource = null;
             this.demoState.isPlaying = false;
@@ -604,7 +632,7 @@ class AudioService {
       }
 
       this.metronomeState.activeSourceNodes.add(source);
-      source.onended = () =>
+      source.onEnded = () =>
         this.metronomeState.activeSourceNodes.delete(source);
     } catch (error) {
       console.error(

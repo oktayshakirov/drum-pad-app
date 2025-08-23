@@ -72,56 +72,43 @@ const AppNavigatorContent: React.FC = () => {
     );
   }
 
-  if (showOnboarding) {
-    return (
-      <OnboardingContext.Provider value={{completeOnboarding}}>
-        <NavigationContainer>
-          <Stack.Navigator
-            initialRouteName="Onboarding"
-            screenOptions={{
-              headerShown: false,
-              cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
-              cardStyle: {backgroundColor: 'transparent'},
-            }}>
-            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </OnboardingContext.Provider>
-    );
-  }
-
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="DrumPad"
-        screenOptions={{
-          headerShown: false,
-          cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
-          cardStyle: {backgroundColor: 'transparent'},
-        }}>
-        <Stack.Screen name="DrumPad" component={DrumPadScreen} />
-        <Stack.Screen
-          name="PackLibrary"
-          component={PackLibraryScreen}
-          options={{presentation: 'modal'}}
-        />
-        <Stack.Screen
-          name="SoundPackDetail"
-          component={SoundPackScreen}
-          options={{presentation: 'modal'}}
-        />
-        <Stack.Screen
-          name="PackUnlocked"
-          component={PackUnlockedScreen}
-          options={{presentation: 'modal'}}
-        />
-        <Stack.Screen
-          name="Customize"
-          component={CustomizeScreen}
-          options={{presentation: 'modal'}}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <OnboardingContext.Provider value={{completeOnboarding}}>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName={showOnboarding ? 'Onboarding' : 'DrumPad'}
+          screenOptions={{
+            headerShown: false,
+            cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
+            cardStyle: {backgroundColor: 'transparent'},
+          }}>
+          {showOnboarding && (
+            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+          )}
+          <Stack.Screen name="DrumPad" component={DrumPadScreen} />
+          <Stack.Screen
+            name="PackLibrary"
+            component={PackLibraryScreen}
+            options={{presentation: 'modal'}}
+          />
+          <Stack.Screen
+            name="SoundPackDetail"
+            component={SoundPackScreen}
+            options={{presentation: 'modal'}}
+          />
+          <Stack.Screen
+            name="PackUnlocked"
+            component={PackUnlockedScreen}
+            options={{presentation: 'modal'}}
+          />
+          <Stack.Screen
+            name="Customize"
+            component={CustomizeScreen}
+            options={{presentation: 'modal'}}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </OnboardingContext.Provider>
   );
 };
 
