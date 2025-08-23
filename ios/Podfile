@@ -47,5 +47,32 @@ target 'ShapeBeatsApp' do
       config[:reactNativePath],
       :mac_catalyst_enabled => false
     )
+    
+    # Fix for react-native-audio-api Ogg Vorbis linking issues
+    installer.pods_project.targets.each do |target|
+      if target.name == 'ShapeBeatsApp'
+        target.build_configurations.each do |config|
+          # Add explicit library search paths
+          config.build_settings['LIBRARY_SEARCH_PATHS'] ||= ['$(inherited)']
+          config.build_settings['LIBRARY_SEARCH_PATHS'] << '$(PODS_ROOT)/RNAudioAPI/common/cpp/audioapi/external/iphoneos'
+          config.build_settings['LIBRARY_SEARCH_PATHS'] << '$(PODS_ROOT)/RNAudioAPI/common/cpp/audioapi/external/iphonesimulator'
+          
+          # Add explicit linking flags for device builds
+          config.build_settings['OTHER_LDFLAGS'] ||= ['$(inherited)']
+          config.build_settings['OTHER_LDFLAGS'] << '-force_load $(PODS_ROOT)/RNAudioAPI/common/cpp/audioapi/external/iphoneos/libvorbis.a'
+          config.build_settings['OTHER_LDFLAGS'] << '-force_load $(PODS_ROOT)/RNAudioAPI/common/cpp/audioapi/external/iphoneos/libvorbisfile.a'
+          config.build_settings['OTHER_LDFLAGS'] << '-force_load $(PODS_ROOT)/RNAudioAPI/common/cpp/audioapi/external/iphoneos/libogg.a'
+          config.build_settings['OTHER_LDFLAGS'] << '-force_load $(PODS_ROOT)/RNAudioAPI/common/cpp/audioapi/external/iphoneos/libopus.a'
+          config.build_settings['OTHER_LDFLAGS'] << '-force_load $(PODS_ROOT)/RNAudioAPI/common/cpp/audioapi/external/iphoneos/libopusfile.a'
+        end
+      elsif target.name == 'RNAudioAPI'
+        # Also configure the RNAudioAPI target itself
+        target.build_configurations.each do |config|
+          config.build_settings['LIBRARY_SEARCH_PATHS'] ||= ['$(inherited)']
+          config.build_settings['LIBRARY_SEARCH_PATHS'] << '$(PODS_ROOT)/RNAudioAPI/common/cpp/audioapi/external/iphoneos'
+          config.build_settings['LIBRARY_SEARCH_PATHS'] << '$(PODS_ROOT)/RNAudioAPI/common/cpp/audioapi/external/iphonesimulator'
+        end
+      end
+    end
   end
 end
