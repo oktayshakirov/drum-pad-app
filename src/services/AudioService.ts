@@ -2,6 +2,7 @@ import {AudioContext, AudioBuffer} from 'react-native-audio-api';
 import {Image, Platform} from 'react-native';
 import {getSoundModuleId, getAvailableSoundNames} from '../utils/soundUtils';
 import {soundPacks} from '../assets/sounds';
+import AudioAssetLoader from './AudioAssetLoader';
 import type {
   MetronomeState,
   DemoState,
@@ -481,6 +482,25 @@ class AudioService {
       return null;
     }
 
+    // For Android release builds, try loading directly from assets directory first
+    if (Platform.OS === 'android' && this.audioContext) {
+      try {
+        const arrayBuffer = await this._loadFromAndroidAssets(soundIdentifier);
+        if (arrayBuffer) {
+          if (this.audioContext.state === 'suspended') {
+            await this.audioContext.resume();
+          }
+          return await this.audioContext.decodeAudioData(arrayBuffer);
+        }
+      } catch (error) {
+        console.warn(
+          `${LOG_PREFIX} Android assets loading failed for ${soundIdentifier}:`,
+          (error as Error).message,
+        );
+      }
+    }
+
+    // Fallback to Image.resolveAssetSource for other platforms or if Android assets fail
     let assetSource;
     try {
       assetSource = Image.resolveAssetSource(soundModuleId);
@@ -517,6 +537,55 @@ class AudioService {
     } catch (error) {
       console.error(
         `${LOG_PREFIX} Error loading/decoding ${soundIdentifier}:`,
+        (error as Error).message,
+      );
+      return null;
+    }
+  }
+
+  private async _loadFromAndroidAssets(
+    soundIdentifier: string,
+  ): Promise<ArrayBuffer | null> {
+    try {
+      let assetPath: string;
+
+      if (soundIdentifier.startsWith('demo-')) {
+        const packName = soundIdentifier.replace('demo-', '');
+        assetPath = `sounds/packs/${packName}/demo.mp3`;
+      } else if (soundIdentifier.includes('/')) {
+        const [packName, soundName] = soundIdentifier.split('/');
+        if (packName === 'metronome') {
+          assetPath = `sounds/metronome/${soundName}.mp3`;
+        } else {
+          assetPath = `sounds/packs/${packName}/samples/${soundName}.mp3`;
+        }
+      } else {
+        assetPath = `sounds/metronome/${soundIdentifier}.mp3`;
+      }
+
+      try {
+        const byteArray = await AudioAssetLoader.loadAudioAssetAsArrayBuffer(
+          assetPath,
+        );
+
+        const arrayBuffer = new ArrayBuffer(byteArray.length);
+        const uint8Array = new Uint8Array(arrayBuffer);
+        for (let i = 0; i < byteArray.length; i++) {
+          uint8Array[i] = byteArray[i];
+        }
+
+        return arrayBuffer;
+      } catch (error) {
+        console.warn(
+          `${LOG_PREFIX} Native Android asset loading failed for ${assetPath}:`,
+          (error as Error).message,
+        );
+      }
+
+      return null;
+    } catch (error) {
+      console.warn(
+        `${LOG_PREFIX} Native Android assets loading error:`,
         (error as Error).message,
       );
       return null;
@@ -651,6 +720,27 @@ class AudioService {
       return cachedBuffer;
     }
 
+    // For Android release builds, try loading demo directly from assets directory first
+    if (Platform.OS === 'android' && this.audioContext) {
+      try {
+        const arrayBuffer = await this._loadFromAndroidAssets(`demo-${packId}`);
+        if (arrayBuffer) {
+          if (this.audioContext.state === 'suspended') {
+            await this.audioContext.resume();
+          }
+          const buffer = await this.audioContext.decodeAudioData(arrayBuffer);
+          this.demoState.buffers.set(packId, buffer);
+          return buffer;
+        }
+      } catch (error) {
+        console.warn(
+          `${LOG_PREFIX} Android demo assets loading failed for ${packId}:`,
+          (error as Error).message,
+        );
+      }
+    }
+
+    // Fallback to Image.resolveAssetSource for other platforms or if Android assets fail
     try {
       const assetSource = Image.resolveAssetSource(demoModuleId);
       if (!assetSource?.uri) {
