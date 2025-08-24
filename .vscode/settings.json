@@ -1,4 +1,17 @@
 {
   "java.compile.nullAnalysis.mode": "automatic",
-  "java.configuration.updateBuildConfiguration": "automatic"
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "gradle.excludeFromValidation": [
+    "**/node_modules/react-native-audio-api/android/build.gradle",
+    "**/node_modules/**/android/build.gradle"
+  ],
+  "gradle.allowParallelRun": true,
+  "gradle.offline.enabled": false,
+  "files.exclude": {
+    "**/node_modules/react-native-audio-api/android/build.gradle": true
+  },
+  "java.import.gradle.enabled": false,
+  "java.import.maven.enabled": false,
+  "gradle.buildFile": "android/build.gradle",
+  "gradle.rootProject": "android"
 }

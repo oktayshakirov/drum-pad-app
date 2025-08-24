@@ -1,0 +1,4 @@
+{
+  "recommendations": ["vscjava.vscode-gradle", "redhat.java"],
+  "unwantedRecommendations": ["ms-vscode.vscode-gradle"]
+}
