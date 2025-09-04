@@ -5,7 +5,6 @@
 
   "android": {
     "package": "com.shadev.shapebeats",
-    "versionCode": 1,
     "adaptiveIcon": {
       "foregroundImage": "./src/assets/images/icon.png",
       "backgroundColor": "#121212"
@@ -13,7 +12,6 @@
   },
   "ios": {
     "bundleIdentifier": "com.shadev.shapebeats",
-    "buildNumber": "1",
     "supportsTablet": true
   },
   "react-native-google-mobile-ads": {
