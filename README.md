@@ -1,14 +1,55 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# ShapeBeats - Drum Pad App
 
-# Getting Started
+ShapeBeats is a powerful and intuitive drum pad application built with React Native. Create beats, explore multiple sound packs, and unleash your musical creativity with professional-quality audio samples and a sleek, responsive interface.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+> Transform your mobile device into a professional drum machine. ShapeBeats combines cutting-edge audio technology with an intuitive user experience to deliver the ultimate beat-making experience.
 
-## Step 1: Start Metro
+Whether you're a beginner exploring rhythm for the first time or a seasoned producer looking for a portable beat-making solution, ShapeBeats has you covered. Our app features multiple premium sound packs, real-time audio processing, metronome functionality, and a customizable interface that adapts to your creative workflow.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Demo
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+![ShapeBeats Demo](https://oktayshakirov.com/assets/images/projects/shape-beats.jpg 'ShapeBeats Demo')
+
+<p align="center">
+  <a href="https://apps.apple.com/us/app/shape-beats/id6751116257"><strong>➥ Download on the App Store</strong></a>
+</p>
+
+## Features
+
+- 🎵 **Multiple Sound Packs** - 12+ premium sound packs with unique styles
+- 🥁 **Professional Audio** - High-quality samples and real-time processing
+- 🎛️ **Customizable Interface** - Drag and drop pad arrangement
+- ⏱️ **Built-in Metronome** - Perfect timing for practice and recording
+- 🎚️ **Audio Controls** - Volume, equalizer, and audio effects
+- 📱 **Cross-Platform** - Native performance on both Android and iOS
+- 🎨 **Modern UI** - Sleek design optimized for touch interaction
+
+## ⚙️ Installation
+
+After downloading the project, you have some prerequisites to install. Then you can run it on your localhost or build for production.
+
+### 🔧 Install prerequisites (once for a machine)
+
+- **Node.js:** [Install Node.js](https://nodejs.org/en/download/) [Recommended LTS version]
+- **React Native CLI:** `npm install -g @react-native-community/cli`
+- **Android Studio:** [Install Android Studio](https://developer.android.com/studio) (for Android development)
+- **Xcode:** [Install Xcode](https://developer.apple.com/xcode/) (for iOS development, macOS only)
+
+### 🖥️ Local setup
+
+After successfully installing those dependencies, open this project with any IDE [[VS Code](https://code.visualstudio.com/) recommended], and then open the internal terminal of IDE [vs code shortcut <code>ctrl/cmd+\`</code>]
+
+- Install dependencies
+
+```sh
+# Using npm
+npm install
+
+# OR using Yarn
+yarn install
+```
+
+- Start Metro bundler
 
 ```sh
 # Using npm
@@ -18,11 +59,7 @@ npm start
 yarn start
 ```
 
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
+- Run on Android
 
 ```sh
 # Using npm
@@ -32,66 +69,60 @@ npm run android
 yarn android
 ```
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+- Run on iOS (macOS only)
 
 ```sh
+# Install CocoaPods dependencies first
 bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
 bundle exec pod install
-```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
+# Then run
 npm run ios
-
-# OR using Yarn
+# OR
 yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+After that, it will open up the app in your Android Emulator, iOS Simulator, or connected device, watch for changes to source files, and live-reload when changes are saved.
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+## 🏗️ Production Build
 
-## Step 3: Modify your app
+After finishing all the customization, you can create a production build by running these commands.
 
-Now that you have successfully run the app, let's make changes!
+### Android
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+```sh
+# Generate release APK
+cd android
+./gradlew assembleRelease
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+# OR using npm script
+npm run build:android
+```
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+### iOS
 
-## Congratulations! :tada:
+```sh
+# Build for iOS (requires macOS and Xcode)
+cd ios
+xcodebuild -workspace ShapeBeats.xcworkspace -scheme ShapeBeats -configuration Release -destination generic/platform=iOS -archivePath ShapeBeats.xcarchive archive
 
-You've successfully run and modified your React Native App. :partying_face:
+# OR using npm script
+npm run build:ios
+```
 
-### Now what?
+## Audio Assets
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+This app uses a custom audio asset loading system:
 
-# Troubleshooting
+- **Android**: Audio files are loaded directly from the APK's assets directory using a native module
+- **iOS**: Audio files are bundled by Metro and accessed through React Native's asset resolution
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+For more details, see [Audio Assets Documentation](./src/assets/sounds/README.md).
 
-# Learn More
+## Troubleshooting
 
-To learn more about React Native, take a look at the following resources:
+If you're having issues getting the above steps to work, see the [React Native Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## License
+
+This project is provided for viewing purposes only. All rights are reserved. No part of this project may be copied, modified, or redistributed without explicit written permission from the author.

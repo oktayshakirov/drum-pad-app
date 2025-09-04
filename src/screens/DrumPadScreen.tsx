@@ -320,15 +320,12 @@ const styles = StyleSheet.create({
   headerSection: {
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 7,
-    paddingVertical: 10,
   },
 
   padGridContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 10,
   },
 
   controlsRow: {

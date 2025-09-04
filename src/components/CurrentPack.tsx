@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     width: '100%',
-    marginTop: 15,
+    marginTop: 3,
     maxWidth: 400,
   },
   glassCard: {
