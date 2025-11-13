@@ -64,7 +64,7 @@ android {
     
     externalNativeBuild {
         cmake {
-            path "CMakeLists.txt"
+            path "src/main/jni/CMakeLists.txt"
             version "3.22.1"
         }
     }
@@ -98,5 +98,29 @@ dependencies {
         implementation("com.facebook.react:hermes-android")
     } else {
         implementation jscFlavor
+    }
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name.contains("compileDebugJavaWithJavac") || task.name.contains("compileReleaseJavaWithJavac")) {
+        task.doFirst {
+            def entryPointFile = file("build/generated/autolinking/src/main/java/com/facebook/react/ReactNativeApplicationEntryPoint.java")
+            if (entryPointFile.exists()) {
+                def content = entryPointFile.text
+                if (content.contains("LegacyArchitectureLogger")) {
+                    content = content.replaceAll("import com\\.facebook\\.react\\.common\\.annotations\\.internal\\.LegacyArchitectureLogger;\\s*\n", "")
+                    entryPointFile.write(content)
+                }
+            }
+
+            def autolinkingCpp = file("build/generated/autolinking/src/main/jni/autolinking.cpp")
+            if (autolinkingCpp.exists()) {
+                def cppContent = autolinkingCpp.text
+                if (cppContent.contains("RNSSafeAreaViewComponentDescriptor")) {
+                    cppContent = cppContent.replace("RNSSafeAreaViewComponentDescriptor", "RNCSafeAreaViewComponentDescriptor")
+                    autolinkingCpp.write(cppContent)
+                }
+            }
+        }
     }
 }

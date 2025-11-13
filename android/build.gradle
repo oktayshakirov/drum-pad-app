@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        agpVersion = "8.2.2"      
+        agpVersion = '8.13.0'
         minSdkVersion = 24
         compileSdkVersion = 35
         targetSdkVersion = 35
