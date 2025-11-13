@@ -5830,10 +5830,10 @@ react-native-animatable@^1.4.0:
   dependencies:
     prop-types "^15.8.1"
 
-react-native-audio-api@^0.6.0:
-  version "0.6.5"
-  resolved "https://registry.yarnpkg.com/react-native-audio-api/-/react-native-audio-api-0.6.5.tgz#2cfaad00433c7c5d58212d7149704b6ced280ad9"
-  integrity sha512-F0+J0db5trSIscIEIV5uJkfdOclY8nxWxUXMCuiPyr11VUd5W8CKxhAv0/luFp7EG/1EuITyyeGF2twxQhyvow==
+react-native-audio-api@^0.8.2:
+  version "0.8.4"
+  resolved "https://registry.yarnpkg.com/react-native-audio-api/-/react-native-audio-api-0.8.4.tgz#f2a0ccfcaba44c2820fe0b517237fe85f6c8988a"
+  integrity sha512-OvS5KFK1lAcile4z4easHUxS5i/D2UKF2kTRjEv6HVARs/zqUXahFj6NxhS/PzZ0VEmRDZD7d3V6rfCcO7xgEQ==
 
 react-native-gesture-handler@^2.26.0:
   version "2.28.0"

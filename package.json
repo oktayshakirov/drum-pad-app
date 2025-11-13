@@ -17,7 +17,7 @@
     "react": "19.0.0",
     "react-native": "0.79.2",
     "react-native-animatable": "^1.4.0",
-    "react-native-audio-api": "^0.6.0",
+    "react-native-audio-api": "^0.8.2",
     "react-native-gesture-handler": "^2.26.0",
     "react-native-google-mobile-ads": "^15.4.0",
     "react-native-haptic-feedback": "^2.3.3",
