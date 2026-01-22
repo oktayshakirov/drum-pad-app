@@ -1,5 +1,10 @@
+import amex from './packs/amex';
 import brabus from './packs/brabus';
+import digital from './packs/digital';
 import energy from './packs/energy';
+import ferragamo from './packs/ferragamo';
+import foreign from './packs/foreign';
+import genesis from './packs/genesis';
 import katana from './packs/katana';
 import locoContigo from './packs/locoContigo';
 import lowrider from './packs/lowrider';
@@ -37,8 +42,13 @@ interface MetronomeSounds {
 }
 
 export const soundPacks: Record<string, SoundPack> = {
+  amex,
   brabus,
+  digital,
   energy,
+  ferragamo,
+  foreign,
+  genesis,
   katana,
   locoContigo,
   lowrider,
