@@ -1,9 +1,11 @@
 import amex from './packs/amex';
 import area51 from './packs/area51';
 import brabus from './packs/brabus';
+import destiny from './packs/destiny';
 import digital from './packs/digital';
 import energy from './packs/energy';
 import ferragamo from './packs/ferragamo';
+import flex from './packs/flex';
 import foreign from './packs/foreign';
 import genesis from './packs/genesis';
 import hype from './packs/hype';
@@ -12,6 +14,7 @@ import locoContigo from './packs/locoContigo';
 import lowrider from './packs/lowrider';
 import maskOff from './packs/maskOff';
 import morena from './packs/morena';
+import myWay from './packs/myWay';
 import outtaControl from './packs/outtaControl';
 import shiva from './packs/shiva';
 import vendetta from './packs/vendetta';
@@ -47,9 +50,11 @@ export const soundPacks: Record<string, SoundPack> = {
   amex,
   area51,
   brabus,
+  destiny,
   digital,
   energy,
   ferragamo,
+  flex,
   foreign,
   genesis,
   hype,
@@ -58,6 +63,7 @@ export const soundPacks: Record<string, SoundPack> = {
   lowrider,
   maskOff,
   morena,
+  myWay,
   outtaControl,
   shiva,
   vendetta,
