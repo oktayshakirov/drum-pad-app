@@ -1,14 +1,14 @@
 import {PadColors, SoundPack} from '../../../../types/soundPacks';
 
 const PAD_COLORS: PadColors = {
-  DRUMS_MAIN: '#1A1A2E',
-  DRUMS_SECONDARY: '#16213E',
-  BASS_MAIN: '#0F3460',
-  HIHAT_MAIN: '#1A2A3A',
-  MELODY_MAIN: '#2A1A3A',
-  MELODY_SECONDARY: '#3A1A4A',
-  SFX_MAIN: '#1A3A2A',
-  SFX_SECONDARY: '#2A4A3A',
+  DRUMS_MAIN: '#E8D5A3',
+  DRUMS_SECONDARY: '#F0E6C8',
+  BASS_MAIN: '#F0F0F0',
+  HIHAT_MAIN: '#E8E8E8',
+  MELODY_MAIN: '#F5E6D3',
+  MELODY_SECONDARY: '#F7E7CE',
+  SFX_MAIN: '#F5F5F5',
+  SFX_SECONDARY: '#FFF8DC',
 };
 
 const soundPack: SoundPack = {
@@ -18,7 +18,7 @@ const soundPack: SoundPack = {
   bpm: '152',
   cover: require('./cover.jpg'),
   demo: require('./demo.mp3'),
-  theme: 'dark',
+  theme: 'light',
   sounds: {
     kick: require('./samples/kick.mp3'),
     snare: require('./samples/snare.mp3'),
@@ -70,7 +70,7 @@ const soundPack: SoundPack = {
       id: 5,
       sound: 'crash',
       color: PAD_COLORS.DRUMS_SECONDARY,
-      icon: 'open_hat',
+      icon: 'percussion',
       title: 'Crash',
     },
     {

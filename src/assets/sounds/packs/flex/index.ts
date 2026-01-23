@@ -5,7 +5,7 @@ const PAD_COLORS: PadColors = {
   DRUMS_SECONDARY: '#2A1A2A',
   MELODY_MAIN: '#2A1A3A',
   MELODY_SECONDARY: '#3A2A4A',
-  SYNTH_MAIN: '#1A2A1A',
+  SYNTH_MAIN: '#2A1A3A',
 };
 
 const soundPack: SoundPack = {
@@ -77,6 +77,13 @@ const soundPack: SoundPack = {
     },
     {
       id: 6,
+      sound: 'synth',
+      color: PAD_COLORS.SYNTH_MAIN,
+      icon: 'synth',
+      title: 'Synth',
+    },
+    {
+      id: 7,
       sound: 'melody_1_1',
       color: PAD_COLORS.MELODY_MAIN,
       group: 'melody_1',
@@ -84,7 +91,7 @@ const soundPack: SoundPack = {
       title: 'Melody I',
     },
     {
-      id: 7,
+      id: 8,
       sound: 'melody_1_2',
       color: PAD_COLORS.MELODY_MAIN,
       group: 'melody_1',
@@ -92,7 +99,7 @@ const soundPack: SoundPack = {
       title: 'Melody II',
     },
     {
-      id: 8,
+      id: 9,
       sound: 'melody_1_3',
       color: PAD_COLORS.MELODY_MAIN,
       group: 'melody_1',
@@ -100,7 +107,7 @@ const soundPack: SoundPack = {
       title: 'Melody III',
     },
     {
-      id: 9,
+      id: 10,
       sound: 'melody_2_1',
       color: PAD_COLORS.MELODY_SECONDARY,
       group: 'melody_2',
@@ -108,7 +115,7 @@ const soundPack: SoundPack = {
       title: 'Melody IV',
     },
     {
-      id: 10,
+      id: 11,
       sound: 'melody_2_2',
       color: PAD_COLORS.MELODY_SECONDARY,
       group: 'melody_2',
@@ -116,19 +123,12 @@ const soundPack: SoundPack = {
       title: 'Melody V',
     },
     {
-      id: 11,
+      id: 12,
       sound: 'melody_2_3',
       color: PAD_COLORS.MELODY_SECONDARY,
       group: 'melody_2',
       icon: 'melody',
       title: 'Melody VI',
-    },
-    {
-      id: 12,
-      sound: 'synth',
-      color: PAD_COLORS.SYNTH_MAIN,
-      icon: 'synth',
-      title: 'Synth',
     },
   ],
 };
