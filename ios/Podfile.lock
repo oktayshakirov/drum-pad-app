@@ -11,6 +11,11 @@ PODS:
   - hermes-engine (0.79.2):
     - hermes-engine/Pre-built (= 0.79.2)
   - hermes-engine/Pre-built (0.79.2)
+  - PurchasesHybridCommon (17.51.1):
+    - RevenueCat (= 5.65.0)
+  - PurchasesHybridCommonUI (17.51.1):
+    - PurchasesHybridCommon (= 17.51.1)
+    - RevenueCatUI (= 5.65.0)
   - RCT-Folly (2024.11.18.00):
     - boost
     - DoubleConversion
@@ -1758,6 +1763,9 @@ PODS:
     - React-logger (= 0.79.2)
     - React-perflogger (= 0.79.2)
     - React-utils (= 0.79.2)
+  - RevenueCat (5.65.0)
+  - RevenueCatUI (5.65.0):
+    - RevenueCat (= 5.65.0)
   - RNAudioAPI (0.8.4):
     - DoubleConversion
     - glog
@@ -1906,6 +1914,12 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNPaywalls (9.13.0):
+    - PurchasesHybridCommonUI (= 17.51.1)
+    - React-Core
+  - RNPurchases (9.13.0):
+    - PurchasesHybridCommon (= 17.51.1)
+    - React-Core
   - RNReactNativeHapticFeedback (2.3.3):
     - DoubleConversion
     - glog
@@ -2263,6 +2277,8 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNGoogleMobileAds (from `../node_modules/react-native-google-mobile-ads`)
+  - RNPaywalls (from `../node_modules/react-native-purchases-ui`)
+  - RNPurchases (from `../node_modules/react-native-purchases`)
   - RNReactNativeHapticFeedback (from `../node_modules/react-native-haptic-feedback`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -2274,6 +2290,10 @@ SPEC REPOS:
   trunk:
     - Google-Mobile-Ads-SDK
     - GoogleUserMessagingPlatform
+    - PurchasesHybridCommon
+    - PurchasesHybridCommonUI
+    - RevenueCat
+    - RevenueCatUI
     - SocketRocket
 
 EXTERNAL SOURCES:
@@ -2430,6 +2450,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNGoogleMobileAds:
     :path: "../node_modules/react-native-google-mobile-ads"
+  RNPaywalls:
+    :path: "../node_modules/react-native-purchases-ui"
+  RNPurchases:
+    :path: "../node_modules/react-native-purchases"
   RNReactNativeHapticFeedback:
     :path: "../node_modules/react-native-haptic-feedback"
   RNReanimated:
@@ -2453,6 +2477,8 @@ SPEC CHECKSUMS:
   Google-Mobile-Ads-SDK: db00a3836f288f94e52114f312b56fe066699d82
   GoogleUserMessagingPlatform: f8d0cdad3ca835406755d0a69aa634f00e76d576
   hermes-engine: 314be5250afa5692b57b4dd1705959e1973a8ebe
+  PurchasesHybridCommon: 204de8c7d0b182240ac708cf6a05881bd99ceca9
+  PurchasesHybridCommonUI: a4cb430ad365d27258653ce1bafd4dd5b130d7e4
   RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
   RCTDeprecation: 83ffb90c23ee5cea353bd32008a7bca100908f8c
   RCTRequired: eb7c0aba998009f47a540bec9e9d69a54f68136e
@@ -2518,10 +2544,14 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 04d5eb15eb46be6720e17a4a7fa92940a776e584
   ReactCodegen: c63eda03ba1d94353fb97b031fc84f75a0d125ba
   ReactCommon: 76d2dc87136d0a667678668b86f0fca0c16fdeb0
+  RevenueCat: 9a37739bdf42af84dd87e023db340de7e0f9d874
+  RevenueCatUI: 1a503c1713ab8f598a0eb55e9954de7e3616aa5b
   RNAudioAPI: dbf993428eaa7851880f0fafb3ba4da01a1d44bc
   RNCAsyncStorage: a1c8cc8a99c32de1244a9cf707bf9d83d0de0f71
   RNGestureHandler: 0397fea67f39d5a2d17fcf4a028e206f7ba098ba
   RNGoogleMobileAds: eefcdf50341db377666f0e06894b98acd949dd65
+  RNPaywalls: 4689333650d71df3bb9d8c8a1bca16099b3c0a47
+  RNPurchases: f0abaaee45a4ec59c7ff62dcebba8b2a3e384886
   RNReactNativeHapticFeedback: 851adf794e1fcdc0664d80820fa3272ee8a6a538
   RNReanimated: babc19fbf998038ef93c01a9fbad4f7f9f943855
   RNScreens: 45437ef9ea71ac374dfe14a4fd0cb8e54c1f88e0

@@ -21,6 +21,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../../App';
 import {BlurView} from '@react-native-community/blur';
 import {useGlobalAds} from '../components/ads/adsManager';
+import {useRevenueCat} from '../hooks/useRevenueCat';
 import {
   getResponsiveMaxWidth,
   getResponsiveSize,
@@ -35,6 +36,7 @@ import Reanimated, {
 const DrumPadScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const {currentSoundPack} = useAppContext();
+  const {isLifetime} = useRevenueCat();
   const [activeChannel, setActiveChannel] = useState<'A' | 'B'>('A');
   const [isMetronomePlaying, setIsMetronomePlaying] = useState<boolean>(false);
   const [padConfigs, setPadConfigs] = useState<any[]>([]);
@@ -46,7 +48,7 @@ const DrumPadScreen: React.FC = () => {
   const channelRef = useRef<ChannelSwitchRef>(null);
   const customizeRef = useRef<CustomizeButtonRef>(null);
 
-  useGlobalAds();
+  useGlobalAds(isLifetime);
 
   const loadPadConfigs = useCallback(async (): Promise<void> => {
     const MIN_SKELETON_MS = 350;
@@ -216,9 +218,11 @@ const DrumPadScreen: React.FC = () => {
       <SafeAreaView
         style={styles.safeArea}
         edges={['top', 'left', 'right', 'bottom']}>
-        <Reanimated.View {...bannerContainerProps}>
-          <AdBanner onBannerStateChange={handleBannerStateChange} />
-        </Reanimated.View>
+        {!isLifetime && (
+          <Reanimated.View {...bannerContainerProps}>
+            <AdBanner onBannerStateChange={handleBannerStateChange} />
+          </Reanimated.View>
+        )}
 
         <View style={styles.mainContainer}>
           <View style={styles.headerSection}>

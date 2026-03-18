@@ -49,6 +49,13 @@ npm install
 yarn install
 ```
 
+- **RevenueCat (local only):** copy `.env.example` to `.env` and set your public SDK key(s). `.env` is gitignored and is not committed.
+
+```sh
+cp .env.example .env
+# Edit .env — use REVENUECAT_API_KEY for both platforms, or set REVENUECAT_API_KEY_IOS / REVENUECAT_API_KEY_ANDROID separately.
+```
+
 - Start Metro bundler
 
 ```sh

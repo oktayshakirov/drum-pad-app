@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {showRewardedAd, isRewardedAdReady} from '../components/ads/RewardedAd';
+import {SOUND_PACKS} from '../utils/soundUtils';
 
 const UNLOCKED_PACKS_KEY = 'unlockedPacks';
 const FREE_UNLOCK_ATTEMPTS_KEY = 'freeUnlockAttempts';
@@ -59,6 +60,20 @@ export class UnlockService {
 
   static getUnlockedPacks(): Set<string> {
     return new Set(this.unlockedPacks);
+  }
+
+  static async unlockAllPacks(): Promise<void> {
+    try {
+      const allPackIds = Object.keys(SOUND_PACKS);
+      this.unlockedPacks = new Set(allPackIds);
+      const unlockedPacksArray = Array.from(this.unlockedPacks);
+      await AsyncStorage.setItem(
+        UNLOCKED_PACKS_KEY,
+        JSON.stringify(unlockedPacksArray),
+      );
+    } catch (error) {
+      // Handle error silently
+    }
   }
 
   static canGetFreeUnlock(packId: string): boolean {

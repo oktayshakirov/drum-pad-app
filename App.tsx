@@ -11,6 +11,7 @@ import SoundPackScreen from './src/screens/SoundPackScreen';
 import PackUnlockedScreen from './src/screens/PackUnlockedScreen';
 import CustomizeScreen from './src/screens/CustomizeScreen';
 import {AppProvider, useAppContext} from './src/contexts/AppContext';
+import {RevenueCatProvider} from './src/hooks/useRevenueCat';
 
 import ConsentDialog from './src/components/ads/ConsentDialog';
 import CustomSplashScreen from './src/components/CustomSplashScreen';
@@ -122,7 +123,8 @@ const App: React.FC = () => {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <AppProvider>
+      <RevenueCatProvider>
+        <AppProvider>
         <SafeAreaProvider>
           <StatusBar
             barStyle="light-content"
@@ -142,7 +144,8 @@ const App: React.FC = () => {
             <AppNavigatorContent />
           )}
         </SafeAreaProvider>
-      </AppProvider>
+        </AppProvider>
+      </RevenueCatProvider>
     </GestureHandlerRootView>
   );
 };

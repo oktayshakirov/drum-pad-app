@@ -12,7 +12,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {SOUND_PACKS} from '../utils/soundUtils';
 import {soundPacks} from '../assets/sounds';
 import AudioService from '../services/AudioService';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../../App';
 import Equalizer from '../components/Equalizer';
@@ -21,6 +21,12 @@ import {UnlockService} from '../services/UnlockService';
 import {BlurView} from '@react-native-community/blur';
 import {triggerPlatformHaptic} from '../utils/haptics';
 import {getResponsiveSize} from '../utils/deviceUtils';
+import {useRevenueCat} from '../hooks/useRevenueCat';
+import {
+  getCustomerInfo,
+  hasLifetimeEntitlement,
+  isRevenueCatConfigured,
+} from '../services/revenueCat';
 
 interface PackItemProps {
   item: any;
@@ -240,6 +246,8 @@ const TabButton: React.FC<TabButtonProps> = memo(
 
 const PackLibraryScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const {isLifetime, refresh, showPaywallIfNeeded, isAvailable} =
+    useRevenueCat();
   const [playingPackId, setPlayingPackId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | 'my'>('all');
   const packs = Object.values(SOUND_PACKS);
@@ -251,7 +259,45 @@ const PackLibraryScreen: React.FC = () => {
   const filteredPacks =
     activeTab === 'all'
       ? packs
-      : packs.filter(pack => UnlockService.isPackUnlocked(pack.id));
+      : packs.filter(
+          pack => isLifetime || UnlockService.isPackUnlocked(pack.id),
+        );
+
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false;
+      (async () => {
+        if (!isAvailable || !isRevenueCatConfigured()) {
+          return;
+        }
+        await refresh();
+        if (cancelled) {
+          return;
+        }
+        const {customerInfo, error: infoErr} = await getCustomerInfo();
+        if (cancelled || infoErr?.code === 'NOT_CONFIGURED') {
+          return;
+        }
+        if (hasLifetimeEntitlement(customerInfo)) {
+          await UnlockService.unlockAllPacks();
+          await refresh();
+          return;
+        }
+        await showPaywallIfNeeded();
+        if (cancelled) {
+          return;
+        }
+        const after = await getCustomerInfo();
+        if (hasLifetimeEntitlement(after.customerInfo)) {
+          await UnlockService.unlockAllPacks();
+          await refresh();
+        }
+      })();
+      return () => {
+        cancelled = true;
+      };
+    }, [isAvailable, refresh, showPaywallIfNeeded]),
+  );
 
   const cleanupDemo = useCallback(async (): Promise<void> => {
     if (playingPackId) {
@@ -303,10 +349,10 @@ const PackLibraryScreen: React.FC = () => {
         isPlaying={playingPackId === item.id}
         onSelect={handleSelect}
         onPlayStop={handlePlayStop}
-        isLocked={!UnlockService.isPackUnlocked(item.id)}
+        isLocked={!isLifetime && !UnlockService.isPackUnlocked(item.id)}
       />
     ),
-    [playingPackId, handleSelect, handlePlayStop],
+    [playingPackId, handleSelect, handlePlayStop, isLifetime],
   );
 
   return (
@@ -339,6 +385,7 @@ const PackLibraryScreen: React.FC = () => {
             renderItem={renderPackItem}
             keyExtractor={(item: any) => item.id}
             numColumns={2}
+            columnWrapperStyle={styles.listRow}
             contentContainerStyle={[
               styles.listContainer,
               {
@@ -380,8 +427,13 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingHorizontal: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexGrow: 1,
+    alignItems: 'stretch',
+    justifyContent: 'flex-start',
+  },
+  listRow: {
+    justifyContent: 'flex-start',
+    alignSelf: 'stretch',
   },
   packItem: {
     alignItems: 'flex-start',
