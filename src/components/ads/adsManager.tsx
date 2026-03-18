@@ -14,7 +14,10 @@ const AD_TYPES = {
   REWARDED: 'rewarded',
 };
 
-export async function initializeGlobalAds() {
+export async function initializeGlobalAds(disableAds?: boolean) {
+  if (disableAds) {
+    return;
+  }
   try {
     await initializeGoogleMobileAds();
     await Promise.all([initializeInterstitial(), loadAppOpenAd()]);
@@ -22,7 +25,7 @@ export async function initializeGlobalAds() {
     console.error('Failed to initialize global ads:', error);
 
     setTimeout(() => {
-      initializeGlobalAds().catch(console.error);
+      initializeGlobalAds(disableAds).catch(console.error);
     }, 5000);
   }
 }
@@ -106,12 +109,15 @@ export async function trackRewardedAdShown(): Promise<void> {
   await updateLastAdShownTime(AD_TYPES.REWARDED);
 }
 
-export function useGlobalAds() {
+export function useGlobalAds(disableAds?: boolean) {
   const appState = useRef(AppState.currentState);
   const lastAppStateChange = useRef(Date.now());
   const lastAdShownTime = useRef(0);
 
   useEffect(() => {
+    if (disableAds) {
+      return;
+    }
     console.log('useGlobalAds: Hook initialized');
     console.log('useGlobalAds: Initial app state:', AppState.currentState);
 
@@ -180,5 +186,5 @@ export function useGlobalAds() {
       console.log('useGlobalAds: Hook cleanup');
       subscription.remove();
     };
-  }, []);
+  }, [disableAds]);
 }

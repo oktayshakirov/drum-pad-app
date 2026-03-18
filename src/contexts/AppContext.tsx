@@ -20,10 +20,12 @@ import {loadAppOpenAd} from '../components/ads/AppOpenAd';
 import {initializeRewardedAd} from '../components/ads/RewardedAd';
 import {initializeInterstitial} from '../components/ads/InterstitialAd';
 import {UnlockService} from '../services/UnlockService';
+import {useRevenueCat} from '../hooks/useRevenueCat';
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
+  const {isLifetime} = useRevenueCat();
   const [state, setState] = useState<AppState>({
     currentSoundPack: '',
     isLoading: true,
@@ -161,7 +163,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
   }, [state.audioContext, state.currentSoundPack, loadSoundPack]);
 
   useEffect(() => {
-    if (state.audioContext && !state.isLoading) {
+    if (state.audioContext && !state.isLoading && !isLifetime) {
       const initializeAds = async () => {
         try {
           await Promise.allSettled([
@@ -176,7 +178,13 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
 
       setTimeout(initializeAds, 1000);
     }
-  }, [state.audioContext, state.isLoading]);
+  }, [state.audioContext, state.isLoading, isLifetime]);
+
+  useEffect(() => {
+    if (isLifetime) {
+      UnlockService.unlockAllPacks().catch(() => {});
+    }
+  }, [isLifetime]);
 
   const contextValue: AppContextType = {
     currentSoundPack: state.currentSoundPack,

@@ -36,6 +36,9 @@ local.properties
 .kotlin/
 android/app/release/
 
+# Secrets (copy .env.example → .env locally)
+.env
+
 # node.js
 #
 node_modules/

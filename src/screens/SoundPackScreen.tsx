@@ -25,6 +25,7 @@ import Equalizer from '../components/Equalizer';
 import ControlsButton from '../components/ControlsButton';
 import {UnlockService} from '../services/UnlockService';
 import {showGlobalInterstitial} from '../components/ads/adsManager';
+import {useRevenueCat} from '../hooks/useRevenueCat';
 import {triggerPlatformHaptic} from '../utils/haptics';
 import {getResponsiveSize} from '../utils/deviceUtils';
 
@@ -103,6 +104,7 @@ const SoundPackDetailScreen: React.FC = () => {
     hoursUntilFreeUnlock: number;
   } | null>(null);
   const {setCurrentSoundPack, currentSoundPack} = useAppContext();
+  const {isLifetime} = useRevenueCat();
 
   const pack = packId ? soundPacks[packId] : undefined;
 
@@ -145,11 +147,11 @@ const SoundPackDetailScreen: React.FC = () => {
   useEffect(() => {
     if (packId) {
       const status = UnlockService.getUnlockStatus(packId);
-      setIsUnlocked(status.isUnlocked);
+      setIsUnlocked(isLifetime || status.isUnlocked);
       setUnlockStatus(status);
       setIsLoadingAd(false);
     }
-  }, [packId]);
+  }, [packId, isLifetime]);
 
   const cleanupDemo = useCallback(async (): Promise<void> => {
     if (isPlaying) {
@@ -197,6 +199,14 @@ const SoundPackDetailScreen: React.FC = () => {
       return;
     }
 
+    if (isLifetime) {
+      await UnlockService.unlockPack(packId);
+      setIsUnlocked(true);
+      setCurrentSoundPack(packId);
+      navigation.navigate('DrumPad');
+      return;
+    }
+
     setIsLoadingAd(true);
     try {
       const result = await UnlockService.attemptUnlockWithFallbacks(packId);
@@ -220,7 +230,13 @@ const SoundPackDetailScreen: React.FC = () => {
         setUnlockStatus(status);
       }
     }
-  }, [packId, isLoadingAd, setCurrentSoundPack, navigation]);
+  }, [
+    packId,
+    isLoadingAd,
+    setCurrentSoundPack,
+    navigation,
+    isLifetime,
+  ]);
 
   const handleSelectPack = useCallback(async (): Promise<void> => {
     if (!packId) {
@@ -233,23 +249,25 @@ const SoundPackDetailScreen: React.FC = () => {
     }
 
     try {
-      await showGlobalInterstitial();
+      if (!isLifetime) {
+        await showGlobalInterstitial();
+      }
     } catch (error) {}
 
     await setCurrentSoundPack(packId);
     navigation.navigate('DrumPad');
-  }, [packId, setCurrentSoundPack, navigation, isCurrentPack]);
+  }, [packId, isCurrentPack, setCurrentSoundPack, navigation, isLifetime]);
 
   const getUnlockButtonText = (): string => {
     if (isLoadingAd) {
       return 'LOADING...';
     }
 
-    if (unlockStatus?.hasRewardedAd) {
+    if (unlockStatus?.hasRewardedAd && !isLifetime) {
       return 'WATCH VIDEO TO UNLOCK';
     }
 
-    if (unlockStatus?.canGetFreeUnlock) {
+    if (unlockStatus?.canGetFreeUnlock && !isLifetime) {
       return 'UNLOCK FREE';
     }
 
@@ -260,10 +278,10 @@ const SoundPackDetailScreen: React.FC = () => {
     if (isLoadingAd) {
       return [styles.selectButton, styles.loadingButton];
     }
-    if (unlockStatus?.hasRewardedAd) {
+    if (unlockStatus?.hasRewardedAd && !isLifetime) {
       return [styles.selectButton, styles.unlockButton];
     }
-    if (unlockStatus?.canGetFreeUnlock) {
+    if (unlockStatus?.canGetFreeUnlock && !isLifetime) {
       return [styles.selectButton, styles.freeUnlockButton];
     }
     return [styles.selectButton, styles.disabledButton];
@@ -273,7 +291,7 @@ const SoundPackDetailScreen: React.FC = () => {
     if (isLoadingAd) {
       return require('../assets/images/loading.png');
     }
-    if (unlockStatus?.hasRewardedAd) {
+    if (unlockStatus?.hasRewardedAd && !isLifetime) {
       return require('../assets/images/video.png');
     }
     return require('../assets/images/pack.png');
@@ -282,7 +300,9 @@ const SoundPackDetailScreen: React.FC = () => {
   const isUnlockButtonDisabled = (): boolean => {
     return (
       isLoadingAd ||
-      (!unlockStatus?.hasRewardedAd && !unlockStatus?.canGetFreeUnlock)
+      (!isLifetime &&
+        !unlockStatus?.hasRewardedAd &&
+        !unlockStatus?.canGetFreeUnlock)
     );
   };
 
@@ -294,11 +314,11 @@ const SoundPackDetailScreen: React.FC = () => {
   };
 
   const getStatusMessage = (): string => {
-    if (unlockStatus?.hasRewardedAd) {
+    if (unlockStatus?.hasRewardedAd && !isLifetime) {
       return '';
     }
 
-    if (unlockStatus?.canGetFreeUnlock) {
+    if (unlockStatus?.canGetFreeUnlock && !isLifetime) {
       return 'No video ads available. Try once for free!';
     }
 
