@@ -1,6 +1,15 @@
 pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
 plugins { id("com.facebook.react.settings") }
-extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
+def nodeExecutable = System.getenv("NODE_BINARY")
+if (!nodeExecutable) {
+    def candidateNodePaths = ["/opt/homebrew/bin/node", "/usr/local/bin/node", "/usr/bin/node"]
+    def firstAvailableNode = candidateNodePaths.find { new File(it).exists() }
+    nodeExecutable = firstAvailableNode ?: "node"
+}
+
+extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
+    ex.autolinkLibrariesFromCommand([nodeExecutable, "../node_modules/react-native/cli.js", "config"])
+}
 rootProject.name = 'ShapeBeats'
 include ':app'
 includeBuild('../node_modules/@react-native/gradle-plugin')

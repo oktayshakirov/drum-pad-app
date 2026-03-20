@@ -6,6 +6,11 @@ react {
     autolinkLibrariesWithApp()
 }
 
+ext {
+    REACT_NATIVE_NODE_MODULES_DIR = file("../../node_modules/react-native").absolutePath
+    REACT_NATIVE_WORKLETS_NODE_MODULES_DIR = file("../../node_modules/react-native-worklets").absolutePath
+}
+
 
 def enableProguardInReleaseBuilds = false
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
@@ -19,8 +24,8 @@ android {
         applicationId "com.shapebeats"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 11
-        versionName "1.5.3"
+        versionCode 12
+        versionName "1.5.4"
         ndk {
             abiFilters "arm64-v8a", "armeabi-v7a", "x86", "x86_64"
         }
