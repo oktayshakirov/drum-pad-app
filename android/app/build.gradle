@@ -106,6 +106,22 @@ dependencies {
     }
 }
 
+// Mirror JS bundle audio files into APK assets so AssetManager can open sounds/packs/... paths.
+// Without this, native loading always fails in release/Play and the app relied on a fragile fallback.
+tasks.register("copyBundledSoundsToAndroidAssets", Copy) {
+    def soundsRoot = file("${rootProject.projectDir}/../src/assets/sounds")
+    onlyIf { soundsRoot.exists() }
+    from(soundsRoot) {
+        exclude "**/*.ts"
+        exclude "**/*.tsx"
+        exclude "**/*.md"
+    }
+    into("${projectDir}/src/main/assets/sounds")
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+tasks.named("preBuild").configure { dependsOn("copyBundledSoundsToAndroidAssets") }
+
 tasks.whenTaskAdded { task ->
     if (task.name.contains("compileDebugJavaWithJavac") || task.name.contains("compileReleaseJavaWithJavac")) {
         task.doFirst {

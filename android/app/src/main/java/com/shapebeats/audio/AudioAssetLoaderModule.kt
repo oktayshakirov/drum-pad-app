@@ -1,9 +1,9 @@
 package com.shapebeats.audio
 
-import android.content.Context
+import android.net.Uri
 import android.util.Base64
 import com.facebook.react.bridge.*
-import com.facebook.react.modules.core.DeviceEventManagerModule
+import java.io.File
 import java.io.IOException
 import java.io.InputStream
 
@@ -11,6 +11,40 @@ class AudioAssetLoaderModule(reactContext: ReactApplicationContext) : ReactConte
 
     override fun getName(): String {
         return "AudioAssetLoader"
+    }
+
+    companion object {
+        /** Serialize cache writes so parallel sound loads cannot corrupt the same file. */
+        private val copyLock = Any()
+    }
+
+    /**
+     * Copies a bundled asset to app cache and returns a file:// URI.
+     * JS loads bytes via fetch(uri) — avoids sending multi‑MB arrays over the RN bridge
+     * (which can fail on cold start / Play builds).
+     */
+    @ReactMethod
+    fun copyAudioAssetToCache(assetPath: String, promise: Promise) {
+        try {
+            val context = reactApplicationContext
+            val normalized = assetPath.trimStart('/')
+            val safeName = normalized.replace(Regex("[^a-zA-Z0-9._-]+"), "_")
+            val outFile = File(context.cacheDir, "shapebeats_$safeName")
+
+            synchronized(copyLock) {
+                if (!outFile.exists() || outFile.length() == 0L) {
+                    context.assets.open(normalized).use { input ->
+                        outFile.outputStream().use { output -> input.copyTo(output) }
+                    }
+                }
+            }
+
+            promise.resolve(Uri.fromFile(outFile).toString())
+        } catch (e: IOException) {
+            promise.reject("ASSET_COPY_ERROR", "Failed to copy asset: $assetPath", e)
+        } catch (e: Exception) {
+            promise.reject("UNKNOWN_ERROR", "Unknown error copying asset: $assetPath", e)
+        }
     }
 
     @ReactMethod
@@ -57,7 +91,7 @@ class AudioAssetLoaderModule(reactContext: ReactApplicationContext) : ReactConte
             
         } catch (e: IOException) {
             promise.reject("ASSET_LOAD_ERROR", "Failed to load asset: $assetPath", e)
-                } catch (e: Exception) {
+        } catch (e: Exception) {
             promise.reject("UNKNOWN_ERROR", "Unknown error loading asset: $assetPath", e)
         }
     }

@@ -39,8 +39,9 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
   const initializeAudioContext = useCallback(async (): Promise<void> => {
     try {
       const context = new AudioContext();
-      setState(prev => ({...prev, audioContext: context}));
       AudioService.setAudioContext(context);
+      await AudioService.waitForAndroidAudioReady();
+      setState(prev => ({...prev, audioContext: context}));
 
       try {
         await UnlockService.initialize();
@@ -157,8 +158,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
   }, [initializeAudioContext]);
 
   useEffect(() => {
-    if (state.audioContext) {
-      loadSoundPack(state.currentSoundPack);
+    if (state.audioContext && state.currentSoundPack) {
+      void loadSoundPack(state.currentSoundPack);
     }
   }, [state.audioContext, state.currentSoundPack, loadSoundPack]);
 
