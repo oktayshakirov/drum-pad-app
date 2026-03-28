@@ -36,6 +36,9 @@ local.properties
 .kotlin/
 android/app/release/
 
+# Generated: copied from src/assets/sounds on each Android preBuild (see android/app/build.gradle)
+android/app/src/main/assets/sounds/
+
 # Secrets (copy .env.example → .env locally)
 .env
 

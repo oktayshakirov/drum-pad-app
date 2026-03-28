@@ -58,10 +58,14 @@ class AudioService {
     this.audioContext = audioContext;
     this.needsAudioRecovery = false;
     this._initializeMetronomeGainNode();
+  }
 
-    if (Platform.OS === 'android') {
-      this._ensureAndroidAudioContextReady();
+  /** Call after setAudioContext on Android before loading/decoding audio (cold start / Play builds). */
+  async waitForAndroidAudioReady(): Promise<void> {
+    if (Platform.OS !== 'android' || !this.audioContext) {
+      return;
     }
+    await this._ensureAndroidAudioContextReady();
   }
 
   private async _ensureAndroidAudioContextReady(): Promise<void> {
@@ -181,6 +185,10 @@ class AudioService {
       this.metronomeState.soundBuffers.clear();
 
       this._initializeMetronomeGainNode();
+
+      if (Platform.OS === 'android') {
+        await this._ensureAndroidAudioContextReady();
+      }
 
       await oldContext.close();
       this.needsAudioRecovery = false;
@@ -564,17 +572,12 @@ class AudioService {
       }
 
       try {
-        const byteArray = await AudioAssetLoader.loadAudioAssetAsArrayBuffer(
-          assetPath,
-        );
-
-        const arrayBuffer = new ArrayBuffer(byteArray.length);
-        const uint8Array = new Uint8Array(arrayBuffer);
-        for (let i = 0; i < byteArray.length; i++) {
-          uint8Array[i] = byteArray[i];
+        const fileUri = await AudioAssetLoader.copyAudioAssetToCache(assetPath);
+        const response = await fetch(fileUri);
+        if (!response.ok) {
+          throw new Error(`${response.status} ${response.statusText}`);
         }
-
-        return arrayBuffer;
+        return await response.arrayBuffer();
       } catch (error) {
         console.warn(
           `${LOG_PREFIX} Native Android asset loading failed for ${assetPath}:`,
