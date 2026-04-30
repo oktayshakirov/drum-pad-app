@@ -11,6 +11,8 @@ Whether you're a beginner exploring rhythm for the first time or a seasoned prod
 ![ShapeBeats Demo](https://oktayshakirov.com/assets/images/projects/shape-beats.jpg 'ShapeBeats Demo')
 
 <p align="center">
+  <a href="https://play.google.com/store/apps/details?id=com.shapebeats"><strong>➥ Get it on Google Play</strong></a>
+  &nbsp;·&nbsp;
   <a href="https://apps.apple.com/us/app/shape-beats/id6751116257"><strong>➥ Download on the App Store</strong></a>
 </p>
 
