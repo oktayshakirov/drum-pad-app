@@ -7,8 +7,10 @@ import {
   Image,
   FlatList,
   ImageBackground,
+  Alert,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import {SOUND_PACKS} from '../utils/soundUtils';
 import {soundPacks} from '../assets/sounds';
 import AudioService from '../services/AudioService';
@@ -21,6 +23,7 @@ import {UnlockService} from '../services/UnlockService';
 import {BlurView} from '@react-native-community/blur';
 import {triggerPlatformHaptic} from '../utils/haptics';
 import {getResponsiveSize} from '../utils/deviceUtils';
+import ConnectModal from '../components/ConnectModal';
 import {useRevenueCat} from '../hooks/useRevenueCat';
 import {
   getCustomerInfo,
@@ -145,15 +148,17 @@ const PackItem: React.FC<PackItemProps> = memo(
 
 interface ModalHeaderProps {
   onClose: () => void;
+  onOpenConnect: () => void;
   activeTab: 'all' | 'my';
   setActiveTab: (tab: 'all' | 'my') => void;
 }
 
 const ModalHeader: React.FC<ModalHeaderProps> = memo(
-  ({onClose, activeTab, setActiveTab}) => {
+  ({onClose, onOpenConnect, activeTab, setActiveTab}) => {
     const headerPadding = getResponsiveSize(15, 20);
     const closeButtonPadding = getResponsiveSize(5, 12);
     const closeButtonFontSize = getResponsiveSize(24, 40);
+    const connectIconSize = getResponsiveSize(24, 36);
 
     return (
       <View
@@ -175,25 +180,36 @@ const ModalHeader: React.FC<ModalHeaderProps> = memo(
             onPress={() => setActiveTab('my')}
           />
         </View>
-        <TouchableOpacity
-          onPress={onClose}
-          style={[
-            styles.closeButton,
-            {
-              padding: closeButtonPadding,
-            },
-          ]}
-          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-          <Text
+        <View style={styles.headerActions}>
+          <TouchableOpacity
+            onPress={() => {
+              triggerPlatformHaptic('selection');
+              onOpenConnect();
+            }}
+            style={[styles.connectButton, {padding: closeButtonPadding}]}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+            <Ionicons name="settings-outline" size={connectIconSize} color="#fff" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={onClose}
             style={[
-              styles.closeButtonText,
+              styles.closeButton,
               {
-                fontSize: closeButtonFontSize,
+                padding: closeButtonPadding,
               },
-            ]}>
-            X
-          </Text>
-        </TouchableOpacity>
+            ]}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+            <Text
+              style={[
+                styles.closeButtonText,
+                {
+                  fontSize: closeButtonFontSize,
+                },
+              ]}>
+              X
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   },
@@ -246,10 +262,17 @@ const TabButton: React.FC<TabButtonProps> = memo(
 
 const PackLibraryScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-  const {isLifetime, refresh, showPaywallIfNeeded, isAvailable} =
-    useRevenueCat();
+  const {
+    isLifetime,
+    refresh,
+    showPaywall,
+    showPaywallIfNeeded,
+    restore,
+    isAvailable,
+  } = useRevenueCat();
   const [playingPackId, setPlayingPackId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | 'my'>('all');
+  const [connectVisible, setConnectVisible] = useState(false);
   const packs = Object.values(SOUND_PACKS);
   const background = soundPacks.brabus;
 
@@ -310,6 +333,26 @@ const PackLibraryScreen: React.FC = () => {
     await cleanupDemo();
     navigation.goBack();
   }, [cleanupDemo, navigation]);
+
+  const handleRestore = useCallback(async (): Promise<void> => {
+    const {success, error} = await restore();
+    const {customerInfo} = await getCustomerInfo();
+    if (hasLifetimeEntitlement(customerInfo)) {
+      await UnlockService.unlockAllPacks();
+      await refresh();
+      Alert.alert(
+        'Purchases restored',
+        'Your full version has been restored. Enjoy every pack!',
+      );
+      return;
+    }
+    Alert.alert(
+      'Nothing to restore',
+      success
+        ? 'We couldn’t find a previous purchase on this account.'
+        : error?.message ?? 'Restore failed. Please try again.',
+    );
+  }, [restore, refresh]);
 
   const handleSelect = useCallback(
     async (packId: string): Promise<void> => {
@@ -377,6 +420,7 @@ const PackLibraryScreen: React.FC = () => {
           ]}>
           <ModalHeader
             onClose={handleClose}
+            onOpenConnect={() => setConnectVisible(true)}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
           />
@@ -396,6 +440,14 @@ const PackLibraryScreen: React.FC = () => {
           />
         </View>
       </SafeAreaView>
+      <ConnectModal
+        visible={connectVisible}
+        onClose={() => setConnectVisible(false)}
+        revenueCatAvailable={isAvailable}
+        isUnlocked={isLifetime}
+        onUpgrade={showPaywall}
+        onRestore={handleRestore}
+      />
     </View>
   );
 };
@@ -417,6 +469,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  connectButton: {
+    padding: 5,
+    marginRight: 4,
   },
   closeButton: {
     padding: 5,
