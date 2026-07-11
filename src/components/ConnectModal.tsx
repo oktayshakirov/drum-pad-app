@@ -42,15 +42,6 @@ function openStoreListing(): void {
   Linking.openURL(url).catch(() => undefined);
 }
 
-/** Opens the store account page so the user can manage their purchase. */
-function openManageInStore(): void {
-  const url =
-    Platform.OS === 'ios'
-      ? 'https://apps.apple.com/account/subscriptions'
-      : 'https://play.google.com/store/account';
-  Linking.openURL(url).catch(() => undefined);
-}
-
 interface MailOption {
   name: string;
   open: () => Promise<void>;
@@ -408,39 +399,16 @@ const ConnectModalContent: React.FC<ConnectModalProps> = ({
             </View>
 
             {isUnlocked ? (
-              <>
-                <TouchableOpacity
-                  style={styles.planAction}
-                  activeOpacity={0.8}
-                  onPress={() => {
-                    triggerPlatformHaptic('selection');
-                    onClose();
-                    openManageInStore();
-                  }}>
-                  <Ionicons name="card-outline" size={22} color="#aaa" />
-                  <View style={styles.planActionText}>
-                    <Text style={styles.planActionTitle}>
-                      Manage in{' '}
-                      {Platform.OS === 'ios' ? 'App Store' : 'Play Store'}
-                    </Text>
-                    <Text style={styles.planActionSubtitle}>
-                      View your purchase or get support
-                    </Text>
-                  </View>
-                  <Ionicons name="chevron-forward" size={20} color="#aaa" />
-                </TouchableOpacity>
-
-                <View style={styles.tipCard}>
-                  <Text style={styles.tipTitle}>
-                    Thank you for supporting {APP_NAME} 💛
-                  </Text>
-                  <Text style={styles.tipBody}>
-                    Your purchase unlocks every sound pack and removes ads
-                    forever. You'll also get any future packs and features we
-                    add — at no extra cost.
-                  </Text>
-                </View>
-              </>
+              <View style={styles.tipCard}>
+                <Text style={styles.tipTitle}>
+                  Thank you for supporting {APP_NAME} 💛
+                </Text>
+                <Text style={styles.tipBody}>
+                  Your purchase unlocks every sound pack and removes ads
+                  forever. You'll also get any future packs and features we add
+                  - at no extra cost.
+                </Text>
+              </View>
             ) : (
               <>
                 <TouchableOpacity
@@ -457,7 +425,7 @@ const ConnectModalContent: React.FC<ConnectModalProps> = ({
                       Unlock Full Version
                     </Text>
                     <Text style={styles.planActionSubtitle}>
-                      Every sound pack, no ads — one-time purchase
+                      Every sound pack, no ads - one-time purchase
                     </Text>
                   </View>
                   <Ionicons name="chevron-forward" size={20} color="#aaa" />
