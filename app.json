@@ -1,6 +1,7 @@
 {
   "name": "Shape Beats",
   "displayName": "Shape Beats",
+  "version": "1.5.7",
   "icon": "./src/assets/images/icon.png",
 
   "android": {

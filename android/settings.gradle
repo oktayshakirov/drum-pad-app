@@ -8,7 +8,7 @@ if (!nodeExecutable) {
 }
 
 extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
-    ex.autolinkLibrariesFromCommand([nodeExecutable, "../node_modules/react-native/cli.js", "config"])
+    ex.autolinkLibrariesFromCommand([nodeExecutable, "node_modules/react-native/cli.js", "config"])
 }
 rootProject.name = 'ShapeBeats'
 include ':app'
