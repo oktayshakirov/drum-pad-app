@@ -14,6 +14,7 @@ import {
   getPadConfigsSync,
   getPackTheme,
 } from '../utils/soundUtils';
+import {soundPacks} from '../assets/sounds';
 import AdBanner from '../components/ads/BannerAd';
 import AudioService from '../services/AudioService';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
@@ -103,7 +104,6 @@ const DrumPadScreen: React.FC = () => {
         activeChannel === 'A' ? 12 : 24,
       )
     : padConfigs;
-  const {soundPacks} = require('../assets/sounds');
   const currentPack = soundPacks[currentSoundPack];
   const blurType = getPackTheme(currentSoundPack) === 'dark' ? 'dark' : 'light';
 

@@ -11,11 +11,17 @@ import {getResponsivePercentage, getResponsiveSize} from '../utils/deviceUtils';
 import Reanimated, {
   useSharedValue,
   useAnimatedStyle,
+  useAnimatedProps,
   withTiming,
+  cancelAnimation,
 } from 'react-native-reanimated';
 import {runOnJS} from 'react-native-worklets';
 import {GestureDetector, Gesture} from 'react-native-gesture-handler';
 import {triggerPlatformHaptic} from '../utils/haptics';
+
+const AnimatedRect = Reanimated.createAnimatedComponent(Rect);
+
+const PROGRESS_STROKE_LENGTH = 384;
 
 interface PadProps {
   sound: string | null;
@@ -40,8 +46,7 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
   }));
   const highlightIdRef = useRef(`hl_${Math.random().toString(36).slice(2, 9)}`);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const progressAnim = useRef(new Animated.Value(0)).current;
+  const progress = useSharedValue(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [showIndicator, setShowIndicator] = useState(false);
   const [indicatorAnim, setIndicatorAnim] = useState<
@@ -60,19 +65,14 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
         if (event.type === 'start' && event.duration) {
           latestPlayInstanceId.current = event.playInstanceId ?? null;
           setIsPlaying(true);
-          setProgress(0);
-          progressAnim.setValue(0);
-          Animated.timing(progressAnim, {
-            toValue: 1,
-            duration: event.duration * 1000,
-            useNativeDriver: false,
-          }).start();
+          progress.value = 0;
+          progress.value = withTiming(1, {duration: event.duration * 1000});
           if (timerRef.current) {
             clearTimeout(timerRef.current);
           }
           timerRef.current = setTimeout(() => {
             setIsPlaying(false);
-            setProgress(1);
+            progress.value = 1;
           }, event.duration * 1000 + 100);
         } else if (event.type === 'end') {
           if (
@@ -80,7 +80,7 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
             event.playInstanceId === latestPlayInstanceId.current
           ) {
             setIsPlaying(false);
-            setProgress(1);
+            progress.value = 1;
             if (timerRef.current) {
               clearTimeout(timerRef.current);
             }
@@ -95,14 +95,7 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
         clearTimeout(timerRef.current);
       }
     };
-  }, [sound, soundPack, progressAnim]);
-
-  useEffect(() => {
-    const sub = progressAnim.addListener(({value}) => {
-      setProgress(value);
-    });
-    return () => progressAnim.removeListener(sub);
-  }, [progressAnim]);
+  }, [sound, soundPack, progress]);
 
   useEffect(() => {
     if (isPlaying) {
@@ -118,9 +111,13 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
   useEffect(() => {
     return () => {
       scale.stopAnimation();
-      progressAnim.stopAnimation();
+      cancelAnimation(progress);
     };
-  }, [scale, progressAnim]);
+  }, [scale, progress]);
+
+  const progressAnimatedProps = useAnimatedProps(() => ({
+    strokeDashoffset: (1 - progress.value) * PROGRESS_STROKE_LENGTH,
+  }));
 
   const handleTouchStart = (touchId: number): void => {
     if (!sound) {
@@ -315,7 +312,7 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
                 ]}
                 useNativeDriver>
                 <Svg style={StyleSheet.absoluteFill} viewBox="0 0 100 100">
-                  <Rect
+                  <AnimatedRect
                     x="1.5"
                     y="1.5"
                     width="97"
@@ -325,8 +322,8 @@ const Pad: React.FC<PadProps> = ({sound, soundPack, color, icon, title}) => {
                     stroke={brighterColor}
                     strokeWidth="3"
                     fill="none"
-                    strokeDasharray={384}
-                    strokeDashoffset={(1 - progress) * 384}
+                    strokeDasharray={PROGRESS_STROKE_LENGTH}
+                    animatedProps={progressAnimatedProps}
                   />
                 </Svg>
               </Animatable.View>
