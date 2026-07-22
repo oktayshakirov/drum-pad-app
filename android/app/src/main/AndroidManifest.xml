@@ -12,7 +12,14 @@
       android:allowBackup="false"
       android:theme="@style/AppTheme"
       android:supportsRtl="true">
-      
+
+      <!-- Keep the portrait lock on large screens (sw >= 600dp). Apps targeting
+           API 36 otherwise have orientation/resizability restrictions ignored
+           there. Google drops this opt-out at API 37. -->
+      <property
+        android:name="android.window.PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY"
+        android:value="true" />
+
       <meta-data
         android:name="com.google.android.gms.ads.APPLICATION_ID"
         android:value="ca-app-pub-5852582960793521~5819935712"
