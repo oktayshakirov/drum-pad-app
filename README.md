@@ -8,7 +8,7 @@ Whether you're a beginner exploring rhythm for the first time or a seasoned prod
 
 ## Demo
 
-![ShapeBeats Demo](https://oktayshakirov.com/assets/images/projects/shape-beats.jpg 'ShapeBeats Demo')
+![ShapeBeats Demo](https://oktayshakirov.com/assets/images/projects/shape-beats.webp 'ShapeBeats Demo')
 
 <p align="center">
   <a href="https://play.google.com/store/apps/details?id=com.shapebeats"><strong>➥ Get it on Google Play</strong></a>
